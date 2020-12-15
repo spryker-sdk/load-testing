@@ -1,0 +1,127 @@
+{{> header}}
+
+<div id="reports"></div>
+
+<script>
+    var table = new Tabulator("#reports", {
+        ajaxURL: '/reports',
+        layout: "fitColumns",
+        resizableColumns: true,
+        groupBy: "done",
+        groupValues: [[false, true]],
+        groupHeader: function (value, count, data, group) {
+            return value ? 'Done' : ('Running (' + count + ')');
+        },
+        initialSort:[
+            {column:"when", dir:"desc"},
+        ],
+        columns: [
+            {title: "Test", field: "testName", widthGrow: 2, headerFilter: "input"},
+            {title: "Instance", field: "instance", headerFilter: "input"},
+            {title: "Status", field: "success", align: "center", formatter: "tickCross"},
+            {title: "Type", field: "testType", headerFilter: "input"},
+            {title: "RPS", field: "targetRps", sorter: "number"},
+            {title: "<small>Duration, <br>minutes</small>", field: "duration", sorter: "number"},
+            {
+                title: "Valid",
+                field: "valid",
+                align: "center",
+                formatter: "tickCross",
+                formatterParams:{
+                    allowEmpty:true,
+                    allowTruthy:true,
+                },
+                cellClick: function(e, cell){
+                    let valid = cell.getValue();
+                    let data = cell.getData();
+                    let row = cell.getRow();
+
+                    cell.setValue(!valid);
+                    data.valid = !valid;
+
+                    fetch('/reports', {
+                        method: 'post',
+                        body: JSON.stringify(data),
+                    }).then(res => {
+                        if (res.ok) {
+                            row.getData();
+                            // location.reload();
+
+                            return;
+                        }
+
+                        console.log(res.status);
+                    });
+                },
+            },
+            {
+                title: "When",
+                field: "when",
+                formatter: function (cell) {
+                    var value = cell.getValue();
+                    if (value) {
+                        return new Date(value).toLocaleDateString() + '<br>' + new Date(value).toLocaleTimeString();
+                    }
+                },
+                sorter: "number",
+                headerFilter: "input"
+            },
+            {title: "Description", field: "description", headerFilter: "input", widthGrow: 4, headerFilter: "input"},
+            {
+                title: "",
+                field: "",
+                formatter: function (cell) {
+                    var row = cell.getRow().getData();
+                    var result = '';
+                    if (row.done && row.reportPath) {
+                        result += `<a href="${row.reportPath}" target="_blank">Report</a>`;
+                    }
+                    result += '&nbsp;';
+                    if (row.logPath) {
+                        result += `<a href="${row.logPath}">Log</a>`;
+                    }
+
+                    return result;
+                }
+            },
+            {
+                formatter:"buttonCross",
+                cellClick: function(e, cell){
+                    if (!confirm('Are you sure to delete?')) {
+                        return;
+                    }
+
+                    let data = cell.getData();
+                    let deleteUri = '/reports/' + data.id;
+
+                    fetch(deleteUri, {method: 'delete'})
+                            .then(res => {
+                                if (res.ok) {
+                                    //todo: for reset navbar
+                                    location.reload();
+
+                                    return;
+                                }
+                                //todo: error
+                                console.log(res.status);
+                            });
+                },
+                width:30,
+                hozAlign:"center"
+            },
+        ],
+    });
+
+    table.clearHeaderFilter(true);
+    var filters = parseURISearchParams(window.location).filter || {};
+    Object.keys(filters).map(filter => {
+        table.setHeaderFilterValue(filter, filters[filter]);
+    });
+
+    setInterval(function () {
+        table.replaceData();
+    }, 5000);
+
+</script>
+
+{{> footer}}

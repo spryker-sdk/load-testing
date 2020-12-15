@@ -1,0 +1,83 @@
+{{> header}}
+
+<h2>Instance</h2>
+<div id="instances"></div>
+
+<script>
+    var table = new Tabulator("#instances", {
+        ajaxURL: '/instances/list',
+        ajaxProgressiveLoadDelay:200,
+        layout: "fitColumns",
+        resizableColumns: true,
+        columns: [
+            {title: "Instance", field: "key", headerFilter: "input"},
+            {title: "Yves", field: "yves", headerFilter: "input"},
+            {title: "Glue", field: "glue", headerFilter: "input"},
+            {
+                formatter:  function (cell) {
+                    return "<i class='fa fa-pencil-square-o' aria-hidden='true'></i>"
+                },
+                cellClick: function(e, cell){
+                    let data = cell.getData();
+                    let editUri = '/instances?key=' + data.key;
+
+                    window.location.assign(editUri);
+                },
+                width:30,
+                hozAlign:"center"
+            },
+            {
+                formatter:"buttonCross",
+                cellClick: function(e, cell){
+                    if (!confirm('Are you sure to delete?')) {
+                        return;
+                    }
+
+                    let data = cell.getData();
+                    let deleteUri = '/instances/' + data.key;
+
+                    fetch(deleteUri, {method: 'delete'})
+                            .then(res => {
+                                if (res.ok) {
+                                    //todo: for reset navbar
+                                    location.reload();
+
+                                    return;
+                                }
+                                //todo: error
+                                console.log(res.status);
+                            });
+                },
+                width:30,
+                hozAlign:"center"
+            },
+        ],
+    });
+</script>
+
+<h2>{{formTitle}}</h2>
+<form action="" method="post" class="pure-form pure-form-stacked">
+    <fieldset>
+        <div class="pure-control-group">
+            <label>
+                Instance Name:
+                <input name="key" type="text" class="pure-input-1" value="{{selectedInstance.key}}" {{#selectedInstance.key}}readonly="readonly"{{/selectedInstance.key}}/>
+            </label>
+        </div>
+        <div class="pure-control-group">
+            <label>
+                Yves url:
+                <input name="yves" type="text" class="pure-input-1" value="{{selectedInstance.yves}}"/>
+            </label>
+        </div>
+        <div class="pure-control-group">
+            <label>
+                Glue Url:
+                <input name="glue" type="text" class="pure-input-1" value="{{selectedInstance.glue}}"/>
+            </label>
+        </div>
+    </fieldset>
+    <button type="submit" class="primary-button pure-button">Go</button>
+</form>
+
+{{> footer}}

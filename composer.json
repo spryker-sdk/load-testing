@@ -1,7 +1,7 @@
 {
   "name": "spryker-sdk/load-testing",
   "type": "library",
-  "description": "LoadTesting module",
+  "description": "LoadTesting tool",
   "license": "proprietary",
   "require": {
     "php": ">=7.3",

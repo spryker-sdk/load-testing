@@ -69,7 +69,7 @@ console publish:trigger-events
 3. Run the *queue worker*:
 
 ```bash
-console console q:w:s -s 
+console q:w:s -s 
 ```
 
 That being done, you should have the fixtures loaded into the databases.

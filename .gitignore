@@ -7,9 +7,7 @@ vendor/
 
 /.dist/
 /gatling
-/run
 /web
 
 !/.dist/.gitkeep
-!/run/.gitkeep
 !/web/.gitkeep

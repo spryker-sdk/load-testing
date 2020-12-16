@@ -7,7 +7,7 @@ const rimraf = require("rimraf");
 const fastify = require('fastify')({logger: true});
 const port = process.env.PORT || 3000;
 
-const tests = require('./tests.js');
+const scenarios = require('../resources/scenarios/scenarios.js');
 
 const destinationFolder = 'web';
 const reportSuffix = '/report';
@@ -29,7 +29,7 @@ fastify.register(require('point-of-view'), {
     engine: {
         mustache: require('mustache'),
     },
-    templates: 'src/templates',
+    templates: 'resources/templates',
 });
 const partials = {
     partials: {
@@ -43,15 +43,20 @@ fastify.register(require('fastify-static'), {
     decorateReply: false,
 });
 fastify.register(require('fastify-static'), {
-    root: path.join(__dirname, '/public'),
-    prefix: '/public',
+    root: path.join(__dirname, '/../resources/css'),
+    prefix: '/css',
+    decorateReply: false,
+});
+fastify.register(require('fastify-static'), {
+    root: path.join(__dirname, '/../resources/js'),
+    prefix: '/js',
     decorateReply: false,
 });
 
 fastify.get('/', (req, reply) => {
     reply.view('list.mustache', {
         title: 'Load testing',
-        tests,
+        scenarios: scenarios,
         projects: Array.from(instanceList.values()),
         jobs: Array.from(jobs.values()),
         reports: Array.from(reports.values()),
@@ -113,7 +118,7 @@ fastify.get('/run', (req, reply) => {
     reply.view(template, {
         title: 'Run a test',
         errorMessage: 'Some tests are already running.',
-        tests,
+        scenarios: scenarios,
         projects: Array.from(instanceList.values()),
         jobs: Array.from(jobs.values()),
         reports: Array.from(reports.values()),
@@ -170,7 +175,7 @@ fastify.post('/run', async (req, reply) => {
         + ` -DTARGET_RPS=${targetRps}`;
 
     description = description || '-';
-    const run = spawn('./gatling/bin/gatling.sh', ['-sf=spryker', `-rd='${description}'`, `-rf=${reportFolder}`, `-s=spryker.${testName}${testType}`], {env: env});
+    const run = spawn('./gatling/bin/gatling.sh', ['-sf=resources/scenarios/spryker', `-rd='${description}'`, `-rf=${reportFolder}`, `-s=spryker.${testName}${testType}`], {env: env});
 
     run.stdout.on('data', data => {
         runObject.log.push({
@@ -219,7 +224,7 @@ fastify.get('/instances', (req, reply) => {
 
     reply.view('instance.mustache', {
         title: 'Instances',
-        tests,
+        scenarios: scenarios,
         projects: Array.from(instanceList.values()),
         selectedInstance: selectedInstance,
         formTitle: Object.entries(selectedInstance).length === 0 ? 'Add instance' : 'Edit instance',
@@ -280,7 +285,7 @@ fastify.get('/log/*', async (req, reply) => {
         log,
         title: 'Console log',
         errorMessage: 'Some tests are already running.',
-        tests,
+        scenarios: scenarios,
         projects: Array.from(instanceList.values()),
         jobs: Array.from(jobs.values()),
         reports: Array.from(reports.values()),

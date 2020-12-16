@@ -2,10 +2,9 @@
   "name": "spryker-load",
   "version": "1.0.0",
   "description": "",
-  "main": "src/index.js",
+  "main": "public/index.js",
   "scripts": {
-    "run": "PM2_HOME=run pm2 start src/index.js --no-daemon",
-    "start": "node src/index.js",
+    "run": "node public/index.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "Spryker",
@@ -20,7 +19,6 @@
     "glob": "^7.1.6",
     "mustache": "^3.1.0",
     "platformsh-config": "^2.3.1",
-    "pm2": "^4.4.0",
     "point-of-view": "^3.7.0",
     "rimraf": "^3.0.2",
     "yaml": "^1.7.2"

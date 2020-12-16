@@ -28,7 +28,7 @@ trait PlaceOrderBase {
   lazy val scenarioName = "PlaceOrder page"
 
   val httpProtocol = YvesProtocol.httpProtocol
-  val feeder = tsv("spryker/payload/place_order_payload.csv").random;
+  val feeder = tsv("resources/scenarios/payload/place_order_payload.csv").random;
 
   val request = http(scenarioName)
     .post("/place-order-debug")

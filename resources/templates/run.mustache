@@ -27,13 +27,13 @@
         <div class="pure-control-group">
             <select name="testName" required class="pure-input-1">
                 <option value=""></option>
-                {{#tests}}
+                {{#scenarios}}
                     <optgroup label="{{title}}">
                         {{#tests}}
                         <option value="{{id}}">{{title}}</option>
                         {{/tests}}
                     </optgroup>
-                {{/tests}}
+                {{/scenarios}}
             </select>
         </div>
         <div class="pure-control-group">

@@ -7,7 +7,7 @@ To integrate Gatling into your project, follow the steps below.
 1. Require the *composer* package:
 
 ```bash
-composer require git@github.com:spryker-sdk/load-testing.git --dev
+composer require spryker-sdk/load-testing --dev
 ```
 2. Add the Router provider plugin to `src/Pyz/Yves/Router/RouterDependencyProvider.php`
 

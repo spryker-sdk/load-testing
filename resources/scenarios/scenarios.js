@@ -1,4 +1,4 @@
-const tests = [
+const scenarios = [
     {
         title: 'Storefront',
         tests: [
@@ -25,4 +25,4 @@ const tests = [
     },
 ];
 
-module.exports = tests;
+module.exports = scenarios;

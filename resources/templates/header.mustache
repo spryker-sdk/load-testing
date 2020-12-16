@@ -8,8 +8,8 @@
     <link rel="stylesheet" href="https://unpkg.com/purecss@1.0.1/build/pure-min.css"
           integrity="sha384-oAOxQR6DkCoMliIh8yFnu25d7Eq/PHS21PClpwjOTeU2jRSq11vu66rf90/cZr47" crossorigin="anonymous">
     <link href="https://unpkg.com/tabulator-tables@4.5.1/dist/css/tabulator.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="/public/layout.css">
-    <script type="text/javascript" src="/public/layout.js"></script>
+    <link rel="stylesheet" href="/css/layout.css">
+    <script type="text/javascript" src="/js/layout.js"></script>
     <script type="text/javascript" src="https://unpkg.com/tabulator-tables@4.5.1/dist/js/tabulator.js"></script>
     <script src="https://use.fontawesome.com/97ec165e51.js"></script>
 </head>
@@ -40,11 +40,11 @@
                     {{/projects}}
                     <li class="pure-menu-heading">Tests</li>
                     <li class="pure-menu-item"><a href="/" class="pure-menu-link">ALL</a></li
-                    {{#tests}}
+                    {{#scenarios}}
                         {{#tests}}
                         <li class="pure-menu-item"><small><a href="/?filter[testName]={{id}}" class="pure-menu-link">{{id}}</a></small></li>
                         {{/tests}}
-                    {{/tests}}
+                    {{/scenarios}}
                 </ul>
             </div>
         </div>

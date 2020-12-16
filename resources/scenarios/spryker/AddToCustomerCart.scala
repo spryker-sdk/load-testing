@@ -65,7 +65,7 @@ trait AddToCustomerCartBase {
       .pause(1)
       .exec(request)
     }
-    
+
 }
 
 class AddToCustomerCartRamp extends Simulation with AddToCustomerCartBase {

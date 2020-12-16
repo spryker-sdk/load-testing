@@ -29,15 +29,14 @@ function saveGatlingConfig() {
   if [ -d './gatling/conf' ]; then
     rm -rf ./.dist/gatling-conf 2>/dev/null
     mkdir ./.dist/gatling-conf
-    cp -R -n ./gatling/conf ./.dist/gatling-conf
+    cp -R -n ./gatling/conf/* ./.dist/gatling-conf
   fi
 }
 
 function loadGatlingConfig() {
   if [ -d './.dist/gatling-conf' ]; then
     rm -rf ./gatling/conf 2>/dev/null
-    cp -R -n ./.dist/gatling-conf ./gatling/conf
-    rm -rf ./.dist/gatling-conf 2>/dev/null
+    mv ./.dist/gatling-conf ./gatling/conf
   fi
 }
 

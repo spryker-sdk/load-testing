@@ -21,6 +21,7 @@ const scenarios = [
             { id: 'PdpApi', title: 'PDP request'},
             { id: 'GuestCheckoutApi', title: 'Guest checkout request'},
             { id: 'CheckoutApi', title: 'Checkout request'},
+            { id: 'GuestCheckoutCustomerApi', title: 'Guest Checkout request with products'},
         ],
     },
 ];

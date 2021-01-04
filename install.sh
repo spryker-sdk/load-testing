@@ -1,8 +1,8 @@
 #!/bin/bash
 
-GATLING_DOWNLOAD_MAVEN_URL='https://repo1.maven.org/maven2/io/gatling/highcharts/gatling-charts-highcharts-bundle/3.3.0/gatling-charts-highcharts-bundle-3.3.0-bundle.zip'
-GATLINT_ARCHIVE_NAME='gatling-charts-highcharts-bundle-3.3.0-bundle.zip'
-GATLINT_DIRECTORY_NAME='gatling-charts-highcharts-bundle-3.3.0'
+GATLING_DOWNLOAD_MAVEN_URL='https://repo1.maven.org/maven2/io/gatling/highcharts/gatling-charts-highcharts-bundle/3.5.0/gatling-charts-highcharts-bundle-3.5.0-bundle.zip'
+GATLINT_ARCHIVE_NAME='gatling-charts-highcharts-bundle-3.5.0-bundle.zip'
+GATLINT_DIRECTORY_NAME='gatling-charts-highcharts-bundle-3.5.0'
 
 function installNpm() {
   npm i

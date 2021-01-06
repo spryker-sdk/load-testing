@@ -1,0 +1,19 @@
+{
+  "name": "spryker-sdk/load-testing",
+  "type": "library",
+  "description": "Load Testing tool",
+  "license": "proprietary",
+  "require": {
+    "php": ">=7.3",
+  },
+  "minimum-stability": "dev",
+  "prefer-stable": true,
+  "extra": {
+    "branch-alias": {
+      "dev-master": "1.0.x-dev"
+    }
+  },
+  "config": {
+    "sort-packages": true
+  }
+}

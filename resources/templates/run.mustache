@@ -1,0 +1,76 @@
+{{> header}}
+
+<h2>Run a test</h2>
+<form action="" method="post" class="pure-form pure-form-stacked">
+    <fieldset>
+        <legend>Instance</legend>
+        <div class="pure-control-group">
+            {{^projects}}
+                <a class="primary-button pure-button" href="/instances">New instance</a>
+            {{/projects}}
+            {{#projects}}
+                <label class="pure-radio">
+                    <input type="radio" name="instance" value="{{key}}" required/>
+                    <div style="display: inline-block; vertical-align: top;">
+                        {{ key }}
+                        <br>
+                        <small>{{ yves }}</small>
+                        <br>
+                        <small>{{ glue }}</small>
+                    </div>
+                </label>
+            {{/projects}}
+        </div>
+    </fieldset>
+    <fieldset>
+        <legend>Test</legend>
+        <div class="pure-control-group">
+            <select name="testName" required class="pure-input-1">
+                <option value=""></option>
+                {{#scenarios}}
+                    <optgroup label="{{title}}">
+                        {{#tests}}
+                        <option value="{{id}}">{{title}}</option>
+                        {{/tests}}
+                    </optgroup>
+                {{/scenarios}}
+            </select>
+        </div>
+        <div class="pure-control-group">
+            <label>
+                Type
+            </label>
+            <select name="testType" class="pure-input-1">
+                <option value="Ramp">Ramp</option>
+                <option value="Steady">Steady</option>
+            </select>
+        </div>
+        <div class="pure-control-group">
+            <label class="pure-input-1-2">
+                Target RPS:
+                <input name="targetRps" type="number" required min="1"/>
+            </label>
+            <label class="pure-input-1-2">
+                Duration, minutes:
+                <input name="duration" type="number" value="10" required min="1"/>
+            </label>
+        </div>
+        <div class="pure-control-group">
+            <label>
+                Description:
+                <input name="description" type="text" class="pure-input-1"/>
+            </label>
+        </div>
+    </fieldset>
+    <button type="submit" class="primary-button pure-button">Go</button>
+</form>
+
+<script>
+    let instances = document.querySelectorAll("input[type=radio][name=instance]");
+
+    if (instances.length === 1) {
+        instances[0].checked = true
+    }
+</script>
+
+{{> footer}}

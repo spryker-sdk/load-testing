@@ -1,0 +1,21 @@
+{{> header}}
+
+{{#runObject}}
+
+<h2>{{ id }}</h2>
+
+{{/runObject}}
+
+<pre>{{#log}}{{entry}}{{/log}}</pre>
+
+<script>
+
+    setTimeout(function () {
+        window.location.hash = '#bottom';
+        window.location.reload();
+    }, 1000);
+
+</script>
+<a id="bottom"></a>
+
+{{> footer}}

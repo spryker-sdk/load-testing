@@ -1,0 +1,16 @@
+{{> header}}
+
+{{#runObject}}
+
+    <h2>{{ id }}</h2>
+    {{#success}}
+    <a href="{{ reportPath }}" target="_blank">Report</a>
+    {{/success}}
+
+{{/runObject}}
+
+    <pre>{{#log}}{{entry}}{{/log}}</pre>
+
+    <a id="bottom"></a>
+
+{{> footer}}

@@ -1,0 +1,13 @@
+.platform/local
+.idea
+node_modules
+
+/tests/SprykerSdkTest/LoadTesting/Fixtures/_support/_generated/
+vendor/
+
+/.dist/
+/gatling
+/web
+
+!/.dist/.gitkeep
+!/web/.gitkeep

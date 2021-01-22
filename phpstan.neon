@@ -1,0 +1,4 @@
+parameters:
+    bootstrap: %rootDir%/../../../phpstan-bootstrap.php
+    autoload_directories:
+        - %rootDir%/../../../tests/

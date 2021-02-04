@@ -1,4 +1,7 @@
 # Load testing tool for Spryker
+[![Build Status](https://github.com/spryker-sdk/load-testing/workflows/CI/badge.svg?branch=master)](https://github.com/spryker-sdk/load-testing/actions?query=workflow%3ACI+branch%3Amaster)
+[![Minimum PHP Version](http://img.shields.io/badge/php-%3E%3D%207.3-8892BF.svg)](https://php.net/)
+[![PHPStan](https://img.shields.io/badge/PHPStan-enabled-brightgreen.svg?style=flat)](https://github.com/phpstan/phpstan)
 
 The tool contains predefined test scenarios that are specific to Spryker.
 Test runs based on Gatling.io, an open-source tool.

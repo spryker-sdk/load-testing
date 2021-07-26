@@ -12,6 +12,24 @@ coverage:
     whitelist: { include: ['../../../../src/*'] }
 
 suites:
+    AbstractProduct:
+        class_name: LoadTestingAbstractProductTester
+        path: AbstractProduct
+        modules:
+            enabled:
+                - \SprykerTest\Shared\Testify\Helper\Environment
+                - \SprykerTest\Shared\Testify\Helper\LocatorHelper
+                - \SprykerTest\Shared\Propel\Helper\ConnectionHelper
+                - \SprykerTest\Shared\Testify\Helper\DataCleanupHelper
+                - \SprykerTest\Shared\Product\Helper\ProductDataHelper
+                - \SprykerTest\Zed\ProductAttribute\Helper\ProductAttributeDataHelper
+                - \SprykerTest\Shared\Stock\Helper\StockDataHelper
+                - \SprykerTest\Shared\Tax\Helper\TaxSetDataHelper
+                - \SprykerTest\Shared\PriceProduct\Helper\PriceProductDataHelper
+                - \SprykerTest\Shared\Availability\Helper\AvailabilityDataHelper
+            config:
+                \SprykerTest\Shared\Testify\Helper\DataCleanupHelper:
+                    cleanup: false
     Product:
         class_name: LoadTestingProductTester
         path: Product
@@ -30,7 +48,24 @@ suites:
             config:
                 \SprykerTest\Shared\Testify\Helper\DataCleanupHelper:
                     cleanup: false
-
+    ProductOffer:
+        class_name: LoadTestingProductOfferTester
+        path: ProductOffer
+        modules:
+            enabled:
+                - \SprykerTest\Shared\Testify\Helper\Environment
+                - \SprykerTest\Shared\Testify\Helper\LocatorHelper
+                - \SprykerTest\Shared\Propel\Helper\ConnectionHelper
+                - \SprykerTest\Shared\Testify\Helper\DataCleanupHelper
+                - \SprykerTest\Shared\Product\Helper\ProductDataHelper
+                - \SprykerTest\Zed\ProductOffer\Helper\ProductOfferHelper
+                - \SprykerTest\Shared\Stock\Helper\StockDataHelper
+                - \SprykerTest\Shared\Tax\Helper\TaxSetDataHelper
+                - \SprykerTest\Shared\PriceProduct\Helper\PriceProductDataHelper
+                - \SprykerTest\Shared\Availability\Helper\AvailabilityDataHelper
+            config:
+                \SprykerTest\Shared\Testify\Helper\DataCleanupHelper:
+                    cleanup: false
     Customer:
         class_name: LoadTestingCustomerTester
         path: Customer
@@ -42,6 +77,38 @@ suites:
                 - \SprykerTest\Shared\Testify\Helper\DataCleanupHelper
                 - \SprykerTest\Shared\Testify\Helper\DependencyHelper
                 - \SprykerTest\Shared\Customer\Helper\CustomerDataHelper
+                - \SprykerTest\Shared\Quote\Helper\PersistentQuoteHelper
+                - \SprykerSdkTest\LoadTesting\Fixtures\Helper\CustomerHelper
+            config:
+                \SprykerTest\Shared\Testify\Helper\DataCleanupHelper:
+                    cleanup: false
+    MerchantOrder:
+        class_name: LoadTestingMerchantOrderTester
+        path: MerchantOrder
+        modules:
+            enabled:
+                - \SprykerTest\Shared\Testify\Helper\Environment
+                - \SprykerTest\Shared\Testify\Helper\LocatorHelper
+                - \SprykerTest\Shared\Propel\Helper\ConnectionHelper
+                - \SprykerTest\Shared\Testify\Helper\DataCleanupHelper
+                - \SprykerTest\Zed\MerchantSalesOrder\Helper\MerchantSalesHelper
+                - \SprykerTest\Shared\Testify\Helper\DependencyHelper
+                - \SprykerTest\Shared\Quote\Helper\PersistentQuoteHelper
+                - \SprykerSdkTest\LoadTesting\Fixtures\Helper\CustomerHelper
+            config:
+                \SprykerTest\Shared\Testify\Helper\DataCleanupHelper:
+                    cleanup: false
+    Merchant:
+        class_name: LoadTestingMerchantTester
+        path: Merchant
+        modules:
+            enabled:
+                - \SprykerTest\Shared\Testify\Helper\Environment
+                - \SprykerTest\Shared\Testify\Helper\LocatorHelper
+                - \SprykerTest\Shared\Propel\Helper\ConnectionHelper
+                - \SprykerTest\Shared\Testify\Helper\DataCleanupHelper
+                - \SprykerTest\Zed\Merchant\Helper\MerchantHelper
+                - \SprykerTest\Shared\Testify\Helper\DependencyHelper
                 - \SprykerTest\Shared\Quote\Helper\PersistentQuoteHelper
                 - \SprykerSdkTest\LoadTesting\Fixtures\Helper\CustomerHelper
             config:

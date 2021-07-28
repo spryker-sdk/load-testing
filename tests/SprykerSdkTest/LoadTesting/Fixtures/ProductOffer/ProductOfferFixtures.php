@@ -7,6 +7,8 @@
 
 namespace SprykerSdkTest\LoadTesting\Fixtures\ProductOffer;
 
+use Generated\Shared\Transfer\ProductOfferTransfer;
+use SprykerSdkTest\LoadTesting\Fixtures\Helper\LoadTestingCsvDemoDataLoaderTrait;
 use SprykerSdkTest\LoadTesting\Fixtures\LoadTestingProductOfferTester;
 use SprykerTest\Shared\Testify\Fixtures\FixturesBuilderInterface;
 use SprykerTest\Shared\Testify\Fixtures\FixturesContainerInterface;
@@ -23,6 +25,8 @@ use SprykerTest\Shared\Testify\Fixtures\FixturesContainerInterface;
  */
 class ProductOfferFixtures implements FixturesBuilderInterface, FixturesContainerInterface
 {
+    use LoadTestingCsvDemoDataLoaderTrait;
+
     /**
      * @param \SprykerSdkTest\LoadTesting\Fixtures\LoadTestingProductOfferTester $I
      *
@@ -42,9 +46,28 @@ class ProductOfferFixtures implements FixturesBuilderInterface, FixturesContaine
      */
     protected function createProductOffers(LoadTestingProductOfferTester $I): void
     {
-        // todo: make iterations parameterized?
-        for ($i = 0; $i < 10000; $i++) {
-            $I->haveProductOffer();
+        $demoData = $this->loadDemoData();
+
+        foreach ($demoData as $data) {
+            $I->haveProductOffer([
+                ProductOfferTransfer::CONCRETE_SKU => $data['product_sku'],
+                ProductOfferTransfer::MERCHANT_REFERENCE => $data['merchant_reference'],
+                ProductOfferTransfer::PRODUCT_OFFER_REFERENCE => $data['product_offer_reference'],
+            ]);
         }
+    }
+
+    protected function getFileName(): string
+    {
+        return 'merchant_product_offer.csv';
+    }
+
+    protected function getRequiredFields(): array
+    {
+        return [
+            'product_sku',
+            'merchant_reference',
+            'product_offer_reference',
+        ];
     }
 }

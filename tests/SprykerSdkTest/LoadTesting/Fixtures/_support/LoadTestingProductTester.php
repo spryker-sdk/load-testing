@@ -51,7 +51,8 @@ class LoadTestingProductTester extends Actor implements FixturesExporterInterfac
 
         $productConcreteTransfer = $this->haveFullProduct(
             $productConcreteOverride,
-            $productAbstractOverride
+            $productAbstractOverride,
+            true
         );
 
         $this->haveProductInStockForStore($storeTransfer, [

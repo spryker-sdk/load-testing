@@ -7,6 +7,8 @@
 
 namespace SprykerSdkTest\LoadTesting\Fixtures\AbstractProduct;
 
+use Generated\Shared\Transfer\ProductAbstractTransfer;
+use SprykerSdkTest\LoadTesting\Fixtures\Helper\LoadTestingCsvDemoDataLoaderTrait;
 use SprykerSdkTest\LoadTesting\Fixtures\LoadTestingAbstractProductTester;
 use SprykerTest\Shared\Testify\Fixtures\FixturesBuilderInterface;
 use SprykerTest\Shared\Testify\Fixtures\FixturesContainerInterface;
@@ -23,6 +25,8 @@ use SprykerTest\Shared\Testify\Fixtures\FixturesContainerInterface;
  */
 class AbstractProductFixtures implements FixturesBuilderInterface, FixturesContainerInterface
 {
+    use LoadTestingCsvDemoDataLoaderTrait;
+
     /**
      * @param \SprykerSdkTest\LoadTesting\Fixtures\LoadTestingAbstractProductTester $I
      *
@@ -42,9 +46,26 @@ class AbstractProductFixtures implements FixturesBuilderInterface, FixturesConta
      */
     protected function createAbstractProduct(LoadTestingAbstractProductTester $I): void
     {
-        // todo: make iterations parameterized?
-        for ($i = 0; $i < 10000; $i++) {
-            $I->haveProductAbstract();
+        $demoData = $this->loadDemoData();
+
+        foreach ($demoData as $data) {
+            $I->haveProductAbstract([
+                ProductAbstractTransfer::SKU => $data['sku'],
+                ProductAbstractTransfer::ID_PRODUCT_ABSTRACT => $data['id'],
+            ]);
         }
+    }
+
+    protected function getFileName(): string
+    {
+        return 'product_abstract.csv';
+    }
+
+    protected function getRequiredFields(): array
+    {
+        return [
+            'id',
+            'sku',
+        ];
     }
 }

@@ -7,8 +7,8 @@
 
 namespace SprykerSdkTest\LoadTesting\Fixtures\Merchant;
 
-use Faker\Factory;
 use Generated\Shared\Transfer\MerchantTransfer;
+use SprykerSdkTest\LoadTesting\Fixtures\Helper\LoadTestingCsvDemoDataLoaderTrait;
 use SprykerSdkTest\LoadTesting\Fixtures\LoadTestingMerchantTester;
 use SprykerTest\Shared\Testify\Fixtures\FixturesBuilderInterface;
 use SprykerTest\Shared\Testify\Fixtures\FixturesContainerInterface;
@@ -25,6 +25,8 @@ use SprykerTest\Shared\Testify\Fixtures\FixturesContainerInterface;
  */
 class MerchantFixtures implements FixturesBuilderInterface, FixturesContainerInterface
 {
+    use LoadTestingCsvDemoDataLoaderTrait;
+
     /**
      * @param \SprykerSdkTest\LoadTesting\Fixtures\LoadTestingMerchantTester $I
      *
@@ -44,13 +46,26 @@ class MerchantFixtures implements FixturesBuilderInterface, FixturesContainerInt
      */
     protected function createMerchant(LoadTestingMerchantTester $I): void
     {
-        $faker = Factory::create(); // todo: di/parameterized?
+        $demoData = $this->loadDemoData();
 
-        // todo: make iterations parameterized?
-        for ($i = 0; $i < 10000; $i++) {
+        foreach ($demoData as $data) {
             $I->haveMerchant([
-                MerchantTransfer::EMAIL => $faker->unique()->email,
+                MerchantTransfer::MERCHANT_REFERENCE => $data['reference'],
+                MerchantTransfer::EMAIL => $data['email'],
             ]);
         }
+    }
+
+    protected function getFileName(): string
+    {
+        return 'merchant.csv';
+    }
+
+    protected function getRequiredFields(): array
+    {
+        return [
+            'reference',
+            'email',
+        ];
     }
 }

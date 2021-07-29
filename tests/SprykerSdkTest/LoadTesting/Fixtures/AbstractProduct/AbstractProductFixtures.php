@@ -51,7 +51,6 @@ class AbstractProductFixtures implements FixturesBuilderInterface, FixturesConta
         foreach ($demoData as $data) {
             $I->haveProductAbstract([
                 ProductAbstractTransfer::SKU => $data['sku'],
-                ProductAbstractTransfer::ID_PRODUCT_ABSTRACT => $data['id'],
             ]);
         }
     }
@@ -64,7 +63,6 @@ class AbstractProductFixtures implements FixturesBuilderInterface, FixturesConta
     protected function getRequiredFields(): array
     {
         return [
-            'id',
             'sku',
         ];
     }

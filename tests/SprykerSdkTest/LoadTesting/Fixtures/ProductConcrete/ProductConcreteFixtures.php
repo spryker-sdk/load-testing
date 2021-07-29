@@ -48,7 +48,6 @@ class ProductConcreteFixtures implements FixturesBuilderInterface, FixturesConta
         foreach ($demoData as $data) {
             $productConcreteOverride = [
                 ProductConcreteTransfer::SKU => $data['sku'],
-                ProductConcreteTransfer::FK_PRODUCT_ABSTRACT => $data['abstract_id'],
                 ProductConcreteTransfer::IS_ACTIVE => 1,
             ];
 
@@ -66,7 +65,6 @@ class ProductConcreteFixtures implements FixturesBuilderInterface, FixturesConta
     protected function getRequiredFields(): array
     {
         return [
-            'abstract_id',
             'abstract_sku',
             'sku',
             'pdp_url',

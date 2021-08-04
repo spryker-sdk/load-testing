@@ -7,7 +7,6 @@
 
 namespace SprykerSdkTest\LoadTesting\Fixtures\Product;
 
-use Generated\Shared\Transfer\ProductAbstractTransfer;
 use Generated\Shared\Transfer\ProductConcreteTransfer;
 use SprykerSdkTest\LoadTesting\Fixtures\Helper\LoadTestingCsvDemoDataLoaderTrait;
 use SprykerSdkTest\LoadTesting\Fixtures\LoadTestingProductTester;
@@ -17,11 +16,6 @@ use SprykerTest\Shared\Testify\Fixtures\FixturesContainerInterface;
 /**
  * Auto-generated group annotations
  *
- * @group SprykerSdkTest
- * @group LoadTesting
- * @group Fixtures
- * @group Product
- * @group ProductFixtures
  * Add your own group annotations below this line
  */
 class ProductFixtures implements FixturesBuilderInterface, FixturesContainerInterface
@@ -35,6 +29,11 @@ class ProductFixtures implements FixturesBuilderInterface, FixturesContainerInte
     /**
      * @param \SprykerSdkTest\LoadTesting\Fixtures\LoadTestingProductTester $I
      *
+     * @group SprykerSdkTest
+     * @group LoadTesting
+     * @group Fixtures
+     * @group Product
+     * @group ProductFixtures
      * @return \SprykerTest\Shared\Testify\Fixtures\FixturesContainerInterface
      */
     public function buildFixtures(LoadTestingProductTester $I): FixturesContainerInterface

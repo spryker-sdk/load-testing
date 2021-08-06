@@ -18,11 +18,6 @@ use SprykerTest\Shared\Testify\Fixtures\FixturesContainerInterface;
 /**
  * Auto-generated group annotations
  *
- * @group SprykerSdkTest
- * @group LoadTesting
- * @group Fixtures
- * @group ProductConcrete
- * @group ProductConcreteFixtures
  * Add your own group annotations below this line
  */
 class ProductConcreteFixtures implements FixturesBuilderInterface, FixturesContainerInterface
@@ -32,6 +27,11 @@ class ProductConcreteFixtures implements FixturesBuilderInterface, FixturesConta
     /**
      * @param \SprykerSdkTest\LoadTesting\Fixtures\LoadTestingProductTester $I
      *
+     * @group SprykerSdkTest
+     * @group LoadTesting
+     * @group Fixtures
+     * @group ProductConcrete
+     * @group ProductConcreteFixtures
      * @return \SprykerTest\Shared\Testify\Fixtures\FixturesContainerInterface
      */
     public function buildFixtures(LoadTestingProductTester $I): FixturesContainerInterface

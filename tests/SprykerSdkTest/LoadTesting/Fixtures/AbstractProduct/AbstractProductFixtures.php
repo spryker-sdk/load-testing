@@ -16,11 +16,6 @@ use SprykerTest\Shared\Testify\Fixtures\FixturesContainerInterface;
 /**
  * Auto-generated group annotations
  *
- * @group SprykerSdkTest
- * @group LoadTesting
- * @group Fixtures
- * @group AbstractProduct
- * @group AbstractProductFixtures
  * Add your own group annotations below this line
  */
 class AbstractProductFixtures implements FixturesBuilderInterface, FixturesContainerInterface
@@ -30,6 +25,11 @@ class AbstractProductFixtures implements FixturesBuilderInterface, FixturesConta
     /**
      * @param \SprykerSdkTest\LoadTesting\Fixtures\LoadTestingAbstractProductTester $I
      *
+     * @group SprykerSdkTest
+     * @group LoadTesting
+     * @group Fixtures
+     * @group AbstractProduct
+     * @group AbstractProductFixtures
      * @return \SprykerTest\Shared\Testify\Fixtures\FixturesContainerInterface
      */
     public function buildFixtures(LoadTestingAbstractProductTester $I): FixturesContainerInterface
@@ -51,6 +51,7 @@ class AbstractProductFixtures implements FixturesBuilderInterface, FixturesConta
         foreach ($demoData as $data) {
             $I->haveProductAbstract([
                 ProductAbstractTransfer::SKU => $data['sku'],
+                ProductAbstractTransfer::ID_TAX_SET => 3,
             ]);
         }
     }

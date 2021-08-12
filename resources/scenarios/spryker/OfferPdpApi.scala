@@ -28,7 +28,7 @@ trait OfferPdpApiBase {
     lazy val scenarioName = "PDP Offer Api"
 
     val httpProtocol = GlueProtocol.httpProtocol
-    val feeder = csv("tests/_data/merchant_product_offer.csv").queue
+    val feeder = csv("tests/_data/merchant_product_offer.csv").random
 
     val request = http(scenarioName)
         .get("/product-offers/${product_offer_reference}")

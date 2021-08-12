@@ -28,8 +28,8 @@ trait AddOfferToCustomerCartBase {
     lazy val scenarioName = "Add Offer To Customer Cart"
 
     val httpProtocol = YvesProtocol.httpProtocol
-    val productFeeder = csv("tests/_data/merchant_product_offer.csv").queue
-    val customerFeeder = csv("tests/_data/customer.csv").queue
+    val productFeeder = csv("tests/_data/merchant_product_offer.csv").random
+    val customerFeeder = csv("tests/_data/customer.csv").random
 
     val loginPageRequest = http("Login Page Request")
         .get("/en/login")

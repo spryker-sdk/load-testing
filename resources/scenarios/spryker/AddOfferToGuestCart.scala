@@ -28,7 +28,7 @@ trait AddOfferToGuestCartBase {
     lazy val scenarioName = "Add Offer To Guest Cart"
 
     val httpProtocol = YvesProtocol.httpProtocol
-    val feeder = csv("tests/_data/merchant_product_offer.csv").queue
+    val feeder = csv("tests/_data/merchant_product_offer.csv").random
 
     val pdpRequest = http("PDP Reqest")
         .get("${pdp_url}")

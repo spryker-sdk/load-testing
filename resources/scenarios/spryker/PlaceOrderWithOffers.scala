@@ -28,7 +28,7 @@ trait PlaceOrderWithOffersBase {
     lazy val scenarioName = "Place Order page"
 
     val httpProtocol = YvesProtocol.httpProtocol
-    val feeder = csv("tests/_data/merchant_product_offer.csv").queue;
+    val feeder = csv("tests/_data/merchant_product_offer.csv").random;
 
     val request = http(scenarioName)
         .post("/place-order-debug")

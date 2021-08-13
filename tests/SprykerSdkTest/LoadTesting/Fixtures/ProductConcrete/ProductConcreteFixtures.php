@@ -45,10 +45,18 @@ class ProductConcreteFixtures implements FixturesBuilderInterface, FixturesConta
     {
         $demoData = $this->loadDemoData();
 
+        $productFacade = $I->getLocator()->product()->facade();
+
         foreach ($demoData as $data) {
             try {
+                $sku = $data['sku'];
+
+                if ($productFacade->hasProductConcrete($sku)) {
+                    continue;
+                }
+
                 $productConcreteOverride = [
-                    ProductConcreteTransfer::SKU => $data['sku'],
+                    ProductConcreteTransfer::SKU => $sku,
                     ProductConcreteTransfer::IS_ACTIVE => 1,
                 ];
 

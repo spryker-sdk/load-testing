@@ -46,14 +46,18 @@ class ProductConcreteFixtures implements FixturesBuilderInterface, FixturesConta
         $demoData = $this->loadDemoData();
 
         foreach ($demoData as $data) {
-            $productConcreteOverride = [
-                ProductConcreteTransfer::SKU => $data['sku'],
-                ProductConcreteTransfer::IS_ACTIVE => 1,
-            ];
+            try {
+                $productConcreteOverride = [
+                    ProductConcreteTransfer::SKU => $data['sku'],
+                    ProductConcreteTransfer::IS_ACTIVE => 1,
+                ];
 
-            $I->haveFullProductWithPrice($productConcreteOverride, [
-                ProductAbstractTransfer::SKU => $data['abstract_sku'],
-            ], $data['pdp_url']);
+                $I->haveFullProductWithPrice($productConcreteOverride, [
+                    ProductAbstractTransfer::SKU => $data['abstract_sku'],
+                ], $data['pdp_url']);
+            } catch (\Throwable $e) {
+                echo $e->getMessage() . PHP_EOL;
+            }
         }
     }
 

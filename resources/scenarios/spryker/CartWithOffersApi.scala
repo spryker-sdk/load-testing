@@ -28,7 +28,7 @@ trait CartWithOffersApiBase {
     lazy val scenarioName = "Add offer to Cart Api"
 
     val httpProtocol = GlueProtocol.httpProtocol
-    val productFeeder = csv("tests/_data/merchant_product_offer.csv").queue
+    val productFeeder = csv("tests/_data/merchant_product_offer.csv").random
     val customerFeeder = csv("tests/_data/customer.csv").random
 
     val getAccessTokenRequest = http("Get Access Token")

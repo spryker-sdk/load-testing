@@ -30,6 +30,24 @@ suites:
             config:
                 \SprykerTest\Shared\Testify\Helper\DataCleanupHelper:
                     cleanup: false
+    AbstractProductLocalizedAttributes:
+        class_name: LoadTestingAbstractProductLocalizedAttributesTester
+        path: AbstractProductLocalizedAttributes
+        modules:
+            enabled:
+                - \SprykerTest\Shared\Testify\Helper\Environment
+                - \SprykerTest\Shared\Testify\Helper\LocatorHelper
+                - \SprykerTest\Shared\Propel\Helper\ConnectionHelper
+                - \SprykerTest\Shared\Testify\Helper\DataCleanupHelper
+                - \SprykerTest\Shared\Product\Helper\ProductDataHelper
+                - \SprykerTest\Zed\ProductAttribute\Helper\ProductAttributeDataHelper
+                - \SprykerTest\Shared\Stock\Helper\StockDataHelper
+                - \SprykerTest\Shared\Tax\Helper\TaxSetDataHelper
+                - \SprykerTest\Shared\PriceProduct\Helper\PriceProductDataHelper
+                - \SprykerTest\Shared\Availability\Helper\AvailabilityDataHelper
+            config:
+                \SprykerTest\Shared\Testify\Helper\DataCleanupHelper:
+                    cleanup: false
     ProductConcrete:
         class_name: LoadTestingProductTester
         path: ProductConcrete

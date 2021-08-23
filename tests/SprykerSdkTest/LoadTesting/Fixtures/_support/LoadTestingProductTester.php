@@ -91,7 +91,7 @@ class LoadTestingProductTester extends Actor implements FixturesExporterInterfac
             );
 
         $this->havePriceProduct($priceProductConcreteOverride);
-       // $this->createPriceProductAbstract($productConcreteTransfer->getFkProductAbstract(),$priceProductAbstractOverride);
+        $this->createPriceProductAbstract($productConcreteTransfer->getFkProductAbstract(),$priceProductAbstractOverride);
         $this->replaceProductUrl($productConcreteTransfer->getFkProductAbstract(), $productUrl);
         $this->haveAvailabilityAbstract($productConcreteTransfer);
 

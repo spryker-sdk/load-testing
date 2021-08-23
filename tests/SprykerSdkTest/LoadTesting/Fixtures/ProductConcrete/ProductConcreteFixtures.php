@@ -8,12 +8,16 @@
 namespace SprykerSdkTest\LoadTesting\Fixtures\ProductConcrete;
 
 use Codeception\Configuration;
+use Codeception\Module;
 use Generated\Shared\DataBuilder\LocalizedAttributesBuilder;
 use Generated\Shared\Transfer\LocaleTransfer;
 use Generated\Shared\Transfer\LocalizedAttributesTransfer;
 use Generated\Shared\Transfer\ProductAbstractTransfer;
 use Generated\Shared\Transfer\ProductConcreteTransfer;
 use Orm\Zed\Locale\Persistence\SpyLocaleQuery;
+use Orm\Zed\PriceProduct\Persistence\SpyPriceProduct;
+use Orm\Zed\PriceProduct\Persistence\SpyPriceProductQuery;
+use Orm\Zed\PriceProduct\Persistence\SpyPriceProductStoreQuery;
 use Propel\Runtime\Propel;
 use Spryker\Zed\PriceProduct\Communication\Plugin\ProductConcrete\PriceProductConcreteAfterCreatePlugin;
 use Spryker\Zed\ProductBundle\Communication\Plugin\Product\ProductBundleProductConcreteAfterCreatePlugin;
@@ -76,11 +80,34 @@ class ProductConcreteFixtures implements FixturesBuilderInterface, FixturesConta
     {
         $demoData = $this->loadDemoData();
         $productFacade = $I->getLocator()->product()->facade();
+        $productSearchFacade = $I->getLocator()->productSearch()->facade();
 
-        foreach ($demoData as $data) {
+        foreach ($demoData as $demoDataKey => $data) {
             try{
                 $sku = $data['sku'];
                 if ($productFacade->hasProductConcrete($sku)) {
+                    $productConcreteTransfer = $productFacade->getProductConcrete($sku);
+                    if (
+                        $productSearchFacade->isProductConcreteSearchable($productConcreteTransfer->getIdProductConcrete()) &&
+                        $this->isValidProductAbstractPrices($productConcreteTransfer->getFkProductAbstract(), $I)
+                    ) {
+                        continue;
+                    }
+
+                    (new ProductSearchProductConcreteAfterCreatePlugin())->create($productConcreteTransfer);
+                    $this->debug(sprintf('Added Product concrete to Search: %s', $productConcreteTransfer->getSku()));
+
+                    $priceProductOverride = $I->generatePriceProductData(
+                        $productConcreteTransfer->getAbstractSku(),
+                        $productConcreteTransfer->getAbstractSku(),
+                        $productConcreteTransfer->getFkProductAbstract()
+                    );
+                    $I->createPriceProductAbstract($productConcreteTransfer->getFkProductAbstract(), $priceProductOverride);
+                    $this->debug(sprintf('Updated default price for Product Abstract id: %s', $productConcreteTransfer->getFkProductAbstract()));
+
+
+                    $this->debug(sprintf('%d row of the demo data was updated. Total amount amount of rows: %d.', $demoDataKey+1, count($demoData)));
+
                     continue;
                 }
 
@@ -105,6 +132,59 @@ class ProductConcreteFixtures implements FixturesBuilderInterface, FixturesConta
                 echo $e->getMessage() . PHP_EOL;
             }
         }
+    }
+
+
+    /**
+     * @param string $message
+     *
+     * @return void
+     */
+    protected function debug(string $message): void
+    {
+        codecept_debug($message);
+    }
+
+    /**
+     * @param int $idProductAbstract
+     * @param \SprykerSdkTest\LoadTesting\Fixtures\LoadTestingProductTester $I
+     *
+     * @return bool
+     */
+    protected function isValidProductAbstractPrices(int $idProductAbstract, LoadTestingProductTester $I): bool
+    {
+        $priceProduct = $this->getPriceProductQuery()->findOneByFkProductAbstract($idProductAbstract);
+        if (!$priceProduct || $priceProduct->getPriceType()->getName() !== 'DEFAULT') {
+            return false;
+        }
+
+        $priceProductStoreCollection = $this->getPriceProductStoreQuery()
+            ->findByFkPriceProduct($priceProduct->getIdPriceProduct()
+            );
+
+        foreach ($priceProductStoreCollection as $priceProductStore) {
+            if ($priceProductStore->getGrossPrice()) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    /**
+     * @return \Orm\Zed\PriceProduct\Persistence\SpyPriceProductStoreQuery
+     */
+    protected function getPriceProductStoreQuery(): SpyPriceProductStoreQuery
+    {
+        return new SpyPriceProductStoreQuery();
+    }
+
+    /**
+     * @return \Orm\Zed\PriceProduct\Persistence\SpyPriceProductQuery
+     */
+    protected function getPriceProductQuery(): SpyPriceProductQuery
+    {
+        return new SpyPriceProductQuery();
     }
 
     /**

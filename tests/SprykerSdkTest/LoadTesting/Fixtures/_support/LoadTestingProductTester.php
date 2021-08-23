@@ -55,6 +55,7 @@ class LoadTestingProductTester extends Actor implements FixturesExporterInterfac
     protected const STORE_NAME_DE = "DE";
     protected const STORE_NAME_US = "US";
 
+
     /**
      * @param array $productConcreteOverride
      * @param array $productAbstractOverride
@@ -77,29 +78,20 @@ class LoadTestingProductTester extends Actor implements FixturesExporterInterfac
             StockProductTransfer::IS_NEVER_OUT_OF_STOCK => 1,
         ]);
 
-        $priceProductConcreteOverride = [
-            PriceProductTransfer::SKU_PRODUCT_ABSTRACT => $productConcreteTransfer->getAbstractSku(),
-            PriceProductTransfer::SKU_PRODUCT => $productConcreteTransfer->getSku(),
-            PriceProductTransfer::ID_PRODUCT => $productConcreteTransfer->getIdProductConcrete(),
-            PriceProductTransfer::PRICE_TYPE_NAME => 'DEFAULT',
-            PriceProductTransfer::MONEY_VALUE => [
-                MoneyValueTransfer::NET_AMOUNT => 770,
-                MoneyValueTransfer::GROSS_AMOUNT => 880,
-            ],
-        ];
-        $priceProductAbstractOverride = [
-            PriceProductTransfer::SKU_PRODUCT_ABSTRACT => $productConcreteTransfer->getAbstractSku(),
-            PriceProductTransfer::SKU_PRODUCT => $productConcreteTransfer->getAbstractSku(),
-            PriceProductTransfer::ID_PRODUCT => $productConcreteTransfer->getFkProductAbstract(),
-            PriceProductTransfer::PRICE_TYPE_NAME => 'DEFAULT',
-            PriceProductTransfer::MONEY_VALUE => [
-                MoneyValueTransfer::NET_AMOUNT => 770,
-                MoneyValueTransfer::GROSS_AMOUNT => 880,
-            ],
-        ];
+        $priceProductConcreteOverride = $this->generatePriceProductData(
+            $productConcreteTransfer->getAbstractSku(),
+            $productConcreteTransfer->getSku(),
+            $productConcreteTransfer->getIdProductConcrete()
+        );
+
+        $priceProductAbstractOverride = $this->generatePriceProductData(
+                $productConcreteTransfer->getAbstractSku(),
+                $productConcreteTransfer->getAbstractSku(),
+                $productConcreteTransfer->getIdProductConcrete()
+            );
 
         $this->havePriceProduct($priceProductConcreteOverride);
-        $this->createPriceProductAbstract($productConcreteTransfer->getFkProductAbstract(),$priceProductAbstractOverride);
+       // $this->createPriceProductAbstract($productConcreteTransfer->getFkProductAbstract(),$priceProductAbstractOverride);
         $this->replaceProductUrl($productConcreteTransfer->getFkProductAbstract(), $productUrl);
         $this->haveAvailabilityAbstract($productConcreteTransfer);
 
@@ -112,19 +104,15 @@ class LoadTestingProductTester extends Actor implements FixturesExporterInterfac
      *
      * @return \Generated\Shared\Transfer\PriceProductTransfer
      */
-    protected function createPriceProductAbstract(int $idProductAbstract, array $priceProductOverride = []): ProductAbstractTransfer
+    public function createPriceProductAbstract(int $idProductAbstract, array $priceProductOverride = []): ProductAbstractTransfer
     {
         $priceProductTransfer1 = $this->createPriceProductTransfer(
             $priceProductOverride,
-            static::NET_PRICE,
-            static::GROSS_PRICE,
             static::EUR_ISO_CODE,
             static::STORE_NAME_DE
         );
         $priceProductTransfer2 = $this->createPriceProductTransfer(
             $priceProductOverride,
-            static::NET_PRICE,
-            static::GROSS_PRICE,
             static::EUR_ISO_CODE,
             static::STORE_NAME_US
         );
@@ -140,6 +128,29 @@ class LoadTestingProductTester extends Actor implements FixturesExporterInterfac
     }
 
     /**
+     * @param string $skuProductAbstract
+     * @param string $skuProduct
+     * @param int $idProduct
+     *
+     * @return array
+     */
+    public function generatePriceProductData(string $skuProductAbstract, string $skuProduct, int $idProduct): array
+    {
+        $priceProductData = [
+            PriceProductTransfer::SKU_PRODUCT_ABSTRACT =>$skuProductAbstract,
+            PriceProductTransfer::SKU_PRODUCT => $skuProduct,
+            PriceProductTransfer::ID_PRODUCT => $idProduct,
+            PriceProductTransfer::PRICE_TYPE_NAME => 'DEFAULT',
+            PriceProductTransfer::MONEY_VALUE => [
+                MoneyValueTransfer::NET_AMOUNT => static::NET_PRICE,
+                MoneyValueTransfer::GROSS_AMOUNT => static::GROSS_PRICE,
+            ],
+        ];
+
+        return $priceProductData;
+    }
+
+    /**
      * @param array $priceProductOverride
      * @param int $netPrice
      * @param int $grossPrice
@@ -149,8 +160,6 @@ class LoadTestingProductTester extends Actor implements FixturesExporterInterfac
      */
     protected function createPriceProductTransfer(
         array $priceProductOverride,
-        int $netPrice,
-        int $grossPrice,
         string $currencyIsoCode,
         string $storeName
     ): PriceProductTransfer {
@@ -172,14 +181,6 @@ class LoadTestingProductTester extends Actor implements FixturesExporterInterfac
             $priceTypeTransfer = $priceProductOverride[PriceProductTransfer::PRICE_TYPE];
         }
 
-        if (isset($priceProductOverride[PriceProductTransfer::MONEY_VALUE][MoneyValueTransfer::NET_AMOUNT])) {
-            $netPrice = $priceProductOverride[PriceProductTransfer::MONEY_VALUE][MoneyValueTransfer::NET_AMOUNT];
-        }
-
-        if (isset($priceProductOverride[PriceProductTransfer::MONEY_VALUE][MoneyValueTransfer::GROSS_AMOUNT])) {
-            $grossPrice = $priceProductOverride[PriceProductTransfer::MONEY_VALUE][MoneyValueTransfer::GROSS_AMOUNT];
-        }
-
         if (isset($priceProductOverride[PriceProductTransfer::MONEY_VALUE][MoneyValueTransfer::CURRENCY])) {
             $currencyTransfer = $priceProductOverride[PriceProductTransfer::MONEY_VALUE][MoneyValueTransfer::CURRENCY];
         }
@@ -196,6 +197,9 @@ class LoadTestingProductTester extends Actor implements FixturesExporterInterfac
             ->build();
 
         $storeTransfer = $this->getStoreFacade()->getStoreByName($storeName);
+
+        $grossPrice = $priceProductOverride[PriceProductTransfer::MONEY_VALUE][MoneyValueTransfer::GROSS_AMOUNT];
+        $netPrice = $priceProductOverride[PriceProductTransfer::MONEY_VALUE][MoneyValueTransfer::NET_AMOUNT];
 
         $moneyValueTransfer = $this->createMoneyValueTransfer(
             $grossPrice,

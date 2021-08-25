@@ -7,6 +7,7 @@
 
 namespace SprykerSdkTest\LoadTesting\Fixtures;
 
+use \ArrayObject;
 use Codeception\Actor;
 use Generated\Shared\DataBuilder\PriceProductBuilder;
 use Generated\Shared\Transfer\CurrencyTransfer;
@@ -91,7 +92,7 @@ class LoadTestingProductTester extends Actor implements FixturesExporterInterfac
             );
 
         $this->havePriceProduct($priceProductConcreteOverride);
-        $this->createPriceProductAbstract($productConcreteTransfer->getFkProductAbstract(),$priceProductAbstractOverride);
+        $this->createPriceProductAbstract($productConcreteTransfer->getFkProductAbstract(), $priceProductAbstractOverride);
         $this->replaceProductUrl($productConcreteTransfer->getFkProductAbstract(), $productUrl);
         $this->haveAvailabilityAbstract($productConcreteTransfer);
 
@@ -106,23 +107,25 @@ class LoadTestingProductTester extends Actor implements FixturesExporterInterfac
      */
     public function createPriceProductAbstract(int $idProductAbstract, array $priceProductOverride = []): ProductAbstractTransfer
     {
-        $priceProductTransfer1 = $this->createPriceProductTransfer(
-            $priceProductOverride,
-            static::EUR_ISO_CODE,
-            static::STORE_NAME_DE
-        );
-        $priceProductTransfer2 = $this->createPriceProductTransfer(
-            $priceProductOverride,
-            static::EUR_ISO_CODE,
-            static::STORE_NAME_US
-        );
+        $storeTransfers = $this->getStoreFacade()->getAllStores();
+        $priceProductTransfers = new ArrayObject();
 
-        $productAbstractTransfer = $this->getPriceProductFacade()->persistProductAbstractPriceCollection(
+        foreach ($storeTransfers as $storeTransfer) {
+            $priceProductTransfers->append(
+                $this->createPriceProductTransfer(
+                    $priceProductOverride,
+                    static::EUR_ISO_CODE,
+                    $storeTransfer
+                )
+            );
+        }
+
+        $productAbstractTransfer = $this->getPriceProductFacade()
+            ->persistProductAbstractPriceCollection(
             (new ProductAbstractTransfer())
                 ->setIdProductAbstract($idProductAbstract)
-                ->addPrice($priceProductTransfer1)
-                ->addPrice($priceProductTransfer2)
-        );
+                ->setPrices($priceProductTransfers)
+            );
 
         return $productAbstractTransfer;
     }
@@ -152,16 +155,15 @@ class LoadTestingProductTester extends Actor implements FixturesExporterInterfac
 
     /**
      * @param array $priceProductOverride
-     * @param int $netPrice
-     * @param int $grossPrice
      * @param string $currencyIsoCode
+     * @param \Generated\Shared\Transfer\StoreTransfer $storeTransfer
      *
      * @return \Generated\Shared\Transfer\PriceProductTransfer
      */
     protected function createPriceProductTransfer(
         array $priceProductOverride,
         string $currencyIsoCode,
-        string $storeName
+        StoreTransfer $storeTransfer
     ): PriceProductTransfer {
         $currencyTransfer = $this->getCurrencyFacade()->fromIsoCode($currencyIsoCode);
 
@@ -195,8 +197,6 @@ class LoadTestingProductTester extends Actor implements FixturesExporterInterfac
         $priceProductTransfer = (new PriceProductBuilder($priceProductDefaultData))
             ->seed($priceProductOverride)
             ->build();
-
-        $storeTransfer = $this->getStoreFacade()->getStoreByName($storeName);
 
         $grossPrice = $priceProductOverride[PriceProductTransfer::MONEY_VALUE][MoneyValueTransfer::GROSS_AMOUNT];
         $netPrice = $priceProductOverride[PriceProductTransfer::MONEY_VALUE][MoneyValueTransfer::NET_AMOUNT];

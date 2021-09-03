@@ -31,13 +31,6 @@ trait CartWithOffersApiBase {
     val productFeeder = csv("tests/_data/merchant_product_offer.csv").random
     val customerFeeder = csv("tests/_data/customer.csv").random
 
-    val getAccessTokenRequest = http("Get Access Token")
-        .post("/access-tokens")
-        .header("Content-Type", "application/json")
-        .body(StringBody("""{"data": {"type": "access-tokens", "attributes": {"username": "${email}", "password": "${password}"}}}"""))
-        .check(status.is(201))
-        .check(jsonPath("$.data.attributes.accessToken").saveAs("auth_token"))
-
     val getCartRequest = http("Get Cart Request")
         .get("/carts")
         .header("Authorization", "Bearer ${auth_token}")
@@ -56,7 +49,6 @@ trait CartWithOffersApiBase {
         .feed(customerFeeder)
         .repeat(1) {
             feed(productFeeder)
-                .exec(getAccessTokenRequest)
                 .exec(getCartRequest)
                 .exec(addToCartRequest)
         }

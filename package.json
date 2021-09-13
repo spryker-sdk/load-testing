@@ -4,7 +4,7 @@
   "description": "",
   "main": "public/index.js",
   "scripts": {
-    "run": "node public/index.js",
+    "run": "pm2 start public/index.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "Spryker",

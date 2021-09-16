@@ -15,6 +15,7 @@ const scenarios = [
     {
         title: 'API',
         tests: [
+            { id: 'AddItemToCartApi', title: 'Add item to cart'},
             { id: 'CartApi', title: 'Add to cart request'},
             { id: 'GuestCartApi', title: 'Add to guest cart request'},
             { id: 'CatalogSearchApi', title: 'Search request'},

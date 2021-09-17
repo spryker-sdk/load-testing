@@ -23,26 +23,23 @@ import scala.util.Random
 import spryker.GlueProtocol._
 import spryker.Scenario._
 
-trait CatalogSearchApiBase {
+trait HomeApiBase {
 
-  lazy val scenarioName = "Catalog Search Api"
+  lazy val scenarioName = "Home Api"
 
   val httpProtocol = GlueProtocol.httpProtocol
-  val feeder = csv("tests/_data/product_concrete.csv").random
 
   val request = http(scenarioName)
-    .get("/search")
-    .queryParam("q", "${sku}")
+    .get("/")
     .check(status.is(200))
 
   val scn = scenario(scenarioName)
-    .feed(feeder)
     .exec(request)
 }
 
-class CatalogSearchApiRamp extends Simulation with CatalogSearchApiBase {
+class HomeApiRamp extends Simulation with HomeApiBase {
 
-  override lazy val scenarioName = "Catalog Search API [Incremental]"
+  override lazy val scenarioName = "Home API [Incremental]"
 
   setUp(scn.inject(
       rampUsersPerSec(0) to (Scenario.targetRps.toDouble) during (Scenario.duration),
@@ -51,9 +48,9 @@ class CatalogSearchApiRamp extends Simulation with CatalogSearchApiBase {
     .protocols(httpProtocol)
 }
 
-class CatalogSearchApiSteady extends Simulation with CatalogSearchApiBase {
+class HomeApiSteady extends Simulation with HomeApiBase {
 
-  override lazy val scenarioName = "Catalog Search API [Steady RPS]"
+  override lazy val scenarioName = "Home API [Steady RPS]"
 
   setUp(scn.inject(
       constantUsersPerSec(Scenario.targetRps.toDouble) during (Scenario.duration),

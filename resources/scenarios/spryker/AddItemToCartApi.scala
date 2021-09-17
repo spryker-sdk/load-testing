@@ -30,24 +30,42 @@ trait AddItemToCartApiBase {
   val httpProtocol = GlueProtocol.httpProtocol
 
   val addToCartRequest = http("Add Item To Cart Api")
-    .post("/carts/13f5aabc-48d3-5da6-a591-cce470de39a1/items")
+    .post("/carts/a72bbc39-18a5-53a2-a1db-8572f59a817f/items")
     .body(StringBody("""{"data":{"type":"items","attributes":{"sku":"041498248932","quantity":1,"idPromotionalItem":"string","productOfferReference":"041498248932_474-001","merchantReference":"474-001","salesUnit":{"id":0,"amount":2},"productOptions":[{}],"isReplaceable":true}}}""")).asJson
-    .header("Authorization", "Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiJ9.eyJhdWQiOiJmcm9udGVuZCIsImp0aSI6IjQ4MjBiZTM3MzU5NmY1NDdmZmVhMTNjZDkzZmRiYmQxYTA1N2E0MWFlNzIyYWRkN2UyMzU3NTA4NzA0OThjMWMzOWIwMjY5YTFjMDdmM2JlIiwiaWF0IjoxNjMxNzgwMDMxLjA0OTE4LCJuYmYiOjE2MzE3ODAwMzEuMDQ5MTg1LCJleHAiOjE2MzE4MDg4MzAuOTU4NzAwOSwic3ViIjoie1wiaWRfYWdlbnRcIjpudWxsLFwiY3VzdG9tZXJfcmVmZXJlbmNlXCI6XCJVUy1RQS0yMlwiLFwiaWRfY3VzdG9tZXJcIjoyMn0iLCJzY29wZXMiOlsiY3VzdG9tZXIiXX0.Esx23uBhIXMFz-aVbmvBVhcbiVqo4CFVD7vURP_11tLfphnEYppgFzzhxraB1XAXKHiBwMbRkuWFwkcl1X501h7mXvmxE-G22tXC3imYopkXjuN9f9QlD5Axh2yqRaKL7qHoINXJEa-vUGdMaUi_v_A1fCSCeKwx88lRmQSpZxK0q2RFlyArT96VDZn-nM1OVQp9OPedt-Eit0lw2TKGDy1lXQsqGu9oL6qqQLkKQpRFQumPhTOoUctfmv_nBkE3PFqC4dnax-txIzVr4usFZK3pZt1GTrKSpiZFovShDDqlCi17g0IjuIxRu-xfO5HzhOl-hLVkK_UvYGzVGCAauQ")
+    .header("Authorization", "Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiJ9.eyJhdWQiOiJmcm9udGVuZCIsImp0aSI6ImI1YzdmYjJhMTM3N2I3NDk4MTJkYTExYWIzYjlmNjAxNDY1NzBmOWMwYzIwM2MxNmY2MzZhYThmM2VkM2ZiMjYzMWVkODljNmQyMTQzODhiIiwiaWF0IjoxNjMxODcyNTY2LjE1MzIzLCJuYmYiOjE2MzE4NzI1NjYuMTUzMjQ1OSwiZXhwIjoxNjMxOTAxMzY2LjA4ODg1NSwic3ViIjoie1wiaWRfYWdlbnRcIjpudWxsLFwiY3VzdG9tZXJfcmVmZXJlbmNlXCI6XCJVUy0tMjJcIixcImlkX2N1c3RvbWVyXCI6MjJ9Iiwic2NvcGVzIjpbImN1c3RvbWVyIl19.K3lSzqHmBdobATXyz_DjUXfnf233R2rNEZ1pbD3TtH9dzO3yx0BbWgfvjLw0AzNXIaBL88Jlq867OevTcL0PwP-6yN3toQ_VROtjkGAExLu-E4ixaTfENbTSPcnsPZtp-opnhrenXNMte0XgzIw7gam3Ke8hDSOcU_2r1Jtey7I5oHMPsfLeBVqutm1d1iKlaWHEQtEGvIVmqqg0h8__uYEI5-v2vo5yCpEr4u-EMv0YzNcg2fOVyI_RpN9Ngo0MhL-tG0HEugOXtfJ7OzLAdWXi6WN0KPcjbU9a8arIsy34gBeLSOnAF8RfpdO8pxT8-UiFRAQk4-vXmubl-NxNng")
     .check(status.is(201))
 
   val scn = scenario(scenarioName)
       .exec(addToCartRequest)
+
+
 }
 
 class AddItemToCartApiRamp extends Simulation with AddItemToCartApiBase {
 
   override lazy val scenarioName = "Add Item To Cart Api [Incremental]"
 
+        val createUserRequest = http("Add Customer")
+        .post("/customers")
+        .body(StringBody("""{"data":{"type":"customers","attributes":{"firstName":"Paul","lastName":"Rosenberg","gender":"Male","salutation":"Mr","email":"zingeon4@gmail.com","password":"supe!rsEcu1re","confirmPassword":"supe!rsEcu1re","acceptedTerms":true}}}""")).asJson
+        .check(status.is(201))
+
+        val createUserScenario = scenario(scenarioName)
+        .exec(createUserRequest).inject(
+              rampUsersPerSec(0) to (Scenario.targetRps.toDouble) during (Scenario.duration),
+            )
+
+  val targetUrl = loadTarget()
+  println("Simulation!")
   setUp(scn.inject(
       rampUsersPerSec(0) to (Scenario.targetRps.toDouble) during (Scenario.duration),
     ))
     .throttle(reachRps(Scenario.targetRps) in (Scenario.duration))
     .protocols(httpProtocol)
+
+      def loadTarget() = {
+
+    }
 }
 
 class AddItemToCartApiSteady extends Simulation with AddItemToCartApiBase {

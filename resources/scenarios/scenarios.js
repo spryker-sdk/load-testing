@@ -16,6 +16,7 @@ const scenarios = [
         title: 'API',
         tests: [
             { id: 'AddItemToCartApi', title: 'Add item to cart'},
+            { id: 'DownloadFixturesCsvApi', title: 'Download Fixtures Csv File'},
             { id: 'HomeApi', title: 'Home request'},
             { id: 'CatalogSearchProductOffersApi', title: 'Catalog Search Product Offers'},
             { id: 'ProductOffersForProductsConcreteApi', title: 'Product Offers For Products Concrete'},

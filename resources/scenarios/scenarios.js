@@ -15,8 +15,12 @@ const scenarios = [
     {
         title: 'API',
         tests: [
+            { id: 'CsvFixturesAddToCartApi', title: 'Download Fixtures in Csv File for Add To Cart(1 item)'},
+            { id: 'CsvFixturesAddToCartLessOrEqualFiftyItemsApi', title: 'Download Fixtures in Csv File for Add To Cart <= 50 Items'},
+            { id: 'CsvFixturesAddToCartFiftyToSeventyItemsApi', title: 'Download Fixtures in Csv File for Add To Cart >= 50 & <= 70 Items'},
             { id: 'AddItemToCartApi', title: 'Add item to cart'},
-            { id: 'DownloadFixturesCsvApi', title: 'Download Fixtures Csv File'},
+            { id: 'AddItemToCartWithLessOrEqualFiftyItemsApi', title: 'Add Item To Cart with <= 50 items'},
+            { id: 'AddItemToCartWithFiftyToSeventyItemsApi', title: 'Add Item To Cart with >= 50 & <= 70 items'},
             { id: 'HomeApi', title: 'Home request'},
             { id: 'CatalogSearchProductOffersApi', title: 'Catalog Search Product Offers'},
             { id: 'ProductOffersForProductsConcreteApi', title: 'Product Offers For Products Concrete'},

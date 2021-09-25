@@ -28,15 +28,15 @@ import spryker.GlueProtocol._
 import scala.tools.nsc.io
 import java.io.{File, PrintWriter, FileOutputStream}
 
-trait DownloadFixturesCsvApiBase {
+trait CsvFixturesAddToCartLessOrEqualFiftyItemsApiBase {
 
-  lazy val scenarioName = "Download Fixtures Csv Api"
+  lazy val scenarioName = "Csv Fixtures Add To Cart Api <= 50 Items"
 
   val httpProtocol = GlueProtocol.httpProtocol
 
-  val downloadFixturesCsvRequest = http("Download Fixtures Csv Api")
+  val csvFixturesAddToCartRequest = http("Csv Fixtures Add To Cart Api <= 50 Items")
     .post("/customer-fixture")
-    .body(StringBody("""{"data":{"type":"customer-fixture","attributes":{}}}""")).asJson
+    .body(StringBody("""{"data":{"type":"customer-fixture","attributes":{"itemsQuantity": 49}}}""")).asJson
     .check(
       jsonPath("$.data.attributes.accessToken").saveAs("accessToken")
     ).check(
@@ -44,41 +44,37 @@ trait DownloadFixturesCsvApiBase {
     )
 
   val scn = scenario(scenarioName)
-      .exec(downloadFixturesCsvRequest)
-      .pause(20, 25)
+      .exec(csvFixturesAddToCartRequest)
       .exec(session => {
         val accessToken = session("accessToken").as[String].trim
         val cartId = session("cartId").as[String].trim
-        println(Scenario.targetRps.toDouble);
-        println(accessToken)
-        println(cartId)
 
-  val filePath = "tests/_data/customer_fixtures.csv";
-   val s1 = new File(filePath)
-    if(s1.exists()){
-      val writer = new PrintWriter(new FileOutputStream(new File(filePath), true))
-      writer.write(accessToken)
-      writer.write(",")
-      writer.write(cartId)
-      writer.write("\n")
-      writer.close()
-    }
-    else {
-      val writer = new PrintWriter(new FileOutputStream(new File(filePath), true))
-      writer.println("access_token,cart_id")
-      writer.write(accessToken)
-      writer.write(",")
-      writer.write(cartId)
-      writer.write("\n")
-      writer.close()
-    }
+        val filePath = "tests/_data/customer_fixtures_less_or_equal_fifty_items.csv";
+        val s1 = new File(filePath)
+
+        val writer = new PrintWriter(new FileOutputStream(new File(filePath), true))
+        writer.write(accessToken)
+        writer.write(",")
+        writer.write(cartId)
+        writer.write("\n")
+        writer.close()
       session
       })
 }
 
-class DownloadFixturesCsvApiRamp extends Simulation with DownloadFixturesCsvApiBase {
+class CsvFixturesAddToCartLessOrEqualFiftyItemsApiRamp extends Simulation with CsvFixturesAddToCartLessOrEqualFiftyItemsApiBase {
 
-  override lazy val scenarioName = "Download Fixtures Csv Api [Incremental]"
+  override lazy val scenarioName = "Csv Fixtures Add To Cart Api <= 50 Items [Incremental]"
+
+  before {
+      val filePath = "tests/_data/customer_fixtures_less_or_equal_fifty_items.csv";
+      val pw = new PrintWriter(filePath);
+      pw.close();
+
+      val writer = new PrintWriter(new FileOutputStream(new File(filePath), true))
+      writer.println("access_token,cart_id")
+      writer.close()
+  }
 
   setUp(scn.inject(
       rampUsersPerSec(0) to (Scenario.targetRps.toDouble) during (Scenario.duration),
@@ -88,9 +84,19 @@ class DownloadFixturesCsvApiRamp extends Simulation with DownloadFixturesCsvApiB
 
 }
 
-class DownloadFixturesCsvApiSteady extends Simulation with DownloadFixturesCsvApiBase {
+class CsvFixturesAddToCartLessOrEqualFiftyItemsApiSteady extends Simulation with CsvFixturesAddToCartLessOrEqualFiftyItemsApiBase {
 
-  override lazy val scenarioName = "Download Fixtures Csv Api [Steady RPS]"
+  override lazy val scenarioName = "Csv Fixtures Add To Cart Api <= 50 Items [Steady RPS]"
+
+  before {
+      val filePath = "tests/_data/customer_fixtures_less_or_equal_fifty_items.csv";
+      val pw = new PrintWriter(filePath);
+      pw.close();
+
+      val writer = new PrintWriter(new FileOutputStream(new File(filePath), true))
+      writer.println("access_token,cart_id")
+      writer.close()
+  }
 
   setUp(scn.inject(
       constantUsersPerSec(0.1) during (Scenario.duration),

@@ -24,15 +24,18 @@ import spryker.GlueProtocol._
 import spryker.Scenario._
 import io.gatling.core.feeder._
 
-trait CheckoutApiBase {
+trait CheckoutWithLessOrEqualFiftyItemsApiBase {
 
-  lazy val scenarioName = "Checkout Api"
+  lazy val scenarioName = "Checkout With Less Or Equal Fifty Items Api"
 
   val httpProtocol = GlueProtocol.httpProtocol
   val productFeeder = csv("tests/_data/product_concrete.csv").random
   val customerFeeder = csv("tests/_data/customer.csv").random
 
-  val feeder = Iterator.continually(Map("customerEmail" -> (Random.alphanumeric.take(30).mkString + "@gmail.com"), "password" -> "supe!rsEcu1re"))
+  val feeder = Iterator.continually(Map(
+  "customerEmail" -> (Random.alphanumeric.take(30).mkString + "@gmail.com"), 
+  "password" -> "supe!rsEcu1re", 
+  "cartItemsQuantity" -> 49))
 
   val createCustomerRequest = http("Create Customer Request")
     .post("/customers")
@@ -55,9 +58,9 @@ trait CheckoutApiBase {
     .check(status.is(201))
     .check(jsonPath("$.data.id").saveAs("cart_id"))
 
-  val addToCartRequest = http("Add to Cart Request")
-    .post("/carts/${cart_id}/items")
-    .body(StringBody("""{"data":{"type":"items","attributes":{"sku":"041498248932","quantity":1,"idPromotionalItem":"string","productOfferReference":"041498248932_474-001","merchantReference":"474-001","salesUnit":{"id":0,"amount":55},"productOptions":[{}],"isReplaceable":true}}}""")).asJson
+  val addMultipleItemsToCartRequest = http("Add Multiple Items to Cart Request")
+    .post("/carts/${cart_id}/fixtures")
+    .body(StringBody("""{"data":{"type":"fixtures","attributes":{"itemsQuantity":"${cartItemsQuantity}","sku":"041498248932","quantity":1,"idPromotionalItem":"string","productOfferReference":"041498248932_474-001","merchantReference":"474-001","salesUnit":{"id":0,"amount":55},"productOptions":[{}],"isReplaceable":true}}}""")).asJson
     .header("Authorization", "Bearer ${access_token}")
     .header("Content-Type", "application/json")
     .check(status.is(201))
@@ -73,21 +76,21 @@ trait CheckoutApiBase {
     .feed(feeder)
     .repeat(1) {
        exec(createCustomerRequest)
-      .pause(1)
+      .pause(5)
       .exec(accessTokenRequest)
-      .pause(1)
+      .pause(5)
       .exec(createCartRequest)
-      .pause(1)
-      .exec(addToCartRequest)
-      .pause(1)
+      .pause(5)
+      .exec(addMultipleItemsToCartRequest)
+      .pause(5)
       .exec(checkoutRequest)
-      .pause(1)
+      .pause(5)
     }
 }
 
-class CheckoutApiRamp extends Simulation with CheckoutApiBase {
+class CheckoutWithLessOrEqualFiftyItemsApiRamp extends Simulation with CheckoutWithLessOrEqualFiftyItemsApiBase {
 
-  override lazy val scenarioName = "Checkout Api [Incremental]"
+  override lazy val scenarioName = "Checkout With Less Or Equal Fifty Items Api [Incremental]"
 
   setUp(scn.inject(
       rampUsersPerSec(0) to (Scenario.targetRps.toDouble) during (Scenario.duration),
@@ -96,9 +99,9 @@ class CheckoutApiRamp extends Simulation with CheckoutApiBase {
     .protocols(httpProtocol)
 }
 
-class CheckoutApiSteady extends Simulation with CheckoutApiBase {
+class CheckoutWithLessOrEqualFiftyItemsApiSteady extends Simulation with CheckoutWithLessOrEqualFiftyItemsApiBase {
 
-  override lazy val scenarioName = "Checkout Api [Steady RPS]"
+  override lazy val scenarioName = "Checkout With Less Or Equal Fifty Items Api [Steady RPS]"
 
   setUp(scn.inject(
       constantUsersPerSec(Scenario.targetRps.toDouble) during (Scenario.duration),

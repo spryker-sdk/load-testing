@@ -32,6 +32,7 @@ trait PdpApiBase {
 
   val request = http(scenarioName)
     .get("/concrete-products/${sku}")
+    .header("Merchant-Reference", "${merchant_reference}")
     .check(status.is(200))
 
   val scn = scenario(scenarioName)

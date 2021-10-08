@@ -15,6 +15,11 @@ const scenarios = [
     {
         title: 'API',
         tests: [
+            { id: 'PdpApi', title: 'PDP request'},
+            { id: 'CatalogSearchApi', title: 'Search request'},
+            { id: 'CheckoutApi', title: 'Checkout request'},
+            { id: 'CheckoutWithLessOrEqualFiftyItemsApi', title: 'Checkout With Less Or Equal Fifty Items request'},
+            { id: 'CheckoutWithFiftyToSeventyItemsApi', title: 'Checkout With Fifty To Seventy Items request'},
             { id: 'CsvFixturesAddToCartApi', title: 'Download Fixtures in Csv File for Add To Cart(1 item)'},
             { id: 'CsvFixturesAddToCartLessOrEqualFiftyItemsApi', title: 'Download Fixtures in Csv File for Add To Cart <= 50 Items'},
             { id: 'CsvFixturesAddToCartFiftyToSeventyItemsApi', title: 'Download Fixtures in Csv File for Add To Cart >= 50 & <= 70 Items'},
@@ -26,10 +31,7 @@ const scenarios = [
             { id: 'ProductOffersForProductsConcreteApi', title: 'Product Offers For Products Concrete'},
             { id: 'CartApi', title: 'Add to cart request'},
             { id: 'GuestCartApi', title: 'Add to guest cart request'},
-            { id: 'CatalogSearchApi', title: 'Search request'},
-            { id: 'PdpApi', title: 'PDP request'},
             { id: 'GuestCheckoutApi', title: 'Guest checkout request'},
-            { id: 'CheckoutApi', title: 'Checkout request'},
         ],
     },
 ];

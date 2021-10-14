@@ -6,6 +6,7 @@ const dateFormat = require('date-format');
 const rimraf = require("rimraf");
 const fastify = require('fastify')({logger: true});
 const port = process.env.PORT || 3000;
+const host = process.env.HOST || '0.0.0.0';
 
 const scenarios = require('../resources/scenarios/scenarios.js');
 
@@ -307,7 +308,7 @@ const start = async () => {
     await readReports();
 
     try {
-        await fastify.listen(port, '0.0.0.0', error => {
+        await fastify.listen(port, host, error => {
             if (error) {
                 fastify.log.info(`Server start error: ${error.error}`)
                 process.exit(1);

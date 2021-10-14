@@ -307,7 +307,13 @@ const start = async () => {
     await readReports();
 
     try {
-        await fastify.listen(port);
+        await fastify.listen(port, '0.0.0.0', error => {
+            if (error) {
+                fastify.log.info(`Server start error: ${error.error}`)
+                process.exit(1);
+            }
+        });
+
         fastify.log.info(`server listening on ${fastify.server.address().port}`)
     } catch (err) {
         fastify.log.error(err);

@@ -17,6 +17,7 @@
     "fastify-static": "^2.5.0",
     "fs-extra": "^8.1.0",
     "glob": "^7.1.6",
+    "pm2": "^5.1.2",
     "mustache": "^3.1.0",
     "platformsh-config": "^2.3.1",
     "point-of-view": "^3.7.0",

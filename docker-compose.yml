@@ -11,7 +11,7 @@ services:
     environment:
       HOST: 0.0.0.0
       PORT: 3000
-      NODE_ENV: "${ENV:-production}"
+      NODE_ENV: "${NODE_ENV:-production}"
     volumes:
         - *tool
     ports:

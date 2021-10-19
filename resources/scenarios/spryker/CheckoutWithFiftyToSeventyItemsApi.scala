@@ -35,7 +35,8 @@ trait CheckoutWithFiftyToSeventyItemsApiBase {
   val feeder = Iterator.continually(Map(
   "customerEmail" -> (Random.alphanumeric.take(30).mkString + "@gmail.com"), 
   "password" -> "supe!rsEcu1re", 
-  "cartItemsQuantity" -> 60))
+  "cartItemsQuantityFirstChunk" -> 30,
+  "cartItemsQuantitySecondChunk" -> 30))
 
   val createCustomerRequest = http("Create Customer Request")
     .post("/customers")
@@ -58,9 +59,16 @@ trait CheckoutWithFiftyToSeventyItemsApiBase {
     .check(status.is(201))
     .check(jsonPath("$.data.id").saveAs("cart_id"))
 
-  val addMultipleItemsToCartRequest = http("Add Multiple Items to Cart Request")
+  val addMultipleItemsToCartRequestFirstChunk = http("Add Multiple Items to Cart Request first chunk")
     .post("/carts/${cart_id}/fixtures")
-    .body(StringBody("""{"data":{"type":"fixtures","attributes":{"itemsQuantity":"${cartItemsQuantity}","sku":"041498248932","quantity":1,"idPromotionalItem":"string","productOfferReference":"041498248932_474-001","merchantReference":"474-001","salesUnit":{"id":0,"amount":55},"productOptions":[{}],"isReplaceable":true}}}""")).asJson
+    .body(StringBody("""{"data":{"type":"fixtures","attributes":{"itemsQuantity":"${cartItemsQuantityFirstChunk}","sku":"041498248932","quantity":1,"idPromotionalItem":"string","productOfferReference":"041498248932_474-001","merchantReference":"474-001","salesUnit":{"id":0,"amount":55},"productOptions":[{}],"isReplaceable":true}}}""")).asJson
+    .header("Authorization", "Bearer ${access_token}")
+    .header("Content-Type", "application/json")
+    .check(status.is(201))
+
+  val addMultipleItemsToCartRequestSecondChunk = http("Add Multiple Items to Cart Request second chunk")
+    .post("/carts/${cart_id}/fixtures")
+    .body(StringBody("""{"data":{"type":"fixtures","attributes":{"itemsQuantity":"${cartItemsQuantitySecondChunk}","sku":"041498248932","quantity":1,"idPromotionalItem":"string","productOfferReference":"041498248932_474-001","merchantReference":"474-001","salesUnit":{"id":0,"amount":55},"productOptions":[{}],"isReplaceable":true}}}""")).asJson
     .header("Authorization", "Bearer ${access_token}")
     .header("Content-Type", "application/json")
     .check(status.is(201))
@@ -81,7 +89,9 @@ trait CheckoutWithFiftyToSeventyItemsApiBase {
       .pause(5)
       .exec(createCartRequest)
       .pause(5)
-      .exec(addMultipleItemsToCartRequest)
+      .exec(addMultipleItemsToCartRequestFirstChunk)
+      .pause(5)
+      .exec(addMultipleItemsToCartRequestSecondChunk)
       .pause(5)
       .exec(checkoutRequest)
       .pause(5)

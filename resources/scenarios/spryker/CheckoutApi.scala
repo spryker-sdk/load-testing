@@ -29,60 +29,15 @@ trait CheckoutApiBase {
   lazy val scenarioName = "Checkout Api"
 
   val httpProtocol = GlueProtocol.httpProtocol
-  val productFeeder = csv("tests/_data/product_concrete.csv").random
-  val customerFeeder = csv("tests/_data/customer.csv").random
-
-  val feeder = Iterator.continually(Map("customerEmail" -> (Random.alphanumeric.take(30).mkString + "@gmail.com"), "password" -> "supe!rsEcu1re"))
-
-  val createCustomerRequest = http("Create Customer Request")
-    .post("/customers")
-    .header("Content-Type", "application/json")
-    .body(StringBody("""{"data":{"type":"customers","attributes":{"firstName":"Paul","lastName":"Rosenberg","gender":"Male","salutation":"Mr","email":"${customerEmail}","password":"${password}","confirmPassword":"${password}","acceptedTerms":true}}}""")).asJson
-    .check(status.is(201))
-
-  val accessTokenRequest = http("Access Token Request")
-    .post("/access-tokens")
-    .header("Content-Type", "application/json")
-    .body(StringBody("""{"data":{"type":"access-tokens","attributes":{"username":"${customerEmail}","password":"${password}"}}}""")).asJson
-    .check(status.is(201))
-    .check(jsonPath("$.data.attributes.accessToken").saveAs("access_token"))
-
-  val createCartRequest = http("Create Cart Request")
-    .post("/carts")
-    .header("Authorization", "Bearer ${access_token}")
-    .header("Content-Type", "application/json")
-    .body(StringBody("""{"data":{"type":"carts","attributes":{"priceMode":"NET_MODE","currency":"USD","store":"US","merchantReference":"474-001","merchantSelections":{"serviceType":"delivery","merchantFilterAddress":{"address1":"Kharkiv Ukraine","zipCode":"12345"}},"merchantTimeslot":{"merchantTimeslotId":1,"startTime":"2022-09-16","endTime":"2022-12-18","merchantTimeslotReservation":{"merchantTimeslotReservationId":1,"expirationDate":"2022:03:01-14:37:45"}}}}}""")).asJson
-    .check(status.is(201))
-    .check(jsonPath("$.data.id").saveAs("cart_id"))
-
-  val addToCartRequest = http("Add to Cart Request")
-    .post("/carts/${cart_id}/items")
-    .body(StringBody("""{"data":{"type":"items","attributes":{"sku":"041498248932","quantity":1,"idPromotionalItem":"string","productOfferReference":"041498248932_474-001","merchantReference":"474-001","salesUnit":{"id":0,"amount":55},"productOptions":[{}],"isReplaceable":true}}}""")).asJson
-    .header("Authorization", "Bearer ${access_token}")
-    .header("Content-Type", "application/json")
-    .check(status.is(201))
 
   val checkoutRequest = http("Checkout Request")
-    .post("/checkout")
-    .body(StringBody("""{"data":{"type":"checkout","attributes":{"customer":{"firstName":"Paul","lastName":"Rosenberg","gender":"Male","salutation":"Mr","email":"${customerEmail}","dateOfBirth":"1957-10-23","phone":"1 800-123-0000"},"idCart":"${cart_id}","billingAddress":{"salutation":"Mr","firstName":"Paul","lastName":"Rosenberg","address1":"203 Fifth Ave","address2":"17th floor","address3":"Office 1716","zipCode":"10013","city":"New York","iso2Code":"US","company":"Spryker","phone":"1 800-123-0000","isDefaultBilling":true,"isDefaultShipping":true,"regionIso2Code":"US-CA"},"shippingAddress":{"salutation":"Mr","firstName":"Paul","lastName":"Rosenberg","address1":"203 Fifth Ave","address2":"17th floor","address3":"Office 1716","zipCode":"10013","city":"New York","iso2Code":"US","company":"Spryker","phone":"1 800-123-0000","isDefaultBilling":true,"isDefaultShipping":true,"regionIso2Code":"US-CA"},"payments":[{"paymentProviderName":"DummyPayment","paymentMethodName":"Invoice"}],"shipment":{"idShipmentMethod":3},"shipments":[{"shippingAddress":{"salutation":"Mr","firstName":"Paul","lastName":"Rosenberg","address1":"203 Fifth Ave","address2":"17th floor","address3":"Office 1716","zipCode":"10013","city":"New York","iso2Code":"US","company":"Spryker","phone":"1 800-123-0000","isDefaultBilling":true,"isDefaultShipping":true,"regionIso2Code":"US-CA"},"items":["string"],"idShipmentMethod":3,"requestedDeliveryDate":"2022-09-19"}],"cartNote":"string"}}}""")).asJson
-    .header("Authorization", "Bearer ${access_token}")
+    .post("/checkout-testing")
+    .body(StringBody("""{"data":{"type":"checkout-testing","attributes":{"itemsQuantity":1,"customer":{"firstName":"Paul","lastName":"Rosenberg","gender":"Male","salutation":"Mr","email":"zingeon1@gmail.com","dateOfBirth":"1957-10-23","phone":"1 800-123-0000"},"idCart":"test","billingAddress":{"salutation":"Mr","firstName":"Paul","lastName":"Rosenberg","address1":"203 Fifth Ave","address2":"17th floor","address3":"Office 1716","zipCode":"10013","city":"New York","iso2Code":"US","company":"Spryker","phone":"1 800-123-0000","isDefaultBilling":true,"isDefaultShipping":true,"regionIso2Code":"US-CA"},"shippingAddress":{"salutation":"Mr","firstName":"Paul","lastName":"Rosenberg","address1":"203 Fifth Ave","address2":"17th floor","address3":"Office 1716","zipCode":"10013","city":"New York","iso2Code":"US","company":"Spryker","phone":"1 800-123-0000","isDefaultBilling":true,"isDefaultShipping":true,"regionIso2Code":"US-CA"},"payments":[{"paymentProviderName":"DummyPayment","paymentMethodName":"Invoice"}],"shipment":{"idShipmentMethod":3},"shipments":[{"shippingAddress":{"salutation":"Mr","firstName":"Paul","lastName":"Rosenberg","address1":"203 Fifth Ave","address2":"17th floor","address3":"Office 1716","zipCode":"10013","city":"New York","iso2Code":"US","company":"Spryker","phone":"1 800-123-0000","isDefaultBilling":true,"isDefaultShipping":true,"regionIso2Code":"US-CA"},"items":["string"],"idShipmentMethod":3,"requestedDeliveryDate":"2022-09-19"}],"cartNote":"string"}}}""")).asJson
     .header("Content-Type", "application/json")
     .check(status.is(201))
 
   val scn = scenario(scenarioName)
-    .feed(feeder)
-    .repeat(1) {
-       exec(createCustomerRequest)
-      .pause(1)
-      .exec(accessTokenRequest)
-      .pause(1)
-      .exec(createCartRequest)
-      .pause(1)
-      .exec(addToCartRequest)
-      .pause(1)
       .exec(checkoutRequest)
-      .pause(1)
-    }
 }
 
 class CheckoutApiRamp extends Simulation with CheckoutApiBase {

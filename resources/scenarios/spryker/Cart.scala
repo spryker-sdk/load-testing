@@ -24,29 +24,27 @@ import spryker.YvesProtocol._
 import spryker.Scenario._
 import java.net.URL
 
-trait PdpBase {
+trait CartBase {
 
-  lazy val scenarioName = "Pdp page"
+  lazy val scenarioName = "Cart page"
 
   val httpProtocol = YvesProtocol.httpProtocol
-  val feeder = csv("tests/_data/product_concrete.csv").random
   val url = new URL(YvesProtocol.baseUrl)
   val hostName = url.getHost
 
   val request = http(scenarioName)
-    .get("/product/${sku}")
+    .get("/cart")
     .header("Authorization", "Basic YWxkaTpsaWtlc2Nsb3Vk")
     .header("Host", hostName)
     .check(status.is(200))
 
   val scn = scenario(scenarioName)
-    .feed(feeder)
     .exec(request)
 }
 
-class PdpRamp extends Simulation with PdpBase {
+class CartRamp extends Simulation with CartBase {
 
-  override lazy val scenarioName = "Pdp page [Incremental]"
+  override lazy val scenarioName = "Cart page [Incremental]"
 
   setUp(scn.inject(
       rampUsersPerSec(0) to (Scenario.targetRps.toDouble) during (Scenario.duration),
@@ -55,9 +53,9 @@ class PdpRamp extends Simulation with PdpBase {
     .protocols(httpProtocol)
 }
 
-class PdpSteady extends Simulation with PdpBase {
+class CartSteady extends Simulation with CartBase {
 
-  override lazy val scenarioName = "Pdp page [Steady RPS]"
+  override lazy val scenarioName = "Cart page [Steady RPS]"
 
   setUp(scn.inject(
       constantUsersPerSec(Scenario.targetRps.toDouble) during (Scenario.duration),

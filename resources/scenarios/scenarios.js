@@ -1,5 +1,16 @@
 const scenarios = [
     {
+        title: 'Storefront',
+        tests: [
+            { id: 'Home', title: 'Home page'},
+            { id: 'Products', title: 'Products page'},
+            { id: 'Pdp', title: 'PDP page'},
+            { id: 'Results', title: 'Results page'},
+            { id: 'Cart', title: 'Cart page'},
+            { id: 'Checkout', title: 'Checkout page'},
+        ],
+    },
+    {
         title: 'API',
         tests: [
             { id: 'CatalogSearchProductOffersApi', title: 'Catalog Search Product Offers'},

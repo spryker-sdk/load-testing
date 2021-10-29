@@ -22,21 +22,23 @@ import scala.concurrent.duration._
 import scala.util.Random
 import spryker.YvesProtocol._
 import spryker.Scenario._
+import java.net.URL
 
 trait HomeBase {
 
   lazy val scenarioName = "Home page"
 
   val httpProtocol = YvesProtocol.httpProtocol
-  val feeder = Iterator.continually(Map("rand" -> (Random.alphanumeric.take(20).mkString)))
+  val url = new URL(YvesProtocol.baseUrl)
+  val hostName = url.getHost
 
   val request = http(scenarioName)
     .get("/")
-    .queryParam("rand", "${rand}")
+    .header("Authorization", "Basic YWxkaTpsaWtlc2Nsb3Vk")
+    .header("Host", hostName)
     .check(status.is(200))
 
   val scn = scenario(scenarioName)
-    .feed(feeder)
     .exec(request)
 }
 

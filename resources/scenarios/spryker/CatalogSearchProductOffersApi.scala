@@ -38,7 +38,7 @@ trait CatalogSearchProductOffersApiBase {
 
   val scn = scenario(scenarioName)
   .feed(feeder)
-    .exec(request)
+  .exec(request)
 }
 
 class CatalogSearchProductOffersApiRamp extends Simulation with CatalogSearchProductOffersApiBase {

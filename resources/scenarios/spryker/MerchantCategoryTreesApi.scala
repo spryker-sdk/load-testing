@@ -23,23 +23,24 @@ import scala.util.Random
 import spryker.GlueProtocol._
 import spryker.Scenario._
 
-trait CartsApiBase {
+trait MerchantCategoryTreesApiBase {
 
-  lazy val scenarioName = "Carts Api"
+  lazy val scenarioName = "Merchant Category Trees Api"
 
   val httpProtocol = GlueProtocol.httpProtocol
 
   val request = http(scenarioName)
-      .get("/carts")
+    .get("/merchant-category-trees")
+    .header("Merchant-Reference", "474-001")
     .check(status.is(200))
 
   val scn = scenario(scenarioName)
     .exec(request)
 }
 
-class CartsApiRamp extends Simulation with CartsApiBase {
+class MerchantCategoryTreesApiRamp extends Simulation with MerchantCategoryTreesApiBase {
 
-  override lazy val scenarioName = "Carts API [Incremental]"
+  override lazy val scenarioName = "Catalog Search Product Offers API [Incremental]"
 
   setUp(scn.inject(
       rampUsersPerSec(0) to (Scenario.targetRps.toDouble) during (Scenario.duration),
@@ -48,9 +49,9 @@ class CartsApiRamp extends Simulation with CartsApiBase {
     .protocols(httpProtocol)
 }
 
-class CartsApiSteady extends Simulation with CartsApiBase {
+class MerchantCategoryTreesApiSteady extends Simulation with MerchantCategoryTreesApiBase {
 
-  override lazy val scenarioName = "Carts API [Steady RPS]"
+  override lazy val scenarioName = "Catalog Search Product Offers API [Steady RPS]"
 
   setUp(scn.inject(
       constantUsersPerSec(Scenario.targetRps.toDouble) during (Scenario.duration),

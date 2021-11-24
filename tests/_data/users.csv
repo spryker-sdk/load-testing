@@ -1,0 +1,10 @@
+user_id,user_email,user_password
+1,admin@spryker.com,change123
+2,admin_de@spryker.com,change123
+3,prom.super.user@aldi.com,change123
+4,master.data.expert@aldi.com,change123
+5,search.expert@aldi.com,change123
+6,manager.csr@aldi.com,change123
+7,admin.csr@aldi.com,change123
+8,csr.agent@aldi.com,change123
+9,noncsr.agent@aldi.com,change123

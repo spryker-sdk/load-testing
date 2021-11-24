@@ -23,25 +23,22 @@ import scala.util.Random
 import spryker.GlueProtocol._
 import spryker.Scenario._
 
-trait CatalogSearchProductOffersApiBase {
+trait MerchantCategoryTreesApiBase {
 
-  lazy val scenarioName = "Catalog Search Product Offers Api"
+  lazy val scenarioName = "Merchant Category Trees Api"
 
   val httpProtocol = GlueProtocol.httpProtocol
 
-  val feeder = csv("tests/_data/grocery_items.csv").random
-
   val request = http(scenarioName)
-    .get("/catalog-search-product-offers?q=${name}")
+    .get("/merchant-category-trees")
     .header("Merchant-Reference", "474-001")
     .check(status.is(200))
 
   val scn = scenario(scenarioName)
-  .feed(feeder)
-  .exec(request)
+    .exec(request)
 }
 
-class CatalogSearchProductOffersApiRamp extends Simulation with CatalogSearchProductOffersApiBase {
+class MerchantCategoryTreesApiRamp extends Simulation with MerchantCategoryTreesApiBase {
 
   override lazy val scenarioName = "Catalog Search Product Offers API [Incremental]"
 
@@ -52,7 +49,7 @@ class CatalogSearchProductOffersApiRamp extends Simulation with CatalogSearchPro
     .protocols(httpProtocol)
 }
 
-class CatalogSearchProductOffersApiSteady extends Simulation with CatalogSearchProductOffersApiBase {
+class MerchantCategoryTreesApiSteady extends Simulation with MerchantCategoryTreesApiBase {
 
   override lazy val scenarioName = "Catalog Search Product Offers API [Steady RPS]"
 

@@ -21,25 +21,40 @@ import io.gatling.http.Predef._
 import scala.concurrent.duration._
 import scala.util.Random
 import spryker.GlueProtocol._
+import spryker.BackendApiProtocol._
 import spryker.Scenario._
 
-trait CartsApiBase {
+trait UserByIdBackendApiBase {
 
-  lazy val scenarioName = "Carts Api"
+  lazy val scenarioName = "User By ID Backend Api"
 
-  val httpProtocol = GlueProtocol.httpProtocol
+  val httpProtocol = BackendApiProtocol.httpProtocol
+  val glueBaseUrl = GlueProtocol.baseUrl
+  val customerFeeder = csv("tests/_data/customer.csv").random
+  val usersFeeder = csv("tests/_data/users.csv").random
 
-  val request = http(scenarioName)
-      .get("/carts")
+  val accessTokenRequest = http("Access Token Request")
+    .post(glueBaseUrl + "/access-tokens")
+    .header("Content-Type", "application/json")
+    .body(StringBody("""{"data":{"type":"access-tokens","attributes":{"username":"${email}","password":"${password}"}}}""")).asJson
+    .check(status.is(201))
+    .check(jsonPath("$.data.attributes.accessToken").saveAs("access_token"))
+
+  val userByIdRequest = http(scenarioName)
+    .get("/users/${user_id}")
+    .header("Authorization", "Bearer ${access_token}")
     .check(status.is(200))
 
   val scn = scenario(scenarioName)
-    .exec(request)
+    .feed(customerFeeder)
+    .feed(usersFeeder)
+    .exec(accessTokenRequest)
+    .exec(userByIdRequest)
 }
 
-class CartsApiRamp extends Simulation with CartsApiBase {
+class UserByIdBackendApiRamp extends Simulation with UserByIdBackendApiBase {
 
-  override lazy val scenarioName = "Carts API [Incremental]"
+  override lazy val scenarioName = "User By ID Backend Api [Incremental]"
 
   setUp(scn.inject(
       rampUsersPerSec(0) to (Scenario.targetRps.toDouble) during (Scenario.duration),
@@ -48,9 +63,9 @@ class CartsApiRamp extends Simulation with CartsApiBase {
     .protocols(httpProtocol)
 }
 
-class CartsApiSteady extends Simulation with CartsApiBase {
+class UserByIdBackendApiSteady extends Simulation with UserByIdBackendApiBase {
 
-  override lazy val scenarioName = "Carts API [Steady RPS]"
+  override lazy val scenarioName = "User By ID Backend Api [Steady RPS]"
 
   setUp(scn.inject(
       constantUsersPerSec(Scenario.targetRps.toDouble) during (Scenario.duration),

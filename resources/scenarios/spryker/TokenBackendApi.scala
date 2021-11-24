@@ -20,30 +20,28 @@ import io.gatling.core.Predef._
 import io.gatling.http.Predef._
 import scala.concurrent.duration._
 import scala.util.Random
-import spryker.GlueProtocol._
+import spryker.BackendApiProtocol._
 import spryker.Scenario._
 
-trait CatalogSearchProductOffersApiBase {
+trait TokenBackendApiBase {
 
-  lazy val scenarioName = "Catalog Search Product Offers Api"
+  lazy val scenarioName = "Token Backend Api"
 
-  val httpProtocol = GlueProtocol.httpProtocol
+  val httpProtocol = BackendApiProtocol.httpProtocol
 
-  val feeder = csv("tests/_data/grocery_items.csv").random
-
-  val request = http(scenarioName)
-    .get("/catalog-search-product-offers?q=${name}")
-    .header("Merchant-Reference", "474-001")
+  val tokenRequest = http(scenarioName)
+    .post("/token")
+    .formParam("grantType", "device_token")
+    .formParam("response_type", "token")
     .check(status.is(200))
 
   val scn = scenario(scenarioName)
-  .feed(feeder)
-  .exec(request)
+    .exec(tokenRequest)
 }
 
-class CatalogSearchProductOffersApiRamp extends Simulation with CatalogSearchProductOffersApiBase {
+class TokenBackendApiRamp extends Simulation with TokenBackendApiBase {
 
-  override lazy val scenarioName = "Catalog Search Product Offers API [Incremental]"
+  override lazy val scenarioName = "Token Backend Api [Incremental]"
 
   setUp(scn.inject(
       rampUsersPerSec(0) to (Scenario.targetRps.toDouble) during (Scenario.duration),
@@ -52,9 +50,9 @@ class CatalogSearchProductOffersApiRamp extends Simulation with CatalogSearchPro
     .protocols(httpProtocol)
 }
 
-class CatalogSearchProductOffersApiSteady extends Simulation with CatalogSearchProductOffersApiBase {
+class TokenBackendApiSteady extends Simulation with TokenBackendApiBase {
 
-  override lazy val scenarioName = "Catalog Search Product Offers API [Steady RPS]"
+  override lazy val scenarioName = "Token Backend Api [Steady RPS]"
 
   setUp(scn.inject(
       constantUsersPerSec(Scenario.targetRps.toDouble) during (Scenario.duration),

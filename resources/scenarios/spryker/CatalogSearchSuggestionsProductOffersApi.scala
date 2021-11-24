@@ -29,13 +29,16 @@ trait CatalogSearchSuggestionsProductOffersApiBase {
 
   val httpProtocol = GlueProtocol.httpProtocol
 
+  val feeder = csv("tests/_data/grocery_items.csv").random
+
   val request = http(scenarioName)
-    .get("/catalog-search-suggestions-product-offers")
+    .get("/catalog-search-suggestions-product-offers?q=${name}")
     .header("Merchant-Reference", "474-001")
     .check(status.is(200))
 
   val scn = scenario(scenarioName)
-    .exec(request)
+  .feed(feeder)
+  .exec(request)
 }
 
 class CatalogSearchSuggestionsProductOffersApiRamp extends Simulation with CatalogSearchSuggestionsProductOffersApiBase {

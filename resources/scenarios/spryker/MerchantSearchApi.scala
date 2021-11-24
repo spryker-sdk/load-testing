@@ -30,7 +30,7 @@ trait MerchantSearchApiBase {
   val httpProtocol = GlueProtocol.httpProtocol
 
   val request = http(scenarioName)
-      .get("/merchant-search")
+    .get("/merchant-search?currency=USD&service_type=pickup&zip_code=32836&include=merchant-opening-hours")
     .check(status.is(200))
 
   val scn = scenario(scenarioName)

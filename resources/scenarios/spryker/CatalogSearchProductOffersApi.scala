@@ -19,7 +19,6 @@ package spryker
 import io.gatling.core.Predef._
 import io.gatling.http.Predef._
 import scala.concurrent.duration._
-import scala.util.Random
 import spryker.GlueProtocol._
 import spryker.Scenario._
 
@@ -29,17 +28,19 @@ trait CatalogSearchProductOffersApiBase {
 
   val httpProtocol = GlueProtocol.httpProtocol
 
-  val feeder = csv("tests/_data/grocery_items.csv").random
+  val groceryItemsFeeder = csv("tests/_data/grocery_items.csv").random
+  val merchantsFeeder = csv("tests/_data/merchants.csv").random
 
   val request = http(scenarioName)
     .get("/catalog-search-product-offers?q=${name}")
-    .header("Merchant-Reference", "474-001")
+    .header("Merchant-Reference", "${merchant_reference}")
     .check(status.is(200))
 
   val scn = scenario(scenarioName)
-  .feed(feeder)
-  .exec(request)
-}
+    .feed(groceryItemsFeeder)
+    .feed(merchantsFeeder)
+    .exec(request)
+  }
 
 class CatalogSearchProductOffersApiRamp extends Simulation with CatalogSearchProductOffersApiBase {
 

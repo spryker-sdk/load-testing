@@ -4,7 +4,8 @@
   "description": "",
   "main": "public/index.js",
   "scripts": {
-    "run": "node public/index.js",
+    "run": "pm2 start public/index.js",
+    "generate": "node tests-generator/index.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "Spryker",
@@ -21,6 +22,6 @@
     "platformsh-config": "^2.3.1",
     "point-of-view": "^3.7.0",
     "rimraf": "^3.0.2",
-    "yaml": "^1.7.2"
+    "yaml": "^1.10.2"
   }
 }

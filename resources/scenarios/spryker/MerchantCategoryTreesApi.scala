@@ -37,6 +37,7 @@ trait MerchantCategoryTreesApiBase {
     .check(status.is(200))
 
   val scn = scenario(scenarioName)
+    .feed(merchantsFeeder)
     .exec(request)
 }
 

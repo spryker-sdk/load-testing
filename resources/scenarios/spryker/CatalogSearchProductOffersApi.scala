@@ -47,7 +47,7 @@ class CatalogSearchProductOffersApiRamp extends Simulation with CatalogSearchPro
   override lazy val scenarioName = "Catalog Search Product Offers API [Incremental]"
 
   setUp(scn.inject(
-      rampUsersPerSec(0) to (Scenario.targetRps.toDouble) during (Scenario.duration),
+      rampUsersPerSec(1) to (Scenario.targetRps.toDouble) during (Scenario.duration),
     ))
     .throttle(reachRps(Scenario.targetRps) in (Scenario.duration))
     .protocols(httpProtocol)

@@ -47,9 +47,9 @@ class ResultsRamp extends Simulation with ResultsBase {
   override lazy val scenarioName = "Results page [Incremental]"
 
   setUp(scn.inject(
-      rampUsersPerSec(0) to (Scenario.targetRps.toDouble) during (Scenario.duration),
+      rampUsersPerSec(1) to (Scenario.targetRps.toDouble) during (Scenario.duration),
     ))
-    .throttle(reachRps(Scenario.targetRps) in (Scenario.duration))
+    .throttle(reachRps(Scenario.targetRps) in (Scenario.duration), holdFor(1 hour))
     .protocols(httpProtocol)
 }
 

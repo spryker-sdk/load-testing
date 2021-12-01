@@ -32,6 +32,150 @@ const scenarios = [
     "title": "Frontend API",
     "tests": [
       {
+        "id": "DeleteCartsCartCodesApi",
+        "title": "DeleteCartsCartCodesApi"
+      },
+      {
+        "id": "UpdateCustomerPasswordApi",
+        "title": "UpdateCustomerPasswordApi"
+      },
+      {
+        "id": "DeleteCartsItemsApi",
+        "title": "DeleteCartsItemsApi"
+      },
+      {
+        "id": "UpdateCartsItemsApi",
+        "title": "UpdateCartsItemsApi"
+      },
+      {
+        "id": "DeleteCartsApi",
+        "title": "DeleteCartsApi"
+      },
+      {
+        "id": "UpdateCartsApi",
+        "title": "UpdateCartsApi"
+      },
+      {
+        "id": "UpdateCustomerRestorePasswordApi",
+        "title": "UpdateCustomerRestorePasswordApi"
+      },
+      {
+        "id": "DeleteCustomersApi",
+        "title": "DeleteCustomersApi"
+      },
+      {
+        "id": "UpdateCustomersApi",
+        "title": "UpdateCustomersApi"
+      },
+      {
+        "id": "DeleteRefreshTokensApi",
+        "title": "DeleteRefreshTokensApi"
+      },
+      {
+        "id": "CreateCheckoutTestingApi",
+        "title": "CreateCheckoutTestingApi"
+      },
+      {
+        "id": "CreateCartsFixturesApi",
+        "title": "CreateCartsFixturesApi"
+      },
+      {
+        "id": "CreateCustomerFixtureApi",
+        "title": "CreateCustomerFixtureApi"
+      },
+      {
+        "id": "CreateImportMerchant_posApi",
+        "title": "CreateImportMerchant_posApi"
+      },
+      {
+        "id": "CreateImportCategoriesApi",
+        "title": "CreateImportCategoriesApi"
+      },
+      {
+        "id": "CreateImportProduct_categoriesApi",
+        "title": "CreateImportProduct_categoriesApi"
+      },
+      {
+        "id": "CreateImportProduct_offersApi",
+        "title": "CreateImportProduct_offersApi"
+      },
+      {
+        "id": "CreateImportProduct_imagesApi",
+        "title": "CreateImportProduct_imagesApi"
+      },
+      {
+        "id": "CreateImportProduct_pricesApi",
+        "title": "CreateImportProduct_pricesApi"
+      },
+      {
+        "id": "CreateImportProductsApi",
+        "title": "CreateImportProductsApi"
+      },
+      {
+        "id": "CreateCodeAuthorizeApi",
+        "title": "CreateCodeAuthorizeApi"
+      },
+      {
+        "id": "CreateFirstDataNotificationsApi",
+        "title": "CreateFirstDataNotificationsApi"
+      },
+      {
+        "id": "CreateTokenApi",
+        "title": "CreateTokenApi"
+      },
+      {
+        "id": "CreateInstacartCallbacksApi",
+        "title": "CreateInstacartCallbacksApi"
+      },
+      {
+        "id": "CreateCartsMerchantTimeslotReservationsApi",
+        "title": "CreateCartsMerchantTimeslotReservationsApi"
+      },
+      {
+        "id": "CreateCartsCartCodesApi",
+        "title": "CreateCartsCartCodesApi"
+      },
+      {
+        "id": "CreateReturnsApi",
+        "title": "CreateReturnsApi"
+      },
+      {
+        "id": "CreateCheckoutApi",
+        "title": "CreateCheckoutApi"
+      },
+      {
+        "id": "CreateCheckoutDataApi",
+        "title": "CreateCheckoutDataApi"
+      },
+      {
+        "id": "CreateCustomersAddressesApi",
+        "title": "CreateCustomersAddressesApi"
+      },
+      {
+        "id": "CreateCartsItemsApi",
+        "title": "CreateCartsItemsApi"
+      },
+      {
+        "id": "CreateCartsApi",
+        "title": "CreateCartsApi"
+      },
+      {
+        "id": "CreateCustomerForgottenPasswordApi",
+        "title": "CreateCustomerForgottenPasswordApi"
+      },
+      {
+        "id": "CreateCustomersApi",
+        "title": "CreateCustomersApi"
+      },
+      {
+        "id": "CreateRefreshTokensApi",
+        "title": "CreateRefreshTokensApi"
+      },
+      {
+        "id": "CreateAccessTokensApi",
+        "title": "CreateAccessTokensApi"
+      },
+      {
         "id": "GetCollectionOfCustomersPaymentMethodsApi",
         "title": "GetCollectionOfCustomersPaymentMethodsApi"
       },

@@ -1,0 +1,85 @@
+openapi: 3.0.0
+info:
+    version: 1.0.0
+    contact:
+        name: Spryker
+        url: 'https://support.spryker.com/'
+        email: support@spryker.com
+    title: 'Spryker API'
+    license:
+        name: MIT
+servers:
+    -
+        url: 'https://integration-api.us.sbx1.commerce.ci-aldi.com'
+paths:
+    /users/{userId}:
+        get:
+            summary: 'Retrieves user `userId` details.'
+            parameters:
+                -
+                    name: userId
+                    in: path
+                    required: true
+                    description: 'Id of user.'
+                    schema:
+                        type: string
+                -
+                    $ref: '#/components/parameters/acceptLanguage'
+            operationId: create-code-authorize
+            responses:
+                200:
+                    description: 'User data.'
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/RestUserDataResponse'
+                400:
+                    description: 'Bad request.'
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/RestErrorResponse'
+                default:
+                    description: 'Expected response to a bad request.'
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/RestErrorResponse'
+components:
+    parameters:
+        acceptLanguage:
+            name: Accept-Language
+            in: header
+            description: 'Locale value relevant for the store.'
+            schema:
+                type: string
+            required: false
+    schemas:
+        RestErrors:
+            properties:
+                errors:
+                    type: array
+                    items:
+                        $ref: '#/components/schemas/RestErrorMessage'
+        RestErrorMessage:
+            properties:
+                code:
+                    type: string
+                detail:
+                    type: string
+                status:
+                    type: integer
+        RestUserDataResponse:
+            properties:
+                merchant_reference:
+                    type: string
+                    example: '440-002'
+                email:
+                    type: string
+                    example: 'driver@aldi.us'
+        RestErrorResponse:
+            properties:
+                error:
+                    type: string
+                error_description:
+                    type: string

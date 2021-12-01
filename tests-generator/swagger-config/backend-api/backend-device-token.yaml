@@ -1,0 +1,48 @@
+openapi: 3.0.0
+info:
+    version: 1.0.0
+    contact:
+        name: Spryker
+        url: 'https://support.spryker.com/'
+        email: support@spryker.com
+    title: 'Spryker API'
+    license:
+        name: MIT
+servers:
+    -
+        url: 'https://integration-api.us.sbx1.commerce.ci-aldi.com'
+paths:
+    /device-token:
+        get:
+            summary: 'Creates a device token.'
+            tags:
+                - device-token
+            security:
+                -   BearerAuth: [ ]
+            operationId: create-access-tokens
+            responses:
+                200:
+                    description: 'Device access token generated.'
+                    content:
+                        application/json:
+                            schema:
+                                type: object
+                                properties:
+                                    access_token:
+                                        type: string
+                                    token_type:
+                                        type: string
+                                    expires_in:
+                                        type: integer
+                401:
+                    description: 'Invalid access token.'
+                    content:
+                        text/plain:
+                            schema:
+                                type: string
+                                example: 'Invalid access token.'
+components:
+    securitySchemes:
+        BearerAuth:
+            type: http
+            scheme: bearer

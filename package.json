@@ -5,7 +5,9 @@
   "main": "public/index.js",
   "scripts": {
     "run": "pm2 start public/index.js",
-    "generate": "node tests-generator/index.js",
+    "frontend-api-tests:generate": "node tests-generator/frontend-api/index.js",
+    "backend-api-tests:generate": "node tests-generator/backend-api/index.js",
+    "data-import-api-tests:generate": "node tests-generator/data-import-api/index.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "Spryker",

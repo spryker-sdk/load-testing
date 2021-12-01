@@ -3,7 +3,7 @@ const queryString = require('querystring');
 const successCodeDefaultDescription = "Expected response to a valid request.";
 
 importSection = () => {
-    return  "package spryker\n" +
+    return "package spryker\n" +
         "\n" +
         "import io.gatling.core.Predef._\n" +
         "import io.gatling.http.Predef._\n" +
@@ -38,7 +38,7 @@ generateClassOpeningSection = (className, scenarioName) => {
 classRequestSection = (method, endpoint, statusCode = 200) => {
     return {
         startWith: "  val request = http(scenarioName)\n" +
-        "    ." + method + "(\"" + endpoint + "\")\n",
+            "    ." + method + "(\"" + endpoint + "\")\n",
         endWith: "    .check(status.is(" + statusCode + "))\n" + "\n"
     }
 }
@@ -67,7 +67,7 @@ getSuccessfulResponseCode = (responses) => {
     return responseCode;
 }
 
-generateClassRequestSection = (method, parameters, data) => {
+generateClassRequestSection = (method, parameters, data, requestBody) => {
     const successfulResponseCode = getSuccessfulResponseCode(data.responses)
     const defaultClassRequestSection = classRequestSection(method, parameters.path, successfulResponseCode);
     let extraRequestData = "";
@@ -79,13 +79,18 @@ generateClassRequestSection = (method, parameters, data) => {
         extraRequestData += parameters.headers;
     }
 
+    if (Object.keys(requestBody).length !== 0) {
+        const stringifiedRequestBody = JSON.stringify(requestBody);
+        extraRequestData += `    .body(StringBody("""${stringifiedRequestBody}"""))\n`;
+    }
+
     return defaultClassRequestSection.startWith + extraRequestData + defaultClassRequestSection.endWith;
 }
 
 const classScenarioSection = () => {
     return {
         startWith: "  val scn = scenario(scenarioName)\n",
-        endWith: "    .exec(request)\n" + "\n"
+        endWith: "    .exec(request)\n"
     }
 }
 
@@ -115,9 +120,9 @@ rampSteadyClassesSection = (className, scenarioName) => {
         "  override lazy val scenarioName = \"" + scenarioName + " [Incremental]\"\n" +
         "\n" +
         "  setUp(scn.inject(\n" +
-        "      rampUsersPerSec(0) to (Scenario.targetRps.toDouble) during (Scenario.duration),\n" +
+        "      rampUsersPerSec(1) to (Scenario.targetRps.toDouble) during (Scenario.duration),\n" +
         "    ))\n" +
-        "    .throttle(reachRps(Scenario.targetRps) in (Scenario.duration))\n" +
+        "    .throttle(reachRps(Scenario.targetRps) in (Scenario.duration), holdFor(1 hour))\n" +
         "    .protocols(httpProtocol)\n" +
         "}\n" +
         "\n" +
@@ -140,8 +145,9 @@ generateRampSteadyClassesSection = (className, scenarioName) => {
     return rampSteadyClassesSection(className, scenarioName);
 }
 
-exports.build = (data, method, endpoint) => {
-    const parameters = generateParameters(data.parameters, endpoint)
+exports.build = (data, method, endpoint, schemas) => {
+    const parameters = generateParameters(data, endpoint);
+    const requestBody = generateRequestBody(data, schemas);
     const className = this.generateClassName(data.operationId);
     const scenarioName = data.summary;
     const preparationClassesList = data.hasOwnProperty('prepareDataSteps')
@@ -150,7 +156,7 @@ exports.build = (data, method, endpoint) => {
 
     return generateImportSection(preparationClassesList) +
         generateClassOpeningSection(className, scenarioName) +
-        generateClassRequestSection(method, parameters, data) +
+        generateClassRequestSection(method, parameters, data, requestBody) +
         generateClassScenarioSection(preparationClassesList) +
         generateClassClosingSection() +
         generateRampSteadyClassesSection(className, scenarioName);
@@ -169,50 +175,98 @@ generateHeadersList = (inputParameter, parameters) => {
 }
 
 generatePath = (inputParameter, parameters) => {
-    if (inputParameter.schema.example === undefined) {
-        parameters.path = parameters.path.replace(/\{/g, '${')
-        return;
+    if (inputParameter.schema.example !== undefined) {
+        const pathRegex = new RegExp(`\{${inputParameter.name}\}`);
+        parameters.path = parameters.path.replace(pathRegex, inputParameter.schema.example)
     }
-
-    const pathRegex = new RegExp(`\{${inputParameter.name}\}`);
-    parameters.path = parameters.path.replace(pathRegex, inputParameter.schema.example)
 }
 
-generateParameters = (inputParameters, endpoint) => {
+generateRequestBody = (data, schemas) => {
+    const requestBody = {};
+    if (data.hasOwnProperty('requestBody')
+        && data.requestBody.hasOwnProperty('content')
+        && data.requestBody.content.hasOwnProperty('application/json')
+        && data.requestBody.content['application/json'].hasOwnProperty('schema')
+        && data.requestBody.content['application/json'].schema.hasOwnProperty('$ref')
+    ) {
+        const referencePathParts = data.requestBody.content['application/json'].schema.$ref.split('/');
+        const schemaName = referencePathParts[3];
+
+        if (schemas.hasOwnProperty(schemaName)) {
+            assembleProperties(requestBody, schemas[schemaName], schemas)
+        }
+    }
+
+    return requestBody;
+}
+
+assembleProperties = async (requestBody, schema, schemas) => {
+    const properties = schema.properties;
+    for (let property in properties) {
+        const propertyItem = properties[property];
+        if (propertyItem.hasOwnProperty('$ref')) {
+            const referencePathParts = propertyItem.$ref.split('/');
+            requestBody[property] = {};
+            await assembleProperties(requestBody[property], schemas[referencePathParts[3]], schemas);
+            continue;
+        }
+
+        if (propertyItem.hasOwnProperty(('example'))) {
+            requestBody[property] = propertyItem.example;
+            continue;
+        }
+
+        if (propertyItem.hasOwnProperty(('enum'))) {
+            requestBody[property] = propertyItem.enum[0];
+            continue;
+        }
+
+        requestBody[property] = "${" + property + "}";
+    }
+}
+
+generateParameters = (data, endpoint) => {
     const parameters = {
         query: {},
         headers: "",
         path: endpoint
     }
 
-    for (let inputParameter of inputParameters) {
-        if (!inputParameter.hasOwnProperty('name')
-            || !inputParameter.hasOwnProperty('in')
-            || !inputParameter.hasOwnProperty('required')
-            || (inputParameter.required && !inputParameter.schema.hasOwnProperty('example'))
-        ) {
-            continue;
-        }
+    if (data.hasOwnProperty('parameters') && Array.isArray(data.parameters)) {
+        for (let inputParameter of data.parameters) {
+            if (!inputParameter.hasOwnProperty('name')
+                || !inputParameter.hasOwnProperty('in')
+                || !inputParameter.hasOwnProperty('required')
+                || (inputParameter.required && !inputParameter.schema.hasOwnProperty('example'))
+            ) {
+                continue;
+            }
 
-        if (inputParameter.in === 'query') {
-            generateQueryString(inputParameter, parameters);
-        }
+            if (inputParameter.in === 'query') {
+                generateQueryString(inputParameter, parameters);
+            }
 
-        if (inputParameter.in === 'header') {
-            generateHeadersList(inputParameter, parameters);
-        }
+            if (inputParameter.in === 'header') {
+                generateHeadersList(inputParameter, parameters);
+            }
 
-        if (inputParameter.in === 'path') {
-            generatePath(inputParameter, parameters);
+            if (inputParameter.in === 'path') {
+                generatePath(inputParameter, parameters);
+            }
         }
     }
 
+    setPlaceholdersForPathParameters(parameters);
     parameters.query = queryString.stringify(parameters.query);
     if (parameters.query.length > 0) {
         parameters.path = parameters.path + `?${parameters.query}`
     }
 
     return parameters;
+}
+
+setPlaceholdersForPathParameters = (parameters) => {
+    parameters.path = parameters.path.replace(/\{/g, "${");
 }
 
 exports.generateClassName = (operationId) => {

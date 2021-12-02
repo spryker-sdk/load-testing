@@ -32,6 +32,646 @@ const scenarios = [
     "title": "Frontend API",
     "tests": [
       {
+        "id": "CreateCartsItemsFrontendApi",
+        "title": "CreateCartsItemsFrontendApi"
+      },
+      {
+        "id": "GetStoresFrontendApi",
+        "title": "GetStoresFrontendApi"
+      },
+      {
+        "id": "CreateCartsFrontendApi",
+        "title": "CreateCartsFrontendApi"
+      },
+      {
+        "id": "GetCollectionOfCartsFrontendApi",
+        "title": "GetCollectionOfCartsFrontendApi"
+      },
+      {
+        "id": "DeleteCartsFrontendApi",
+        "title": "DeleteCartsFrontendApi"
+      },
+      {
+        "id": "UpdateCartsFrontendApi",
+        "title": "UpdateCartsFrontendApi"
+      },
+      {
+        "id": "GetCartsFrontendApi",
+        "title": "GetCartsFrontendApi"
+      },
+      {
+        "id": "GetCollectionOfConcreteProductsConcreteProductPricesFrontendApi",
+        "title": "GetCollectionOfConcreteProductsConcreteProductPricesFrontendApi"
+      },
+      {
+        "id": "GetConcreteProductsFrontendApi",
+        "title": "GetConcreteProductsFrontendApi"
+      },
+      {
+        "id": "UpdateCustomerRestorePasswordFrontendApi",
+        "title": "UpdateCustomerRestorePasswordFrontendApi"
+      },
+      {
+        "id": "CreateCustomerForgottenPasswordFrontendApi",
+        "title": "CreateCustomerForgottenPasswordFrontendApi"
+      },
+      {
+        "id": "GetCollectionOfCustomersFrontendApi",
+        "title": "GetCollectionOfCustomersFrontendApi"
+      },
+      {
+        "id": "DeleteCustomersFrontendApi",
+        "title": "DeleteCustomersFrontendApi"
+      },
+      {
+        "id": "UpdateCustomersFrontendApi",
+        "title": "UpdateCustomersFrontendApi"
+      },
+      {
+        "id": "GetCustomersFrontendApi",
+        "title": "GetCustomersFrontendApi"
+      },
+      {
+        "id": "GetCategoryNodesFrontendApi",
+        "title": "GetCategoryNodesFrontendApi"
+      },
+      {
+        "id": "GetCollectionOfCategoryTreesFrontendApi",
+        "title": "GetCollectionOfCategoryTreesFrontendApi"
+      },
+      {
+        "id": "GetCollectionOfConcreteProductsConcreteProductAvailabilitiesFrontendApi",
+        "title": "GetCollectionOfConcreteProductsConcreteProductAvailabilitiesFrontendApi"
+      },
+      {
+        "id": "GetCollectionOfStoresFrontendApi",
+        "title": "GetCollectionOfStoresFrontendApi"
+      },
+      {
+        "id": "CreateCheckoutTestingFrontendApi",
+        "title": "CreateCheckoutTestingFrontendApi"
+      },
+      {
+        "id": "CreateCartsFixturesFrontendApi",
+        "title": "CreateCartsFixturesFrontendApi"
+      },
+      {
+        "id": "CreateCustomerFixtureFrontendApi",
+        "title": "CreateCustomerFixtureFrontendApi"
+      },
+      {
+        "id": "GetCollectionOfCustomersPaymentMethodsFrontendApi",
+        "title": "GetCollectionOfCustomersPaymentMethodsFrontendApi"
+      },
+      {
+        "id": "GetCustomersPaymentMethodsFrontendApi",
+        "title": "GetCustomersPaymentMethodsFrontendApi"
+      },
+      {
+        "id": "CreateImportMerchantPosFrontendApi",
+        "title": "CreateImportMerchantPosFrontendApi"
+      },
+      {
+        "id": "CreateImportCategoriesFrontendApi",
+        "title": "CreateImportCategoriesFrontendApi"
+      },
+      {
+        "id": "CreateImportProductCategoriesFrontendApi",
+        "title": "CreateImportProductCategoriesFrontendApi"
+      },
+      {
+        "id": "CreateImportProductOffersFrontendApi",
+        "title": "CreateImportProductOffersFrontendApi"
+      },
+      {
+        "id": "CreateImportProductImagesFrontendApi",
+        "title": "CreateImportProductImagesFrontendApi"
+      },
+      {
+        "id": "CreateImportProductPricesFrontendApi",
+        "title": "CreateImportProductPricesFrontendApi"
+      },
+      {
+        "id": "CreateImportProductsFrontendApi",
+        "title": "CreateImportProductsFrontendApi"
+      },
+      {
+        "id": "GetCollectionOfConcreteProductsSalesUnitsFrontendApi",
+        "title": "GetCollectionOfConcreteProductsSalesUnitsFrontendApi"
+      },
+      {
+        "id": "GetProductMeasurementUnitsFrontendApi",
+        "title": "GetProductMeasurementUnitsFrontendApi"
+      },
+      {
+        "id": "GetCollectionOfCustomersOrdersFrontendApi",
+        "title": "GetCollectionOfCustomersOrdersFrontendApi"
+      },
+      {
+        "id": "GetCollectionOfCustomersCartsFrontendApi",
+        "title": "GetCollectionOfCustomersCartsFrontendApi"
+      },
+      {
+        "id": "CreateCodeAuthorizeFrontendApi",
+        "title": "CreateCodeAuthorizeFrontendApi"
+      },
+      {
+        "id": "CreateFirstDataNotificationsFrontendApi",
+        "title": "CreateFirstDataNotificationsFrontendApi"
+      },
+      {
+        "id": "CreateTokenFrontendApi",
+        "title": "CreateTokenFrontendApi"
+      },
+      {
+        "id": "GetCollectionOfPreviewDeliveryTimeslotsFrontendApi",
+        "title": "GetCollectionOfPreviewDeliveryTimeslotsFrontendApi"
+      },
+      {
+        "id": "GetCollectionOfProductOffersProductOfferPricesFrontendApi",
+        "title": "GetCollectionOfProductOffersProductOfferPricesFrontendApi"
+      },
+      {
+        "id": "GetCollectionOfMerchantCategoryTreesFrontendApi",
+        "title": "GetCollectionOfMerchantCategoryTreesFrontendApi"
+      },
+      {
+        "id": "CreateInstacartCallbacksFrontendApi",
+        "title": "CreateInstacartCallbacksFrontendApi"
+      },
+      {
+        "id": "GetCollectionOfMerchantsMerchantOpeningHoursFrontendApi",
+        "title": "GetCollectionOfMerchantsMerchantOpeningHoursFrontendApi"
+      },
+      {
+        "id": "GetCollectionOfMerchantSearchFrontendApi",
+        "title": "GetCollectionOfMerchantSearchFrontendApi"
+      },
+      {
+        "id": "GetCollectionOfProductOffersAlternativeProductOffersFrontendApi",
+        "title": "GetCollectionOfProductOffersAlternativeProductOffersFrontendApi"
+      },
+      {
+        "id": "GetCollectionOfCatalogSearchSuggestionsProductOffersFrontendApi",
+        "title": "GetCollectionOfCatalogSearchSuggestionsProductOffersFrontendApi"
+      },
+      {
+        "id": "GetCollectionOfCatalogSearchProductOffersFrontendApi",
+        "title": "GetCollectionOfCatalogSearchProductOffersFrontendApi"
+      },
+      {
+        "id": "GetCollectionOfCartsCartMerchantTimeslotsFrontendApi",
+        "title": "GetCollectionOfCartsCartMerchantTimeslotsFrontendApi"
+      },
+      {
+        "id": "CreateCartsMerchantTimeslotReservationsFrontendApi",
+        "title": "CreateCartsMerchantTimeslotReservationsFrontendApi"
+      },
+      {
+        "id": "GetCollectionOfPreviewPickupTimeslotsFrontendApi",
+        "title": "GetCollectionOfPreviewPickupTimeslotsFrontendApi"
+      },
+      {
+        "id": "GetCollectionOfConcreteProductsProductOffersFrontendApi",
+        "title": "GetCollectionOfConcreteProductsProductOffersFrontendApi"
+      },
+      {
+        "id": "GetProductOffersFrontendApi",
+        "title": "GetProductOffersFrontendApi"
+      },
+      {
+        "id": "GetCollectionOfMerchantsMerchantAddressesFrontendApi",
+        "title": "GetCollectionOfMerchantsMerchantAddressesFrontendApi"
+      },
+      {
+        "id": "GetCollectionOfMerchantsFrontendApi",
+        "title": "GetCollectionOfMerchantsFrontendApi"
+      },
+      {
+        "id": "GetMerchantsFrontendApi",
+        "title": "GetMerchantsFrontendApi"
+      },
+      {
+        "id": "DeleteCartsCartCodesFrontendApi",
+        "title": "DeleteCartsCartCodesFrontendApi"
+      },
+      {
+        "id": "CreateCartsCartCodesFrontendApi",
+        "title": "CreateCartsCartCodesFrontendApi"
+      },
+      {
+        "id": "CreateReturnsFrontendApi",
+        "title": "CreateReturnsFrontendApi"
+      },
+      {
+        "id": "GetCollectionOfReturnsFrontendApi",
+        "title": "GetCollectionOfReturnsFrontendApi"
+      },
+      {
+        "id": "GetReturnsFrontendApi",
+        "title": "GetReturnsFrontendApi"
+      },
+      {
+        "id": "GetCollectionOfReturnReasonsFrontendApi",
+        "title": "GetCollectionOfReturnReasonsFrontendApi"
+      },
+      {
+        "id": "GetHealthCheckFrontendApi",
+        "title": "GetHealthCheckFrontendApi"
+      },
+      {
+        "id": "CreateCheckoutFrontendApi",
+        "title": "CreateCheckoutFrontendApi"
+      },
+      {
+        "id": "CreateCheckoutDataFrontendApi",
+        "title": "CreateCheckoutDataFrontendApi"
+      },
+      {
+        "id": "CreateCustomersAddressesFrontendApi",
+        "title": "CreateCustomersAddressesFrontendApi"
+      },
+      {
+        "id": "GetCollectionOfCustomersAddressesFrontendApi",
+        "title": "GetCollectionOfCustomersAddressesFrontendApi"
+      },
+      {
+        "id": "UpdateCustomerPasswordFrontendApi",
+        "title": "UpdateCustomerPasswordFrontendApi"
+      },
+      {
+        "id": "GetCollectionOfOrdersFrontendApi",
+        "title": "GetCollectionOfOrdersFrontendApi"
+      },
+      {
+        "id": "GetOrdersFrontendApi",
+        "title": "GetOrdersFrontendApi"
+      },
+      {
+        "id": "GetCollectionOfConcreteProductsConcreteProductImageSetsFrontendApi",
+        "title": "GetCollectionOfConcreteProductsConcreteProductImageSetsFrontendApi"
+      },
+      {
+        "id": "DeleteCartsItemsFrontendApi",
+        "title": "DeleteCartsItemsFrontendApi"
+      },
+      {
+        "id": "UpdateCartsItemsFrontendApi",
+        "title": "UpdateCartsItemsFrontendApi"
+      },
+      {
+        "id": "CreateCustomersFrontendApi",
+        "title": "CreateCustomersFrontendApi"
+      },
+      {
+        "id": "DeleteRefreshTokensFrontendApi",
+        "title": "DeleteRefreshTokensFrontendApi"
+      },
+      {
+        "id": "CreateRefreshTokensFrontendApi",
+        "title": "CreateRefreshTokensFrontendApi"
+      },
+      {
+        "id": "CreateAccessTokensFrontendApi",
+        "title": "CreateAccessTokensFrontendApi"
+      },
+      {
+        "id": "GetUsersBackendApi",
+        "title": "GetUsersBackendApi"
+      },
+      {
+        "id": "CreateDeviceTokensBackendApi",
+        "title": "CreateDeviceTokensBackendApi"
+      },
+      {
+        "id": "GetCollectionOfOrdersBackendApi",
+        "title": "GetCollectionOfOrdersBackendApi"
+      },
+      {
+        "id": "CreateCodeAuthorizeBackendApi",
+        "title": "CreateCodeAuthorizeBackendApi"
+      },
+      {
+        "id": "CreateAccessTokensBackendApi",
+        "title": "CreateAccessTokensBackendApi"
+      },
+      {
+        "id": "CreateRabbitmqImportProductOfferDataImportApi",
+        "title": "CreateRabbitmqImportProductOfferDataImportApi"
+      },
+      {
+        "id": "CreateImportProductCategoriesDataImportApi",
+        "title": "CreateImportProductCategoriesDataImportApi"
+      },
+      {
+        "id": "CreateImportCategoriesDataImportApi",
+        "title": "CreateImportCategoriesDataImportApi"
+      },
+      {
+        "id": "GetEmailExportRefundFinanceDataImportApi",
+        "title": "GetEmailExportRefundFinanceDataImportApi"
+      },
+      {
+        "id": "GetEmailReconciliationOrderItemDataImportApi",
+        "title": "GetEmailReconciliationOrderItemDataImportApi"
+      },
+      {
+        "id": "GetEmailReconciliationOrderDataImportApi",
+        "title": "GetEmailReconciliationOrderDataImportApi"
+      },
+      {
+        "id": "GetRabbitmqExportOrderDataImportApi",
+        "title": "GetRabbitmqExportOrderDataImportApi"
+      },
+      {
+        "id": "CreateImportMerchantPosDataImportApi",
+        "title": "CreateImportMerchantPosDataImportApi"
+      },
+      {
+        "id": "CreateImportProductPricesDataImportApi",
+        "title": "CreateImportProductPricesDataImportApi"
+      },
+      {
+        "id": "CreateImportProductImagesDataImportApi",
+        "title": "CreateImportProductImagesDataImportApi"
+      },
+      {
+        "id": "CreateImportProductsDataImportApi",
+        "title": "CreateImportProductsDataImportApi"
+      },
+      {
+        "id": "CreateRabbitmqImportProductOfferApi",
+        "title": "CreateRabbitmqImportProductOfferApi"
+      },
+      {
+        "id": "CreateImportProductCategoriesApi",
+        "title": "CreateImportProductCategoriesApi"
+      },
+      {
+        "id": "GetEmailExportRefundFinanceApi",
+        "title": "GetEmailExportRefundFinanceApi"
+      },
+      {
+        "id": "GetEmailReconciliationOrderItemApi",
+        "title": "GetEmailReconciliationOrderItemApi"
+      },
+      {
+        "id": "GetEmailReconciliationOrderApi",
+        "title": "GetEmailReconciliationOrderApi"
+      },
+      {
+        "id": "GetRabbitmqExportOrderApi",
+        "title": "GetRabbitmqExportOrderApi"
+      },
+      {
+        "id": "CreateImportMerchantPosApi",
+        "title": "CreateImportMerchantPosApi"
+      },
+      {
+        "id": "CreateImportProductPricesApi",
+        "title": "CreateImportProductPricesApi"
+      },
+      {
+        "id": "CreateImportProductImagesApi",
+        "title": "CreateImportProductImagesApi"
+      },
+      {
+        "id": "CreaterabbitmqimportProductOfferApi",
+        "title": "CreaterabbitmqimportProductOfferApi"
+      },
+      {
+        "id": "GetemailexportRefundFinanceApi",
+        "title": "GetemailexportRefundFinanceApi"
+      },
+      {
+        "id": "GetemailreconciliationOrderItemApi",
+        "title": "GetemailreconciliationOrderItemApi"
+      },
+      {
+        "id": "GetemailreconciliationOrderApi",
+        "title": "GetemailreconciliationOrderApi"
+      },
+      {
+        "id": "GetrabbitmqexportOrderApi",
+        "title": "GetrabbitmqexportOrderApi"
+      },
+      {
+        "id": "CreateIimportMerchantPosApi",
+        "title": "CreateIimportMerchantPosApi"
+      },
+      {
+        "id": "CreateIimportProductPricesApi",
+        "title": "CreateIimportProductPricesApi"
+      },
+      {
+        "id": "CreateIimportProductImagesApi",
+        "title": "CreateIimportProductImagesApi"
+      },
+      {
+        "id": "CreateIimportProductsApi",
+        "title": "CreateIimportProductsApi"
+      },
+      {
+        "id": "CreaterabbitmqimportproductOfferApi",
+        "title": "CreaterabbitmqimportproductOfferApi"
+      },
+      {
+        "id": "CreateimportProductCategoriesApi",
+        "title": "CreateimportProductCategoriesApi"
+      },
+      {
+        "id": "GetemailreconciliationorderItemApi",
+        "title": "GetemailreconciliationorderItemApi"
+      },
+      {
+        "id": "CreateimportMerchantPosApi",
+        "title": "CreateimportMerchantPosApi"
+      },
+      {
+        "id": "CreateimportProductPricesApi",
+        "title": "CreateimportProductPricesApi"
+      },
+      {
+        "id": "CreateimportProductImagesApi",
+        "title": "CreateimportProductImagesApi"
+      },
+      {
+        "id": "Createimport-productundefinedategoriesApi",
+        "title": "Createimport-productundefinedategoriesApi"
+      },
+      {
+        "id": "Createimport-merchantundefinedosApi",
+        "title": "Createimport-merchantundefinedosApi"
+      },
+      {
+        "id": "Createimport-productundefinedricesApi",
+        "title": "Createimport-productundefinedricesApi"
+      },
+      {
+        "id": "Createimport-productundefinedmagesApi",
+        "title": "Createimport-productundefinedmagesApi"
+      },
+      {
+        "id": "CreaterabbitmqimportproductundefinedfferApi",
+        "title": "CreaterabbitmqimportproductundefinedfferApi"
+      },
+      {
+        "id": "CreateimportundefinedroductundefinedategoriesApi",
+        "title": "CreateimportundefinedroductundefinedategoriesApi"
+      },
+      {
+        "id": "CreateimportundefinedategoriesApi",
+        "title": "CreateimportundefinedategoriesApi"
+      },
+      {
+        "id": "GetemailexportrefundundefinedinanceApi",
+        "title": "GetemailexportrefundundefinedinanceApi"
+      },
+      {
+        "id": "GetemailreconciliationorderundefinedtemApi",
+        "title": "GetemailreconciliationorderundefinedtemApi"
+      },
+      {
+        "id": "CreateimportundefinederchantundefinedosApi",
+        "title": "CreateimportundefinederchantundefinedosApi"
+      },
+      {
+        "id": "CreateimportundefinedroductundefinedricesApi",
+        "title": "CreateimportundefinedroductundefinedricesApi"
+      },
+      {
+        "id": "CreateimportundefinedroductundefinedmagesApi",
+        "title": "CreateimportundefinedroductundefinedmagesApi"
+      },
+      {
+        "id": "CreateimportundefinedroductsApi",
+        "title": "CreateimportundefinedroductsApi"
+      },
+      {
+        "id": "Createimport-categoriesApi",
+        "title": "Createimport-categoriesApi"
+      },
+      {
+        "id": "Getemailexportrefund-financeApi",
+        "title": "Getemailexportrefund-financeApi"
+      },
+      {
+        "id": "Createimport-productsApi",
+        "title": "Createimport-productsApi"
+      },
+      {
+        "id": "Createimport-ategoriesApi",
+        "title": "Createimport-ategoriesApi"
+      },
+      {
+        "id": "Getemailexportrefund-inanceApi",
+        "title": "Getemailexportrefund-inanceApi"
+      },
+      {
+        "id": "Createimport-roductsApi",
+        "title": "Createimport-roductsApi"
+      },
+      {
+        "id": "Createimport-ProductcategoriesApi",
+        "title": "Createimport-ProductcategoriesApi"
+      },
+      {
+        "id": "Createimport-CategoriesApi",
+        "title": "Createimport-CategoriesApi"
+      },
+      {
+        "id": "Getemailexportrefund-FinanceApi",
+        "title": "Getemailexportrefund-FinanceApi"
+      },
+      {
+        "id": "Createimport-MerchantposApi",
+        "title": "Createimport-MerchantposApi"
+      },
+      {
+        "id": "Createimport-ProductpricesApi",
+        "title": "Createimport-ProductpricesApi"
+      },
+      {
+        "id": "Createimport-ProductimagesApi",
+        "title": "Createimport-ProductimagesApi"
+      },
+      {
+        "id": "Createimport-ProductsApi",
+        "title": "Createimport-ProductsApi"
+      },
+      {
+        "id": "CreateimportP-productcategoriesApi",
+        "title": "CreateimportP-productcategoriesApi"
+      },
+      {
+        "id": "CreateimportC-categoriesApi",
+        "title": "CreateimportC-categoriesApi"
+      },
+      {
+        "id": "GetemailexportrefundF-financeApi",
+        "title": "GetemailexportrefundF-financeApi"
+      },
+      {
+        "id": "CreateimportM-merchantposApi",
+        "title": "CreateimportM-merchantposApi"
+      },
+      {
+        "id": "CreateimportP-productpricesApi",
+        "title": "CreateimportP-productpricesApi"
+      },
+      {
+        "id": "CreateimportP-productimagesApi",
+        "title": "CreateimportP-productimagesApi"
+      },
+      {
+        "id": "CreateimportP-productsApi",
+        "title": "CreateimportP-productsApi"
+      },
+      {
+        "id": "CreaterabbitmqimportproductofferApi",
+        "title": "CreaterabbitmqimportproductofferApi"
+      },
+      {
+        "id": "CreateimportProductcategoriesApi",
+        "title": "CreateimportProductcategoriesApi"
+      },
+      {
+        "id": "CreateimportCategoriesApi",
+        "title": "CreateimportCategoriesApi"
+      },
+      {
+        "id": "GetemailexportrefundFinanceApi",
+        "title": "GetemailexportrefundFinanceApi"
+      },
+      {
+        "id": "GetemailreconciliationorderitemApi",
+        "title": "GetemailreconciliationorderitemApi"
+      },
+      {
+        "id": "GetemailreconciliationorderApi",
+        "title": "GetemailreconciliationorderApi"
+      },
+      {
+        "id": "GetrabbitmqexportorderApi",
+        "title": "GetrabbitmqexportorderApi"
+      },
+      {
+        "id": "CreateimportMerchantposApi",
+        "title": "CreateimportMerchantposApi"
+      },
+      {
+        "id": "CreateimportProductpricesApi",
+        "title": "CreateimportProductpricesApi"
+      },
+      {
+        "id": "CreateimportProductimagesApi",
+        "title": "CreateimportProductimagesApi"
+      },
+      {
+        "id": "CreateimportProductsApi",
+        "title": "CreateimportProductsApi"
+      },
+      {
         "id": "DeleteCartsCartCodesApi",
         "title": "DeleteCartsCartCodesApi"
       },
@@ -84,28 +724,8 @@ const scenarios = [
         "title": "CreateCustomerFixtureApi"
       },
       {
-        "id": "CreateImportMerchant_posApi",
-        "title": "CreateImportMerchant_posApi"
-      },
-      {
         "id": "CreateImportCategoriesApi",
         "title": "CreateImportCategoriesApi"
-      },
-      {
-        "id": "CreateImportProduct_categoriesApi",
-        "title": "CreateImportProduct_categoriesApi"
-      },
-      {
-        "id": "CreateImportProduct_offersApi",
-        "title": "CreateImportProduct_offersApi"
-      },
-      {
-        "id": "CreateImportProduct_imagesApi",
-        "title": "CreateImportProduct_imagesApi"
-      },
-      {
-        "id": "CreateImportProduct_pricesApi",
-        "title": "CreateImportProduct_pricesApi"
       },
       {
         "id": "CreateImportProductsApi",

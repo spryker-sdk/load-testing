@@ -25,7 +25,7 @@ paths:
                         type: string
                 -
                     $ref: '#/components/parameters/acceptLanguage'
-            operationId: create-code-authorize
+            operationId: get-users
             responses:
                 200:
                     description: 'User data.'

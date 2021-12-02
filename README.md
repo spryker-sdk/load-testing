@@ -40,5 +40,35 @@ For *Glue API*:
 - `PdpApi` - request a random product detail page from fixtures
 
 
+## Tests generator based on Swagger .yaml files
+There's a tool for generating tests from Swagger .yaml files: for frontend API, backend API and data import API.
+
+You can put as many as you want files into directories: `tests-generator/swagger-config/frontend-api`, `tests-generator/swagger-config/backend-api` and `tests-generator/swagger-config/data-import-api`.
+
+You can provide default values to parameters/headers/body with `example` property.
+
+Also, to make a chain of requests you can use `prepareDataSteps` property. It uses already defined classes with requests. For example:
+```
+prepareDataSteps:
+    - CreateCustomer
+    - CreateAccessToken
+    - CreateCart
+    - AddToCart
+    - Checkout
+```
+
+From this example you can use `orderId` session variable in you next request in the chain because it will be saved to the gatling session from the class `CheckoutRequestApi`. All of them are stored in `resources/scenarios/spryker/requests`. You can create your own.
+
+### Run
+Front-end API:
+`npm run frontend-api-tests:generate`
+
+Back-end API:
+`npm run backend-api-tests:generate `
+
+Data import API:
+`npm run data-import-api-tests:generate`
+
+
 ## Links
 - [gatling.io](https://gatling.io)

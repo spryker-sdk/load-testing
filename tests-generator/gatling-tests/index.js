@@ -3,7 +3,7 @@ const fs = require('fs');
 
 const scenario = require('../scenario');
 
-exports.generate = (filePath) => {
+exports.generate = (filePath, type) => {
     const importFile = fs.readFileSync(filePath, 'utf8');
     const fileContent = yaml.parse(importFile);
 
@@ -11,7 +11,7 @@ exports.generate = (filePath) => {
         const schemas = fileContent.hasOwnProperty('components') && fileContent.components.hasOwnProperty('schemas')
             ? fileContent.components.schemas
             : {}
-        scenario.generateGatlingTestFile(endpoint, fileContent.paths[endpoint], schemas);
+        scenario.generateGatlingTestFile(endpoint, fileContent.paths[endpoint], schemas, type);
     }
 }
 

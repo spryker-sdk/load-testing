@@ -52,9 +52,9 @@ class CodeAuthorizeBackendApiRamp extends Simulation with CodeAuthorizeBackendAp
   override lazy val scenarioName = "Code Authorize Backend Api [Incremental]"
 
   setUp(scn.inject(
-      rampUsersPerSec(0) to (Scenario.targetRps.toDouble) during (Scenario.duration),
+      rampUsersPerSec(1) to (Scenario.targetRps.toDouble) during (Scenario.duration),
     ))
-    .throttle(reachRps(Scenario.targetRps) in (Scenario.duration))
+    .throttle(reachRps(Scenario.targetRps) in (Scenario.duration), holdFor(1 hour))
     .protocols(httpProtocol)
 }
 

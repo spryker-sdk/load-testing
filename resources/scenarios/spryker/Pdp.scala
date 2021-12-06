@@ -49,9 +49,9 @@ class PdpRamp extends Simulation with PdpBase {
   override lazy val scenarioName = "Pdp page [Incremental]"
 
   setUp(scn.inject(
-      rampUsersPerSec(0) to (Scenario.targetRps.toDouble) during (Scenario.duration),
+      rampUsersPerSec(1) to (Scenario.targetRps.toDouble) during (Scenario.duration),
     ))
-    .throttle(reachRps(Scenario.targetRps) in (Scenario.duration))
+    .throttle(reachRps(Scenario.targetRps) in (Scenario.duration), holdFor(1 hour))
     .protocols(httpProtocol)
 }
 

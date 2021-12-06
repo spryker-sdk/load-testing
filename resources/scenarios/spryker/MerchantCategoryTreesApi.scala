@@ -29,29 +29,32 @@ trait MerchantCategoryTreesApiBase {
 
   val httpProtocol = GlueProtocol.httpProtocol
 
+  val merchantsFeeder = csv("tests/_data/merchants.csv").random
+
   val request = http(scenarioName)
     .get("/merchant-category-trees")
-    .header("Merchant-Reference", "474-001")
+    .header("Merchant-Reference", "${merchant_reference}")
     .check(status.is(200))
 
   val scn = scenario(scenarioName)
+    .feed(merchantsFeeder)
     .exec(request)
 }
 
 class MerchantCategoryTreesApiRamp extends Simulation with MerchantCategoryTreesApiBase {
 
-  override lazy val scenarioName = "Catalog Search Product Offers API [Incremental]"
+  override lazy val scenarioName = "Merchant Category Trees API [Incremental]"
 
   setUp(scn.inject(
-      rampUsersPerSec(0) to (Scenario.targetRps.toDouble) during (Scenario.duration),
+      rampUsersPerSec(1) to (Scenario.targetRps.toDouble) during (Scenario.duration),
     ))
-    .throttle(reachRps(Scenario.targetRps) in (Scenario.duration))
+    .throttle(reachRps(Scenario.targetRps) in (Scenario.duration), holdFor(1 hour))
     .protocols(httpProtocol)
 }
 
 class MerchantCategoryTreesApiSteady extends Simulation with MerchantCategoryTreesApiBase {
 
-  override lazy val scenarioName = "Catalog Search Product Offers API [Steady RPS]"
+  override lazy val scenarioName = "Merchant Category Trees API [Steady RPS]"
 
   setUp(scn.inject(
       constantUsersPerSec(Scenario.targetRps.toDouble) during (Scenario.duration),

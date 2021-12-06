@@ -6,6 +6,10 @@ RUN apk apk update && apk add --no-cache bash npm curl git unzip g++ gcc libgcc 
 
 COPY . .
 
+RUN rm -rf ./gatling
+RUN rm -rf ./node_modules
+RUN rm -rf ./web/*
+
 ARG PORT=3000
 ARG HOST=0.0.0.0
 ARG APP_ENV=production

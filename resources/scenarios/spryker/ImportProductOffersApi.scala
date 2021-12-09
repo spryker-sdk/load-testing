@@ -23,13 +23,13 @@ import io.netty.util.CharsetUtil
 import java.nio.charset.Charset
 import io.gatling.core.akka._
 import scala.concurrent.duration._
-import spryker.GlueProtocol._
+import spryker.BackendApiProtocol._
 
 trait ImportProductOffersApiBase {
 
   lazy val scenarioName = "Import Product Offers Api"
 
-  val httpProtocol = GlueProtocol.httpProtocol
+  val httpProtocol = BackendApiProtocol.httpProtocol
 
   val basicAuthUsername = sys.env.getOrElse("BACKEND_API_USERNAME", "").toString
   val basicAuthPassword = sys.env.getOrElse("BACKEND_API_PASSWORD", "").toString

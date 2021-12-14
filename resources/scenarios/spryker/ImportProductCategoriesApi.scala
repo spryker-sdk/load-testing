@@ -34,7 +34,7 @@ trait ImportProductCategoriesApiBase {
   val basicAuthUsername = sys.env.getOrElse("BACKEND_API_USERNAME", "").toString
   val basicAuthPassword = sys.env.getOrElse("BACKEND_API_PASSWORD", "").toString
 
-  val feeder = csv("tests/_data/category_product_bind_bodies.csv").random
+  val feeder = csv("tests/_data/category_product_bind_bodies.csv")
 
   val addToCartRequest = http("Import Product Categories Api")
     .post("/import-product_categories")

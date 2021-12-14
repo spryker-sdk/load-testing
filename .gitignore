@@ -19,3 +19,11 @@ vendor/
 /tests/_data/product_image_bodies.csv
 /tests/_data/product_offer_bodies.csv
 /tests/_data/product_price_bodies.csv
+
+/tests/_data/category_bodies.csv
+/tests/_data/category_product_bind_bodies.csv
+/tests/_data/merchant_bodies.csv
+/tests/_data/product_bodies.csv
+/tests/_data/product_image_bodies.csv
+/tests/_data/product_offer_bodies.csv
+/tests/_data/product_price_bodies.csv

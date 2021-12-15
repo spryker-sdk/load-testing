@@ -13,6 +13,13 @@ const scenarios = [
     {
         title: 'Frontend API',
         tests: [
+            { id: 'ImportMerchantsApi', title: 'Import Merchants'},
+            { id: 'ImportCategoriesApi', title: 'Import Categories'},
+            { id: 'ImportProductsApi', title: 'Import Products'},
+            { id: 'ImportProductImagesApi', title: 'Import Product Images'},
+            { id: 'ImportProductPricesApi', title: 'Import Product Prices'},
+            { id: 'ImportProductOffersApi', title: 'Import Product Offers'},
+            { id: 'ImportProductCategoriesApi', title: 'Import Product Categories'},
             { id: 'AddItemToCartFullFlowApi', title: '[full flow]Add item to cart'},
             { id: 'AddItemToCartLessOrEqualFiftyItemsFullFlowApi', title: '[full flow]Add Item To Cart with <= 50 Items'},
             { id: 'CheckoutFullFlowApi', title: '[full flow]Checkout request'},

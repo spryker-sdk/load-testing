@@ -5,6 +5,7 @@ const {spawn} = require('child_process');
 const dateFormat = require('date-format');
 const rimraf = require("rimraf");
 const fastify = require('fastify')({logger: true});
+const dotenv = require("dotenv").config({ path: process.cwd() + '/.env' });
 const port = process.env.PORT || 3000;
 const host = process.env.HOST || '0.0.0.0';
 

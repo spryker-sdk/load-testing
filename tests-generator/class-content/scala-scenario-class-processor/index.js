@@ -14,7 +14,7 @@ exports.process = (className, method, data, parameters, requestBody) => {
         ? data.onlyPrepareDataSteps
         : false;
 
-    const classRequestSection = onlyPrepareDataSteps && preparationClasses.length > 0
+    const classRequestSection = onlyPrepareDataSteps && prepareDataSteps.length > 0
         ? ""
         : generateClassRequestSection(method, parameters, data, requestBody)
     generateScenarioCsvFeeders(csvFeederFiles);
@@ -22,7 +22,7 @@ exports.process = (className, method, data, parameters, requestBody) => {
         generateClassOpeningSection(className, scenarioName) +
         generateCsvFeedersDeclaration(csvFeederFiles) +
         classRequestSection +
-        generateClassScenarioSection(prepareDataSteps, csvFeederFiles) +
+        generateClassScenarioSection(prepareDataSteps, csvFeederFiles, onlyPrepareDataSteps) +
         generateClassClosingSection() +
         generateRampSteadyClassesSection(className, scenarioName);
 }
@@ -147,17 +147,21 @@ const generateScenarioCsvFeeders = (feeders) => {
     return scenarioCsvFeeders;
 }
 
-generateClassScenarioSection = (prepareDataSteps, csvFeederFiles) => {
+generateClassScenarioSection = (prepareDataSteps, csvFeederFiles, onlyPrepareDataSteps) => {
     let extraScenarios = "";
     const defaultClassScenarioSection = classScenarioSection();
     for (let preparationClass of prepareDataSteps) {
         extraScenarios += `    .exec(${preparationClass}.executeRequest)\n`;
     }
 
+    const defaultClassScenarioSectionEnd = onlyPrepareDataSteps && prepareDataSteps.length > 0
+        ? ""
+        : defaultClassScenarioSection.endWith
+
     return defaultClassScenarioSection.startWith +
         generateScenarioCsvFeeders(csvFeederFiles) +
         extraScenarios +
-        defaultClassScenarioSection.endWith;
+        defaultClassScenarioSectionEnd;
 }
 
 

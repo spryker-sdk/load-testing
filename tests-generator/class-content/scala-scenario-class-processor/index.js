@@ -13,13 +13,15 @@ exports.process = (className, method, data, parameters, requestBody) => {
     const onlyPrepareDataSteps = data.hasOwnProperty('onlyPrepareDataSteps')
         ? data.onlyPrepareDataSteps
         : false;
+
+    const classRequestSection = onlyPrepareDataSteps && preparationClasses.length > 0
+        ? ""
+        : generateClassRequestSection(method, parameters, data, requestBody)
     generateScenarioCsvFeeders(csvFeederFiles);
     return generateImportSection(prepareDataSteps) +
         generateClassOpeningSection(className, scenarioName) +
         generateCsvFeedersDeclaration(csvFeederFiles) +
-        onlyPrepareDataSteps && preparationClasses.length > 0
-            ? ""
-            : generateClassRequestSection(method, parameters, data, requestBody) +
+        classRequestSection +
         generateClassScenarioSection(prepareDataSteps, csvFeederFiles) +
         generateClassClosingSection() +
         generateRampSteadyClassesSection(className, scenarioName);

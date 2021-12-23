@@ -7,11 +7,14 @@ exports.process = (className, method, data, parameters, requestBody) => {
     const preparationClassesList = data.hasOwnProperty('prepareDataSteps')
         ? preparationClasses.get(data.prepareDataSteps)
         : [];
-
+    const csvFeederFiles = data.hasOwnProperty('csvFeederFiles')
+        ? data.csvFeederFiles
+        : [];
+    generateScenarioCsvFeeders(csvFeederFiles);
     return generateImportSection(preparationClassesList) +
         generateClassOpeningSection(className, scenarioName) +
-        generateClassRequestSection(method, parameters, data, requestBody) +
-        generateClassScenarioSection(preparationClassesList) +
+        generateClassRequestSection(method, parameters, data, requestBody, csvFeederFiles) +
+        generateClassScenarioSection(preparationClassesList, csvFeederFiles) +
         generateClassClosingSection() +
         generateRampSteadyClassesSection(className, scenarioName);
 }
@@ -69,7 +72,18 @@ getSuccessfulResponseCode = (responses) => {
     return responseCode;
 }
 
-generateClassRequestSection = (method, parameters, data, requestBody) => {
+const generateCsvFeedersDeclaration = (feeders) => {
+    let scenarioCsvFeeders = '';
+    if (feeders.length > 0) {
+        for (let feeder of feeders) {
+            scenarioCsvFeeders += "  val " + generateCsvFeederVariableName(feeder) + " = csv(\"" + feeder + "\").random\n";
+        }
+    }
+
+    return scenarioCsvFeeders;
+}
+
+generateClassRequestSection = (method, parameters, data, requestBody, csvFeeders) => {
     const successfulResponseCode = getSuccessfulResponseCode(data.responses)
     const defaultClassRequestSection = classRequestSection(method, parameters.path, successfulResponseCode);
     let extraRequestData = "";
@@ -86,7 +100,10 @@ generateClassRequestSection = (method, parameters, data, requestBody) => {
         extraRequestData += `    .body(StringBody("""${stringifiedRequestBody}"""))\n`;
     }
 
-    return defaultClassRequestSection.startWith + extraRequestData + defaultClassRequestSection.endWith;
+    return generateCsvFeedersDeclaration(csvFeeders) +
+        defaultClassRequestSection.startWith +
+        extraRequestData +
+        defaultClassRequestSection.endWith;
 }
 
 generateAccessTokenHeader = (securityData) => {
@@ -101,8 +118,6 @@ generateAccessTokenHeader = (securityData) => {
     return accessTokenHeader;
 }
 
-
-
 const classScenarioSection = () => {
     return {
         startWith: "  val scn = scenario(scenarioName)\n",
@@ -110,14 +125,32 @@ const classScenarioSection = () => {
     }
 }
 
-generateClassScenarioSection = (preparationClassesList) => {
+const generateCsvFeederVariableName = (feeder) => {
+    return feeder.split('/').pop().split('.').shift();
+}
+
+const generateScenarioCsvFeeders = (feeders) => {
+    let scenarioCsvFeeders = '';
+    if (feeders.length > 0) {
+        for (let feeder of feeders) {
+            scenarioCsvFeeders += "    .feed(" + generateCsvFeederVariableName(feeder) + ")\n";
+        }
+    }
+
+    return scenarioCsvFeeders;
+}
+
+generateClassScenarioSection = (preparationClassesList, csvFeederFiles) => {
     let extraScenarios = "";
     const defaultClassScenarioSection = classScenarioSection();
     for (let preparationClass of preparationClassesList) {
         extraScenarios += `    .exec(${preparationClass}.executeRequest)\n`;
     }
 
-    return defaultClassScenarioSection.startWith + extraScenarios + defaultClassScenarioSection.endWith;
+    return defaultClassScenarioSection.startWith +
+        generateScenarioCsvFeeders(csvFeederFiles) +
+        extraScenarios +
+        defaultClassScenarioSection.endWith;
 }
 
 

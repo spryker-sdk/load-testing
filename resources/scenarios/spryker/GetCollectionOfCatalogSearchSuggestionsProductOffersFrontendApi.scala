@@ -14,7 +14,7 @@ trait GetCollectionOfCatalogSearchSuggestionsProductOffersFrontendApiBase {
 
   val merchants = csv("tests/_data/merchants.csv").random
   val request = http(scenarioName)
-    .get("/catalog-search-suggestions-product-offers?merchantReference=474-001")
+    .get("/catalog-search-suggestions-product-offers?merchantReference=${merchant_reference}")
     .check(status.is(200))
 
   val scn = scenario(scenarioName)

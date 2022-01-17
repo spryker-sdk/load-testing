@@ -13,6 +13,8 @@ const scenarios = [
     {
         title: 'Frontend API',
         tests: [
+            { id: 'GetCollectionOfCustomersCartsFrontendApi', title: 'GetCollectionOfCustomersCartsFrontendApi'},
+            { id: 'GetCollectionOfCustomersOrdersFrontendApi', title: 'GetCollectionOfCustomersOrdersFrontendApi'},
             { id: 'GetCategoryNodesFrontendApi', title: 'Get Category Nodes'},
             { id: 'GetCollectionOfCartsCartMerchantTimeslotsFrontendApi', title: 'GetCollectionOfCartsCartMerchantTimeslotsFrontendApi'},
             { id: 'GetCollectionOfCartsDeliveryTimeslotsFrontendApi', title: 'GetCollectionOfCartsDeliveryTimeslotsFrontendApi'},

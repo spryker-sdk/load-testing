@@ -28,6 +28,7 @@ object CreateCustomerRequestApi {
     .header("Content-Type", "application/json")
     .body(StringBody("""{"data":{"type":"customers","attributes":{"firstName":"Paul","lastName":"Rosenberg","gender":"Male","salutation":"Mr","email":"${customerEmail}","password":"${password}","confirmPassword":"${password}","acceptedTerms":true}}}""")).asJson
     .check(status.is(201))
+    .check(jsonPath("$.data.id").saveAs("customerId"))
 
   val executeRequest = feed(feeder).exec(request)
 }

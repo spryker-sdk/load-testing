@@ -20,12 +20,14 @@ import io.gatling.core.Predef._
 import io.gatling.http.Predef._
 
 object CreateAccessTokenForExistingUserRequestApi {
+  val customersFeeder = csv("tests/_data/customer.csv").random
   val request = http("Access Token for existing user Request")
     .post("/access-tokens")
     .header("Content-Type", "application/json")
-    .body(StringBody("""{"data":{"type":"access-tokens","attributes":{"username":"spencor.hopkin@spryker.com","password":"change123"}}}""")).asJson
+    .body(StringBody("""{"data":{"type":"access-tokens","attributes":{"username":"${email}","password":"${password}"}}}""")).asJson
     .check(status.is(201))
     .check(jsonPath("$.data.attributes.accessToken").saveAs("access_token"))
+    .check(jsonPath("$.data.attributes.refreshToken").saveAs("refreshToken"))
 
-  val executeRequest = exec(request)
+  val executeRequest = feed(customersFeeder).exec(request)
 }

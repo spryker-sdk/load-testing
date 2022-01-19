@@ -37,6 +37,17 @@ trait LoadTestingCsvDemoDataLoaderTrait
             $demoData[] = array_combine($requiredFields, $data);
         }
 
+        $firstLine = getenv('FIXTURE_FIRST_LINE');
+        $lastLine = getenv('FIXTURE_LAST_LINE');
+
+        if ($firstLine !== false && $lastLine !== false) {
+            if (!is_numeric($firstLine) && !is_numeric($lastLine)) {
+                throw new \RuntimeException('[FIXTURE_FIRST_LINE] and [FIXTURE_LAST_LINE] must be numeric');
+            }
+
+            $demoData = array_slice($demoData, (int) $firstLine - 1, (int) $lastLine - (int) $firstLine + 1);
+        }
+
         return $demoData;
     }
 

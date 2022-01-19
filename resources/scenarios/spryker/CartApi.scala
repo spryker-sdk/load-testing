@@ -25,56 +25,56 @@ import spryker.Scenario._
 
 trait CartApiBase {
 
-  lazy val scenarioName = "Add to Cart Api"
+    lazy val scenarioName = "Add to Cart Api"
 
-  val httpProtocol = GlueProtocol.httpProtocol
-  val productFeeder = csv("tests/_data/product_concrete.csv").random
-  val customerFeeder = csv("tests/_data/customer.csv").random
+    val httpProtocol = GlueProtocol.httpProtocol
+    val productFeeder = csv("tests/_data/product_concrete.csv").random
+    val customerFeeder = csv("tests/_data/customer.csv").random
 
-  val getCartRequest = http("Get Cart Request")
-    .get("/carts")
-    .header("Authorization", "Bearer ${auth_token}")
-    .header("Content-Type", "application/json")
-    .check(status.is(200))
-    .check(jsonPath("$.data[0].id").saveAs("cart_uuid"))
+    val getCartRequest = http("Get Cart Request")
+        .get("/carts")
+        .header("Authorization", "Bearer ${auth_token}")
+        .header("Content-Type", "application/json")
+        .check(status.is(200))
+        .check(jsonPath("$.data[0].id").saveAs("cart_uuid"))
 
-  val addToCartRequest = http("Add to Cart Request")
-    .post("/carts/${cart_uuid}/items")
-    .body(StringBody("""{"data": {"type": "items", "attributes": {"sku": "${sku}", "quantity": 1}}}""")).asJson
-    .header("Authorization", "Bearer ${auth_token}")
-    .header("Content-Type", "application/json")
-    .check(status.is(201))
+    val addToCartRequest = http("Add to Cart Request")
+        .post("/carts/${cart_uuid}/items")
+        .body(StringBody("""{"data": {"type": "items", "attributes": {"sku": "${sku}", "quantity": 1}}}""")).asJson
+        .header("Authorization", "Bearer ${auth_token}")
+        .header("Content-Type", "application/json")
+        .check(status.is(201))
 
-  val scn = scenario(scenarioName)
-    .feed(customerFeeder)
-    .repeat(1) {
-      feed(productFeeder)
-      .exec(getCartRequest)
-      .exec(addToCartRequest)
-    }
+    val scn = scenario(scenarioName)
+        .feed(customerFeeder)
+        .repeat(1) {
+            feed(productFeeder)
+                .exec(getCartRequest)
+                .exec(addToCartRequest)
+        }
 }
 
 class CartApiRamp extends Simulation with CartApiBase {
 
-  override lazy val scenarioName = "Add to Cart Api [Incremental]"
+    override lazy val scenarioName = "Add to Cart Api [Incremental]"
 
-  setUp(scn.inject(
-      rampUsersPerSec(0) to (Scenario.targetRps.toDouble) during (Scenario.duration),
+    setUp(scn.inject(
+        rampUsersPerSec(0) to (Scenario.targetRps.toDouble) during (Scenario.duration),
     ))
-    .throttle(reachRps(Scenario.targetRps) in (Scenario.duration))
-    .protocols(httpProtocol)
+        .throttle(reachRps(Scenario.targetRps) in (Scenario.duration))
+        .protocols(httpProtocol)
 }
 
 class CartApiSteady extends Simulation with CartApiBase {
 
-  override lazy val scenarioName = "Add to Cart Api [Steady RPS]"
+    override lazy val scenarioName = "Add to Cart Api [Steady RPS]"
 
-  setUp(scn.inject(
-      constantUsersPerSec(Scenario.targetRps.toDouble) during (Scenario.duration),
+    setUp(scn.inject(
+        constantUsersPerSec(Scenario.targetRps.toDouble) during (Scenario.duration),
     ))
-    .throttle(
-      jumpToRps(Scenario.targetRps),
-      holdFor(Scenario.duration),
-    )
-    .protocols(httpProtocol)
+        .throttle(
+            jumpToRps(Scenario.targetRps),
+            holdFor(Scenario.duration),
+        )
+        .protocols(httpProtocol)
 }

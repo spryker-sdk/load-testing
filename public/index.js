@@ -172,6 +172,8 @@ fastify.post('/run', async (req, reply) => {
         + ` -DYVES_URL=${project.yves}`
         + ` -DGLUE_URL=${project.glue}`
         + ` -DDURATION=${duration}`
+        + ` -DFIXTURE_FIRST_LINE=${env.FIXTURE_FIRST_LINE}`
+        + ` -DFIXTURE_LAST_LINE=${env.FIXTURE_LAST_LINE}`
         + ` -DTARGET_RPS=${targetRps}`;
 
     description = description || '-';
@@ -307,7 +309,7 @@ const start = async () => {
     await readReports();
 
     try {
-        await fastify.listen(port);
+        await fastify.listen(port, "0.0.0.0");
         fastify.log.info(`server listening on ${fastify.server.address().port}`)
     } catch (err) {
         fastify.log.error(err);

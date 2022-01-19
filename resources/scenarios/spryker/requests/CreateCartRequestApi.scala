@@ -27,6 +27,7 @@ object CreateCartRequestApi {
     .body(StringBody("""{"data":{"type":"carts","attributes":{"priceMode":"NET_MODE","currency":"USD","store":"US","merchantReference":"474-001","merchantSelections":{"serviceType":"delivery","merchantFilterAddress":{"address1":"Kharkiv Ukraine","zipCode":"12345"}},"merchantTimeslot":{"merchantTimeslotId":1,"startTime":"2022-09-16","endTime":"2022-12-18","merchantTimeslotReservation":{"merchantTimeslotReservationId":1,"expirationDate":"2022:03:01-14:37:45"}}}}}""")).asJson
     .check(status.is(201))
     .check(jsonPath("$.data.id").saveAs("cartId"))
+    .check(header("ETag").saveAs("if_match_header"))
 
     val executeRequest = exec(request)
 }

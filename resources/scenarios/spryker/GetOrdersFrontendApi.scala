@@ -19,32 +19,28 @@ package spryker
 import io.gatling.core.Predef._
 import io.gatling.http.Predef._
 import scala.concurrent.duration._
-import scala.util.Random
-import spryker.FeProtocol._
+import spryker.GlueProtocol._
 import spryker.Scenario._
-import java.net.URL
+import spryker.CreateCheckoutRequestApi._
 
-trait CheckoutBase {
+trait GetOrdersFrontendApiBase {
+  lazy val scenarioName = "Retrieves order by id."
 
-  lazy val scenarioName = "Checkout page"
+  val httpProtocol = GlueProtocol.httpProtocol
 
-  val httpProtocol = FeProtocol.httpProtocol
-  val url = new URL(FeProtocol.baseUrl)
-  val hostName = url.getHost
-
-  val request = http(scenarioName)
-    .get("/checkout")
-    .header("Authorization", "Basic YWxkaTpsaWtlc2Nsb3Vk")
-    .header("Host", hostName)
+    val request = http(scenarioName)
+    .get("/orders/${order_reference}")
+    .header("Authorization", "Bearer ${access_token}")
     .check(status.is(200))
-
+  
   val scn = scenario(scenarioName)
+    .exec(CreateCheckoutRequestApi.executeRequest)
     .exec(request)
 }
 
-class CheckoutRamp extends Simulation with CheckoutBase {
+class GetOrdersFrontendApiRamp extends Simulation with GetOrdersFrontendApiBase {
 
-  override lazy val scenarioName = "Checkout page [Incremental]"
+  override lazy val scenarioName = "Retrieves order by id. [Incremental]"
 
   setUp(scn.inject(
       rampUsersPerSec(1) to (Scenario.targetRps.toDouble) during (Scenario.duration),
@@ -53,9 +49,9 @@ class CheckoutRamp extends Simulation with CheckoutBase {
     .protocols(httpProtocol)
 }
 
-class CheckoutSteady extends Simulation with CheckoutBase {
+class GetOrdersFrontendApiSteady extends Simulation with GetOrdersFrontendApiBase {
 
-  override lazy val scenarioName = "Checkout page [Steady RPS]"
+  override lazy val scenarioName = "Retrieves order by id. [Steady RPS]"
 
   setUp(scn.inject(
       constantUsersPerSec(Scenario.targetRps.toDouble) during (Scenario.duration),

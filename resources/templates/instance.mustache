@@ -13,6 +13,7 @@
             {title: "Instance", field: "key", headerFilter: "input"},
             {title: "Yves", field: "yves", headerFilter: "input"},
             {title: "Glue", field: "glue", headerFilter: "input"},
+            {title: "Fe API",      field: "fe_api",      headerFilter: "input"},
             {
                 formatter:  function (cell) {
                     return "<i class='fa fa-pencil-square-o' aria-hidden='true'></i>"
@@ -80,6 +81,12 @@
             <label>
                 Backend API Url:
                 <input name="backend_api" type="text" class="pure-input-1" value="{{selectedInstance.backend_api}}"/>
+            </label>
+        </div>
+        <div class="pure-control-group">
+            <label>
+                Fe API Url:
+                <input name="fe_api" type="text" class="pure-input-1" value="{{selectedInstance.fe_api}}"/>
             </label>
         </div>
     </fieldset>

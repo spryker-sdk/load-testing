@@ -20,7 +20,7 @@ import io.gatling.core.Predef._
 import io.gatling.http.Predef._
 import scala.concurrent.duration._
 import scala.util.Random
-import spryker.YvesProtocol._
+import spryker.FeProtocol._
 import spryker.Scenario._
 import java.net.URL
 
@@ -28,8 +28,8 @@ trait HomeBase {
 
   lazy val scenarioName = "Home page"
 
-  val httpProtocol = YvesProtocol.httpProtocol
-  val url = new URL(YvesProtocol.baseUrl)
+  val httpProtocol = FeProtocol.httpProtocol
+  val url = new URL(FeProtocol.baseUrl)
   val hostName = url.getHost
 
   val request = http(scenarioName)

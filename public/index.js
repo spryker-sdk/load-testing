@@ -172,6 +172,7 @@ fastify.post('/run', async (req, reply) => {
     env.JAVA_OPTS = (process.env.JAVA_OPTS || '')
         + ` -DYVES_URL=${project.yves}`
         + ` -DGLUE_URL=${project.glue}`
+        + ` -DFE_URL=${project.fe_api}`
         + ` -DBACKEND_API_URL=${project.backend_api}`
         + ` -DDURATION=${duration}`
         + ` -DTARGET_RPS=${targetRps}`;
@@ -242,6 +243,7 @@ fastify.post('/instances', (req, reply) => {
     let yves = req.body.yves;
     let glue = req.body.glue;
     let backendApi = req.body.backend_api;
+    let feApi = req.body.fe_api;
 
     if (key !== "") {
         let project = Object.assign({},
@@ -249,6 +251,7 @@ fastify.post('/instances', (req, reply) => {
             glue && {"glue": glue},
             key && {"key": key},
             backendApi && {"backend_api": backendApi},
+            feApi && {"fe_api": feApi},
         );
 
         instanceStore.set(key, project);

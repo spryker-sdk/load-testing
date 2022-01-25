@@ -19,32 +19,38 @@ package spryker
 import io.gatling.core.Predef._
 import io.gatling.http.Predef._
 import scala.concurrent.duration._
-import spryker.CreateCheckoutRequestApi._
+import scala.util.Random
+import spryker.GlueProtocol._
 import spryker.Scenario._
-import io.gatling.core.feeder._
 
-trait CreateCheckoutFrontendApiBase {
+trait GetCollectionOfReturnsApiBase {
 
-lazy val scenarioName = "Checkout Full Flow Api"
+  lazy val scenarioName = "Retrieves list of returns"
 
-val scn = scenario(scenarioName)
-  .exec(CreateCheckoutRequestApi.executeRequest)
+  val httpProtocol = GlueProtocol.httpProtocol
+
+  val request = http(scenarioName)
+    .get("/returns")
+    .check(status.is(200))
+
+  val scn = scenario(scenarioName)
+    .exec(request)
 }
 
-class CreateCheckoutFrontendApiRamp extends Simulation with CreateCheckoutFrontendApiBase {
+class GetCollectionOfReturnsApiRamp extends Simulation with GetCollectionOfReturnsApiBase {
 
-  override lazy val scenarioName = "Checkout Full Flow Api [Incremental]"
+  override lazy val scenarioName = "Retrieves list of returns [Incremental]"
 
-  setUp(scn.inject(       
+  setUp(scn.inject(
       rampUsersPerSec(1) to (Scenario.targetRps.toDouble) during (Scenario.duration),
     ))
-    .throttle(reachRps(Scenario.targetRps) in (30), holdFor(1 hour))
+    .throttle(reachRps(Scenario.targetRps) in (Scenario.duration), holdFor(1 hour))
     .protocols(httpProtocol)
 }
 
-class CreateCheckoutFrontendApiSteady extends Simulation with CreateCheckoutFrontendApiBase {
+class GetCollectionOfReturnsApiSteady extends Simulation with GetCollectionOfReturnsApiBase {
 
-  override lazy val scenarioName = "Checkout Full Flow Api [Steady RPS]"
+  override lazy val scenarioName = "Retrieves list of returns [Steady RPS]"
 
   setUp(scn.inject(
       constantUsersPerSec(Scenario.targetRps.toDouble) during (Scenario.duration),

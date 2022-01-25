@@ -7,32 +7,25 @@ import spryker.GlueProtocol._
 import spryker.Scenario._
 import spryker.CreateAccessTokenForExistingUserRequestApi._
 
-trait CreateRefreshTokensFrontendApiBase {
+trait DeleteRefreshTokensFrontendApiBase {
 
-  lazy val scenarioName = "Refreshes customer's auth token."
+  lazy val scenarioName = "Revokes customer's refresh token."
 
   val httpProtocol = GlueProtocol.httpProtocol
 
   val request = http(scenarioName)
-    .post("/refresh-tokens")
-    .body(StringBody("""{
-  "data": {
-    "type": "refresh-tokens",
-    "attributes": {
-      "refreshToken": "${refresh_token}"
-    }
-  }
-}"""))
-    .check(status.is(201))
+    .delete("/refresh-tokens/${refresh_token}")
+    .header("Authorization", "Bearer ${access_token}")
+    .check(status.is(204))
 
   val scn = scenario(scenarioName)
     .exec(CreateAccessTokenForExistingUserRequestApi.executeRequest)
     .exec(request)
   }
 
-class CreateRefreshTokensFrontendApiRamp extends Simulation with CreateRefreshTokensFrontendApiBase {
+class DeleteRefreshTokensFrontendApiRamp extends Simulation with DeleteRefreshTokensFrontendApiBase {
 
-  override lazy val scenarioName = "Refreshes customer's auth token. [Incremental]"
+  override lazy val scenarioName = "Revokes customer's refresh token. [Incremental]"
 
   setUp(scn.inject(
       rampUsersPerSec(1) to (Scenario.targetRps.toDouble) during (Scenario.duration),
@@ -41,9 +34,9 @@ class CreateRefreshTokensFrontendApiRamp extends Simulation with CreateRefreshTo
     .protocols(httpProtocol)
 }
 
-class CreateRefreshTokensFrontendApiSteady extends Simulation with CreateRefreshTokensFrontendApiBase {
+class DeleteRefreshTokensFrontendApiSteady extends Simulation with DeleteRefreshTokensFrontendApiBase {
 
-  override lazy val scenarioName = "Refreshes customer's auth token. [Steady RPS]"
+  override lazy val scenarioName = "Revokes customer's refresh token. [Steady RPS]"
 
   setUp(scn.inject(
       constantUsersPerSec(Scenario.targetRps.toDouble) during (Scenario.duration),

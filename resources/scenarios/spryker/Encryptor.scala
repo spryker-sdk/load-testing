@@ -36,11 +36,11 @@ object Encryptor {
 
     def getNotificationHash(chargetotal: String, currency: String, txndatetime: String, storename: String, approval_code:String): String = {
         val toBeHashedString = chargetotal + "|" + currency + "|" + txndatetime + "|" + storename + "|" + approval_code;
-        generateHMAC(toBeHashedString, feSalt);
+        generateHMAC(feSalt, toBeHashedString);
     }
 
     def getCustomPropHash(oid: String, storename: String, currency: String, chargetotal: String, customParam_SuccessFeUrl: String, customParam_FailureFeUrl: String): String = {
         val toBeHashedString2 = oid + "|" + storename + "|" + currency + "|" + chargetotal + "|" + customParam_SuccessFeUrl + "|" + customParam_FailureFeUrl;
-        generateHMAC(toBeHashedString2, feSalt);
+        generateHMAC(feSalt, toBeHashedString2);
     }
 }

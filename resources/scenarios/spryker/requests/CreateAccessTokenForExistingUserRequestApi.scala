@@ -27,7 +27,7 @@ object CreateAccessTokenForExistingUserRequestApi {
     .body(StringBody("""{"data":{"type":"access-tokens","attributes":{"username":"${email}","password":"${password}"}}}""")).asJson
     .check(status.is(201))
     .check(jsonPath("$.data.attributes.accessToken").saveAs("access_token"))
-    .check(jsonPath("$.data.attributes.refreshToken").saveAs("refreshToken"))
+    .check(jsonPath("$.data.attributes.refreshToken").saveAs("refresh_token"))
 
   val executeRequest = feed(customersFeeder).exec(request)
 }

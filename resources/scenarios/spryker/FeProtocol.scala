@@ -25,8 +25,8 @@ object FeProtocol {
 
   require(!baseUrl.isEmpty, s"FE_URL ($baseUrl) must be not empty")
 
-  val successFeUrl = baseUrl + "/srv/checkout-summary"
-  val failureFeUrl = baseUrl + "/srv/failure"
+  val successFeUrl = "https://vue.us.dev.commerce.ci-aldi.com/srv/checkout-summary"
+  val failureFeUrl = "https://vue.us.dev.commerce.ci-aldi.com/srv/failure"
 
   val httpProtocol = http
     .baseUrl(baseUrl)

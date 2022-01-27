@@ -45,7 +45,7 @@ class GetOrdersFrontendApiRamp extends Simulation with GetOrdersFrontendApiBase 
   setUp(scn.inject(
       rampUsersPerSec(1) to (Scenario.targetRps.toDouble) during (Scenario.duration),
     ))
-    .throttle(reachRps(Scenario.targetRps) in (Scenario.duration), holdFor(1 hour))
+    .throttle(reachRps(Scenario.targetRps) in (30), holdFor(1 hour))
     .protocols(httpProtocol)
 }
 

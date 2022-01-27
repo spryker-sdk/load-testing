@@ -28,14 +28,6 @@ trait GetCustomerPaymentMethodsFrontendApiBase {
   val scn = scenario(scenarioName)
     .exec(CreateCheckoutRequestApi.executeRequest)
     .exec(customerPaymentMethodsRequest)
-      .exec(session => {
-      println("customerPaymentMethodsRequest")
-      println(session("customerPaymentMethodsRequest").as[String])
-      println("customer_payment_method_id")
-      println(session("customer_payment_method_id").as[String])
-      session
-    })
-    // .exec(request)
   }
 
 class GetCustomerPaymentMethodsFrontendApiRamp extends Simulation with GetCustomerPaymentMethodsFrontendApiBase {
@@ -43,9 +35,9 @@ class GetCustomerPaymentMethodsFrontendApiRamp extends Simulation with GetCustom
   override lazy val scenarioName = "Retrieves customer payment method by id. [Incremental]"
 
   setUp(scn.inject(
-      rampUsersPerSec(1) to (Scenario.targetRps.toDouble) during (3),
+      rampUsersPerSec(1) to (Scenario.targetRps.toDouble) during (Scenario.duration),
     ))
-    .throttle(reachRps(Scenario.targetRps) in (3), holdFor(1 hour))
+    .throttle(reachRps(Scenario.targetRps) in (30), holdFor(1 hour))
     .protocols(httpProtocol)
 }
 
@@ -54,11 +46,11 @@ class GetCustomerPaymentMethodsFrontendApiSteady extends Simulation with GetCust
   override lazy val scenarioName = "Retrieves customer payment method by id. [Steady RPS]"
 
   setUp(scn.inject(
-      constantUsersPerSec(Scenario.targetRps.toDouble) during (3),
+      constantUsersPerSec(Scenario.targetRps.toDouble) during (Scenario.duration),
     ))
     .throttle(
       jumpToRps(Scenario.targetRps),
-      holdFor(3),
+      holdFor(Scenario.duration),
     )
     .protocols(httpProtocol)
 }

@@ -49,19 +49,23 @@ object CreateCheckoutRequestApi {
 
   val productConcreteFeeder = csv("tests/_data/product_concrete.csv").random
 
-  val feeder = Iterator.continually(Map("customerEmail" -> (Random.alphanumeric.take(30).mkString + "@gmail.com"), "password" -> "supe!rsEcu1re"))
+  val feeder = Iterator.continually(Map(
+    "customer_email" -> (Random.alphanumeric.take(30).mkString + "@gmail.com"), 
+    "password" -> "supe!rsEcu1re", 
+    "payment_token" -> (Random.alphanumeric.take(8).mkString.toUpperCase() + "-" + Random.alphanumeric.take(4).mkString.toUpperCase() + "-" + Random.alphanumeric.take(4).mkString.toUpperCase() + "-" + Random.alphanumeric.take(4).mkString.toUpperCase() + "-" + Random.alphanumeric.take(12).mkString.toUpperCase())
+  ))
 
   val createCustomerRequest = http("Create Customer Request")
     .post("/customers")
     .header("Content-Type", "application/json")
-    .body(StringBody("""{"data":{"type":"customers","attributes":{"firstName":"Paul","lastName":"Rosenberg","gender":"Male","salutation":"Mr","email":"${customerEmail}","password":"${password}","confirmPassword":"${password}","acceptedTerms":true}}}""")).asJson
+    .body(StringBody("""{"data":{"type":"customers","attributes":{"firstName":"Paul","lastName":"Rosenberg","gender":"Male","salutation":"Mr","email":"${customer_email}","password":"${password}","confirmPassword":"${password}","acceptedTerms":true}}}""")).asJson
     .check(status.is(201))
     .check(jsonPath("$.data.id").saveAs("customer_id"))
 
   val accessTokenRequest = http("Access Token Request")
     .post("/access-tokens")
     .header("Content-Type", "application/json")
-    .body(StringBody("""{"data":{"type":"access-tokens","attributes":{"username":"${customerEmail}","password":"${password}"}}}""")).asJson
+    .body(StringBody("""{"data":{"type":"access-tokens","attributes":{"username":"${customer_email}","password":"${password}"}}}""")).asJson
     .check(status.is(201))
     .check(jsonPath("$.data.attributes.accessToken").saveAs("access_token"))
 
@@ -69,7 +73,7 @@ object CreateCheckoutRequestApi {
     .post("/carts")
     .header("Authorization", "Bearer ${access_token}")
     .header("Content-Type", "application/json")
-    .body(StringBody("""{"data":{"type":"carts","attributes":{"priceMode":"NET_MODE","currency":"USD","store":"US","merchantReference":"${merchant_reference}","merchantSelections":{"serviceType":"delivery","merchantFilterAddress":{"address1":"Kharkiv Ukraine","zipCode":"12345"}},"merchantTimeslot":{"merchantTimeslotId":"${merchant_timeslot_id}","startTime":"2022-09-16","endTime":"2022-12-18","merchantTimeslotReservation":{"merchantTimeslotReservationId":1,"expirationDate":"2022:03:01-14:37:45"}}}}}""")).asJson
+    .body(StringBody("""{"data":{"type":"carts","attributes":{"priceMode":"NET_MODE","currency":"USD","store":"US","merchantReference":"${merchant_reference}","merchantSelections":{"serviceType":"pickup","merchantFilterAddress":{"address1":"Kharkiv Ukraine","zipCode":"12345"}},"merchantTimeslot":{"merchantTimeslotId":"${merchant_timeslot_id}","startTime":"2022-09-16","endTime":"2022-12-18","merchantTimeslotReservation":{"merchantTimeslotReservationId":1,"expirationDate":"2022:03:01-14:37:45"}}}}}""")).asJson
     .check(status.is(201))
     .check(jsonPath("$.data.id").saveAs("cart_id"))
     .check(header("ETag").saveAs("if_match_header"))
@@ -99,7 +103,7 @@ object CreateCheckoutRequestApi {
 
   val checkoutDataRequest = http("Checkout First Data Request")
     .post("/checkout-data")
-    .body(StringBody("""{"data":{"type":"checkout-data","attributes":{"customer":{"salutation":"Mr","email":"${customerEmail}","firstName":"name","lastName":"name"},"idCart":"${cart_id}","cartNote":"this is cart note","billingAddress":{"salutation":"Mr","firstName":"John","lastName":"Doe","address1":"billing","address2":"b","address3":"aaa","zipCode":"12312","city":"Huston","country":"USA","iso2Code":"US","phone":"1234567890","regionIso2Code":"US-IL"},"payments":[{"paymentMethodName":"firstDataCreditCard","paymentProviderName":"firstData"}],"shipment":{"idShipmentMethod":2}}}}"""))
+    .body(StringBody("""{"data":{"type":"checkout-data","attributes":{"customer":{"salutation":"Mr","email":"${customer_email}","firstName":"name","lastName":"name"},"idCart":"${cart_id}","cartNote":"this is cart note","billingAddress":{"salutation":"Mr","firstName":"John","lastName":"Doe","address1":"billing","address2":"b","address3":"aaa","zipCode":"12312","city":"Huston","country":"USA","iso2Code":"US","phone":"1234567890","regionIso2Code":"US-IL"},"payments":[{"paymentMethodName":"firstDataCreditCard","paymentProviderName":"firstData"}],"shipment":{"idShipmentMethod":2}}}}"""))
     .header("Authorization", "Bearer ${access_token}")
     .header("Content-Type", "application/json")
     .check(status.is(200))
@@ -137,7 +141,12 @@ object CreateCheckoutRequestApi {
         .formParam("terminal_id", "1609839")
         .formParam("endpointTransactionId", "908035")
         .formParam("processor_response_code", "00")
-        .formParam("hosteddataid", "3E3C8F77-48A4-4EDB-A2E5-A3FB8C697F09")
+        .formParam("hosteddataid", session => {
+           println("payment_token:")
+        println(session("payment_token").as[String])
+
+        session
+      })
         .formParam("associationResponseCode", "000")
         .formParam("processor_network_information", "VISA")
         .formParam("schemeTransactionId", "011111818998118")
@@ -157,9 +166,9 @@ object CreateCheckoutRequestApi {
         .formParam("bcity", "Eberstalzell")
         .formParam("bstate", "NY")
         .formParam("bcountry", "AT")
-        .formParam("customerid", session => session("customer_id").as[String])
+        .formParam("customerid", "customerID-1")
         .formParam("phone", "1234567890")
-        .formParam("email", session => session("customerEmail").as[String])
+        .formParam("email", session => session("customer_email").as[String])
         .formParam("refnumber", "84561642903 ")
         .formParam("cardnumber", "value=\"(VISA) ... 7777\"")
         .formParam("ccbrand", "VISA")
@@ -181,9 +190,10 @@ object CreateCheckoutRequestApi {
 
   val checkoutRequest = http("Checkout Full Flow Api")
     .post("/checkout")
-    .body(StringBody("""{"data":{"type":"checkout","attributes":{"customer":{"salutation":"Mr","email":"${customerEmail}","firstName":"name","lastName":"name","phone":"1234567890", "dateOfBirth": "1980-10-23"},"idCart":"${cart_id}","cartNote":"this is cart note","billingAddress":{"salutation":"Mr","firstName":"John","lastName":"Doe","address1":"billing","address2":"b","address3":"aaa","zipCode":"32836","city":"Huston","country":"USA","iso2Code":"US","phone":"1234567890","regionIso2Code":"US-IL"},"shipment":{"idShipmentMethod":2},"payments":[{"paymentMethodName":"firstDataCreditCard","paymentProviderName":"firstData","savePaymentMethod":true}],"shippingAddress":{"salutation":"Mr","firstName":"John","lastName":"Doe","address1":"not used","address2":"b","address3":"aaa","zipCode":"32836","city":"Chicago","country":"USA","iso2Code":"US","phone":"1234567890"}}}}""")).asJson
+    .body(StringBody("""{"data":{"type":"checkout","attributes":{"customer":{"salutation":"Mr","email":"sonia@spryker.com","firstName":"name","lastName":"name","phone":"1234567890","dateOfBirth": "1980-10-23"},"idCart":"${cart_id}","cartNote":"this is cart note","billingAddress":{"salutation":"Mr","firstName":"John","lastName":"Doe","address1":"billing","address2":"b","address3":"aaa","zipCode":"32836","city":"Huston","country":"USA","iso2Code":"US","phone":"1234567890","regionIso2Code":"US-IL"},"shipment":{"idShipmentMethod":2},"payments":[{"paymentMethodName":"firstDataCreditCard","paymentProviderName":"firstData","savePaymentMethod":true}],"shippingAddress":{"salutation":"Mr","firstName":"John","lastName":"Doe","address1":"not used","address2":"b","address3":"aaa","zipCode":"32836","city":"Chicago","country":"USA","iso2Code":"US","phone":"1234567890"}}}}""")).asJson
     .header("Authorization", "Bearer ${access_token}")
     .header("Content-Type", "application/json")
+    .check(status.saveAs("checkout_status"))
     .check(status.is(201))
     .check(jsonPath("$.data.attributes.orderReference").saveAs("order_reference"))
     .check(bodyString.saveAs("checkoutRequestResponse"))
@@ -200,5 +210,16 @@ object CreateCheckoutRequestApi {
     .exec(merchantTimeslotReservationsRequest)
     .exec(checkoutDataRequest)
     .exec(serverToServerNotificationRequest)
+    .pause(3)
     .exec(checkoutRequest)
+    .doIfEquals("${checkout_status}", "422") {
+      exec(serverToServerNotificationRequest)
+      .exec(checkoutRequest)
+    }
+    .exec(session => {
+      println("checkout_status")
+      println(session("checkout_status").as[String])
+      println(session("checkoutRequestResponse").as[String])
+      session
+    })
 }

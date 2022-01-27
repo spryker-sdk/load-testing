@@ -58,9 +58,9 @@ class CreateInstacartCallbacksFrontendApiRamp extends Simulation with CreateInst
   override lazy val scenarioName = "Process callback from the Instacart. [Incremental]"
 
   setUp(scn.inject(
-      rampUsersPerSec(1) to (Scenario.targetRps.toDouble) during (5),
+      rampUsersPerSec(1) to (Scenario.targetRps.toDouble) during (Scenario.duration),
     ))
-    .throttle(reachRps(Scenario.targetRps) in (5), holdFor(1 hour))
+    .throttle(reachRps(Scenario.targetRps) in (30), holdFor(1 hour))
     .protocols(httpProtocol)
 }
 
@@ -69,11 +69,11 @@ class CreateInstacartCallbacksFrontendApiSteady extends Simulation with CreateIn
   override lazy val scenarioName = "Process callback from the Instacart. [Steady RPS]"
 
   setUp(scn.inject(
-      constantUsersPerSec(Scenario.targetRps.toDouble) during (5),
+      constantUsersPerSec(Scenario.targetRps.toDouble) during (Scenario.duration),
     ))
     .throttle(
       jumpToRps(Scenario.targetRps),
-      holdFor(5),
+      holdFor(Scenario.duration),
     )
     .protocols(httpProtocol)
 }

@@ -14,7 +14,7 @@ trait GetCollectionOfConcreteProductsProductOffersFrontendApiBase {
 
   val product_concrete = csv("tests/_data/product_concrete.csv").random
   val request = http(scenarioName)
-    .get("/concrete-products/${sku}/product-offers?merchantReference=474-001&include=merchants")
+    .get("/concrete-products/${sku}/product-offers?merchantReference=${merchant_reference}&include=merchants")
     .check(status.is(200))
 
   val scn = scenario(scenarioName)

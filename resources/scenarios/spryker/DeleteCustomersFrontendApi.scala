@@ -20,6 +20,7 @@ trait DeleteCustomersFrontendApiBase {
 
   val scn = scenario(scenarioName)
     .exec(CreateCustomerRequestApi.executeRequest)
+    .exec(CreateAccessTokenRequestApi.executeRequest)
     .exec(request)
   }
 

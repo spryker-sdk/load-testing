@@ -5,6 +5,7 @@ import io.gatling.http.Predef._
 import scala.concurrent.duration._
 import spryker.GlueProtocol._
 import spryker.Scenario._
+import spryker.CreateCheckoutRequestApi._
 
 trait GetCollectionOfOrdersFrontendApiBase {
 
@@ -18,7 +19,7 @@ trait GetCollectionOfOrdersFrontendApiBase {
     .check(status.is(200))
 
   val scn = scenario(scenarioName)
-    .exec(CreateAccessTokenForExistingUserRequestApi.executeRequest)
+    .exec(CreateCheckoutRequestApi.executeRequest)
     .exec(request)
   }
 

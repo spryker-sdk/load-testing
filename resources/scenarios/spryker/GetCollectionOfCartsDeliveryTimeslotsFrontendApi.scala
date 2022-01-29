@@ -15,12 +15,15 @@ trait GetCollectionOfCartsDeliveryTimeslotsFrontendApiBase {
 
   val httpProtocol = GlueProtocol.httpProtocol
 
+  val merchantsFeeder = csv("tests/_data/merchants.csv").random
+
   val request = http(scenarioName)
-    .get("/carts/${cartId}/delivery-timeslots")
+    .get("/carts/${cartId}/delivery-timeslots?merchantReference=${merchant_reference}")
     .header("Authorization", "Bearer ${access_token}")
     .check(status.is(200))
 
   val scn = scenario(scenarioName)
+    .feed(merchantsFeeder)
     .exec(CreateCustomerRequestApi.executeRequest)
     .exec(CreateAccessTokenRequestApi.executeRequest)
     .exec(CreateCartRequestApi.executeRequest)

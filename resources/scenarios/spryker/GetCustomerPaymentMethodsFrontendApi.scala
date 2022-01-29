@@ -28,6 +28,7 @@ trait GetCustomerPaymentMethodsFrontendApiBase {
   val scn = scenario(scenarioName)
     .exec(CreateCheckoutRequestApi.executeRequest)
     .exec(customerPaymentMethodsRequest)
+    .exec(request)
   }
 
 class GetCustomerPaymentMethodsFrontendApiRamp extends Simulation with GetCustomerPaymentMethodsFrontendApiBase {

@@ -31,20 +31,22 @@ trait ImportProductImagesApiBase {
 
   val httpProtocol = BackendApiProtocol.httpProtocol
 
-  val basicAuthUsername = sys.env.getOrElse("BACKEND_API_USERNAME", "").toString
-  val basicAuthPassword = sys.env.getOrElse("BACKEND_API_PASSWORD", "").toString
-
   val feeder = csv("tests/_data/product_image_bodies.csv").circular
 
-  val addToCartRequest = http("Import Product Images Api")
+  var request = http(scenarioName)
     .post("/import-product_images")
     .body(StringBody("""${payload}""")).asJson
-    .basicAuth(basicAuthUsername, basicAuthPassword)
     .check(status.is(200))
+
+  if (!BackendApiProtocol.instanceName.isEmpty &&
+      !BackendApiProtocol.basicAuthUsername.isEmpty &&
+      !BackendApiProtocol.basicAuthPassword.isEmpty) {
+      request = request.basicAuth(BackendApiProtocol.basicAuthUsername, BackendApiProtocol.basicAuthPassword)
+  }
 
   val scn = scenario(scenarioName)
   .feed(feeder)
-  .exec(addToCartRequest)
+  .exec(request)
 }
 
 class ImportProductImagesApiRamp extends Simulation with ImportProductImagesApiBase {

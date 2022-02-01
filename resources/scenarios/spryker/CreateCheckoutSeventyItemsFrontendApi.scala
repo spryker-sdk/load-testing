@@ -19,41 +19,32 @@ package spryker
 import io.gatling.core.Predef._
 import io.gatling.http.Predef._
 import scala.concurrent.duration._
-import scala.util.Random
-import spryker.BackendApiProtocol._
+import spryker.CreateCheckoutRequestSeventyItemsApi._
 import spryker.Scenario._
+import io.gatling.core.feeder._
 
-trait TokenBackendApiBase {
+trait CreateCheckoutSeventyItemsFrontendApiBase {
 
-  lazy val scenarioName = "Token Backend Api"
+lazy val scenarioName = "Checkout with 70 items Full Flow Api"
 
-  val httpProtocol = BackendApiProtocol.httpProtocol
-
-  val tokenRequest = http(scenarioName)
-    .post("/token")
-    .formParam("grantType", "client_credentials")
-    .formParam("client_id", "01a7afdeff08543006f109184b733912")
-    .formParam("clientSecret", "instacart-password")
-    .check(status.is(200))
-
-  val scn = scenario(scenarioName)
-    .exec(tokenRequest)
+val scn = scenario(scenarioName)
+  .exec(CreateCheckoutRequestSeventyItemsApi.executeRequest)
 }
 
-class TokenBackendApiRamp extends Simulation with TokenBackendApiBase {
+class CreateCheckoutSeventyItemsFrontendApiRamp extends Simulation with CreateCheckoutSeventyItemsFrontendApiBase {
 
-  override lazy val scenarioName = "Token Backend Api [Incremental]"
+  override lazy val scenarioName = "Checkout with 70 items Full Flow Api [Incremental]"
 
-  setUp(scn.inject(
+  setUp(scn.inject(       
       rampUsersPerSec(1) to (Scenario.targetRps.toDouble) during (Scenario.duration),
     ))
-    .throttle(reachRps(Scenario.targetRps) in (Scenario.duration), holdFor(1 hour))
+    .throttle(reachRps(Scenario.targetRps) in (30), holdFor(1 hour))
     .protocols(httpProtocol)
 }
 
-class TokenBackendApiSteady extends Simulation with TokenBackendApiBase {
+class CreateCheckoutSeventyItemsFrontendApiSteady extends Simulation with CreateCheckoutSeventyItemsFrontendApiBase {
 
-  override lazy val scenarioName = "Token Backend Api [Steady RPS]"
+  override lazy val scenarioName = "Checkout with 70 items Full Flow Api [Steady RPS]"
 
   setUp(scn.inject(
       constantUsersPerSec(Scenario.targetRps.toDouble) during (Scenario.duration),

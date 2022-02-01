@@ -18,38 +18,36 @@ package spryker
 
 import io.gatling.core.Predef._
 import io.gatling.http.Predef._
+import io.netty.handler.codec.http._
+import io.netty.util.CharsetUtil
+import java.nio.charset.Charset
+import io.gatling.core.akka._
 import scala.concurrent.duration._
-import scala.util.Random
 import spryker.BackendApiProtocol._
-import spryker.Scenario._
 
-trait CodeAuthorizeBackendApiBase {
+trait ImportHealthCheckApiBase {
 
-  lazy val scenarioName = "Code Authorize Backend Api"
+  lazy val scenarioName = "Import Health Check Api"
 
   val httpProtocol = BackendApiProtocol.httpProtocol
-  val customersFeeder = csv("tests/_data/customer.csv").random
 
-  val codeAuthorizeRequest = http(scenarioName)
-    .post("/code-authorize")
-    .formParam("username", "${email}")
-    .formParam("password", "${password}")
-    .formParam("grantType", "authorization_code_backend")
-    .formParam("response_type", "code")
-    .formParam("client_id", "picking_api")
-    .formParam("code_challenge_method", "S256")
-    .formParam("code_challenge", "YLElACP9cTwgsCUc1UdGUnes1VNwSmtK1rMC0GfZMK4")
-    .formParam("redirect_uri", "http://url/")
-    .check(status.is(201))
+  var request = http(scenarioName)
+    .post("/import-health_check")
+    .check(status.is(200))
+
+  if (!BackendApiProtocol.instanceName.isEmpty &&
+      !BackendApiProtocol.basicAuthUsername.isEmpty &&
+      !BackendApiProtocol.basicAuthPassword.isEmpty) {
+      request = request.basicAuth(BackendApiProtocol.basicAuthUsername, BackendApiProtocol.basicAuthPassword)
+  }
 
   val scn = scenario(scenarioName)
-    .feed(customersFeeder)
-    .exec(codeAuthorizeRequest)
+  .exec(request)
 }
 
-class CodeAuthorizeBackendApiRamp extends Simulation with CodeAuthorizeBackendApiBase {
+class ImportHealthCheckApiRamp extends Simulation with ImportHealthCheckApiBase {
 
-  override lazy val scenarioName = "Code Authorize Backend Api [Incremental]"
+  override lazy val scenarioName = "Import Health Check Api [Incremental]"
 
   setUp(scn.inject(
       rampUsersPerSec(1) to (Scenario.targetRps.toDouble) during (Scenario.duration),
@@ -58,9 +56,9 @@ class CodeAuthorizeBackendApiRamp extends Simulation with CodeAuthorizeBackendAp
     .protocols(httpProtocol)
 }
 
-class CodeAuthorizeBackendApiSteady extends Simulation with CodeAuthorizeBackendApiBase {
+class ImportHealthCheckApiSteady extends Simulation with ImportHealthCheckApiBase {
 
-  override lazy val scenarioName = "Code Authorize Backend Api [Steady RPS]"
+  override lazy val scenarioName = "Import Health Check Api [Steady RPS]"
 
   setUp(scn.inject(
       constantUsersPerSec(Scenario.targetRps.toDouble) during (Scenario.duration),

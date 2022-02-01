@@ -13,15 +13,19 @@ const scenarios = [
     {
         title: 'Frontend API',
         tests: [
+            { id: 'UpdateCustomerPasswordFrontendApi', title: 'UpdateCustomerPasswordFrontendApi'},
             { id: 'CreateAccessTokensFrontendApi', title: 'CreateAccessTokensFrontendApi'},
             { id: 'CreateRefreshTokensFrontendApi', title: 'CreateRefreshTokensFrontendApi'},
+            { id: 'CreateCustomerForgottenPasswordFrontendApi', title: 'CreateCustomerForgottenPasswordFrontendApi'},
+            { id: 'DeleteCustomersFrontendApi', title: 'DeleteCustomersFrontendApi'},
             { id: 'CreateCustomersFrontendApi', title: 'CreateCustomersFrontendApi'},
             { id: 'CreateCartsFrontendApi', title: 'CreateCartsFrontendApi'},
             { id: 'CreateCheckoutDataFrontendApi', title: '[full flow]CreateCheckoutDataFrontendApi'},
             { id: 'CreateCheckoutFrontendApi', title: '[full flow]Checkout request'},
+            { id: 'CreateCheckoutFiftyItemsFrontendApi', title: '[full flow]Checkout request with 50 items'},
+            { id: 'CreateCheckoutSeventyItemsFrontendApi', title: '[full flow]Checkout request with 70 items'},
             { id: 'CreateInstacartCallbacksFrontendApi', title: 'CreateInstacartCallbacksFrontendApi'},
             { id: 'AddItemToCartFullFlowApi', title: '[full flow]Add item to cart'},
-            { id: 'AddItemToCartLessOrEqualFiftyItemsFullFlowApi', title: '[full flow]Add Item To Cart with <= 50 Items'},
             { id: 'CreateCartMerchantTimeslotReservationsFrontendApi', title: 'CreateCartMerchantTimeslotReservationsFrontendApi'},
 
             { id: 'GetCollectionOfStoresFrontendApi', title: 'GetCollectionOfStoresFrontendApi'},
@@ -73,6 +77,7 @@ const scenarios = [
             { id: 'ImportProductPricesApi', title: 'Import Product Prices'},
             { id: 'ImportProductOffersApi', title: 'Import Product Offers'},
             { id: 'ImportProductCategoriesApi', title: 'Import Product Categories'},
+            { id: 'ImportHealthCheckApi', title: 'Import Health check'},
             
             // { id: 'CheckoutFullFlowLessOrEqualFiftyItemsApi', title: '[full flow]Checkout request with <= 50 items'},
             // { id: 'CatalogSearchProductOffersApi', title: 'Catalog Search Product Offers'},
@@ -96,11 +101,8 @@ const scenarios = [
     {
         title: 'Backend API',
         tests: [
-            { id: 'PickingOrdersBackendApi', title: 'Picking orders request'},
-            { id: 'UserByIdBackendApi', title: 'User By ID request'},
             { id: 'TokenBackendApi', title: 'Token request'},
             { id: 'CodeAuthorizeBackendApi', title: 'Code Authorize request'},
-            { id: 'GetProductsBackendApi', title: 'Get Products request'},
         ],
     },
 ];

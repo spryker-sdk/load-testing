@@ -134,6 +134,9 @@ fastify.post('/run', async (req, reply) => {
     let duration = req.body.duration;
     let description = req.body.description;
     let title = `${testName}${testType}`;
+    let instanceNameRegex = /\(([a-zA-Z_-]+)\)/i;
+    let found = instance.match(instanceNameRegex);
+    let instanceName = Array.isArray(found) && found.length > 1 ? found[1] : "";
 
     if (!instanceList.has(instance) || jobs.size > 0) {
         reply.code(404);
@@ -174,6 +177,7 @@ fastify.post('/run', async (req, reply) => {
         + ` -DGLUE_URL=${project.glue}`
         + ` -DFE_URL=${project.fe_api}`
         + ` -DBACKEND_API_URL=${project.backend_api}`
+        + ` -DINSTANCE_NAME=${instanceName}`
         + ` -DDURATION=${duration}`
         + ` -DTARGET_RPS=${targetRps}`;
 

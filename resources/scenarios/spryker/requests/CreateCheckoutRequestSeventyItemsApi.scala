@@ -33,9 +33,9 @@ import spryker.CreateAccessTokenRequestApi._
 import spryker.CreateCartRequestApi._
 import spryker.AddToCartRequestApi._
 
-object CreateCheckoutRequestApi {
+object CreateCheckoutRequestSeventyItemsApi {
 
-  lazy val scenarioName = "Checkout Full Flow Api"
+  lazy val scenarioName = "Checkout with 70 items Full Flow Api"
 
   val httpProtocol = GlueProtocol.httpProtocol
 
@@ -200,7 +200,9 @@ object CreateCheckoutRequestApi {
     .exec(accessTokenRequest)
     .exec(previewPickupTimeslotsRequest)
     .exec(createCartRequest)
-    .exec(addToCartRequest)
+    .repeat(70) {
+      exec(addToCartRequest)
+    }
     .exec(updateCartRequest)
     .exec(merchantTimeslotReservationsRequest)
     .exec(checkoutDataRequest)

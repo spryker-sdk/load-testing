@@ -31,20 +31,22 @@ trait ImportProductPricesApiBase {
 
   val httpProtocol = BackendApiProtocol.httpProtocol
 
-  val basicAuthUsername = sys.env.getOrElse("BACKEND_API_USERNAME", "").toString
-  val basicAuthPassword = sys.env.getOrElse("BACKEND_API_PASSWORD", "").toString
-
   val feeder = csv("tests/_data/product_price_bodies.csv").circular
 
-  val addToCartRequest = http("Import Product Prices Api")
+  var request = http(scenarioName)
     .post("/import-product_prices")
     .body(StringBody("""${payload}""")).asJson
-    .basicAuth(basicAuthUsername, basicAuthPassword)
     .check(status.is(200))
+
+  if (!BackendApiProtocol.instanceName.isEmpty &&
+      !BackendApiProtocol.basicAuthUsername.isEmpty &&
+      !BackendApiProtocol.basicAuthPassword.isEmpty) {
+      request = request.basicAuth(BackendApiProtocol.basicAuthUsername, BackendApiProtocol.basicAuthPassword)
+  }
 
   val scn = scenario(scenarioName)
   .feed(feeder)
-  .exec(addToCartRequest)
+  .exec(request)
 }
 
 class ImportProductPricesApiRamp extends Simulation with ImportProductPricesApiBase {

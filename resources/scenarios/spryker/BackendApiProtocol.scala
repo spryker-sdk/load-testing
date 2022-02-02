@@ -22,6 +22,10 @@ import io.gatling.http.Predef._
 object BackendApiProtocol {
 
   val baseUrl = System.getProperty("BACKEND_API_URL", "")
+  val instanceName = System.getProperty("INSTANCE_NAME", "")
+
+  val basicAuthUsername = sys.env.getOrElse("BACKEND_API_" + instanceName + "_BASIC_AUTH_USERNAME", "").toString
+  val basicAuthPassword = sys.env.getOrElse("BACKEND_API_" + instanceName + "_BASIC_AUTH_PASSWORD", "").toString
 
   require(!baseUrl.isEmpty, s"BACKEND_API_URL ($baseUrl) must be not empty")
 

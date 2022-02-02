@@ -28,12 +28,12 @@ trait CodeAuthorizeBackendApiBase {
   lazy val scenarioName = "Code Authorize Backend Api"
 
   val httpProtocol = BackendApiProtocol.httpProtocol
-  val usersFeeder = csv("tests/_data/users.csv").random
+  val customersFeeder = csv("tests/_data/customer.csv").random
 
   val codeAuthorizeRequest = http(scenarioName)
     .post("/code-authorize")
-    .formParam("username", "${user_email}")
-    .formParam("password", "${user_password}")
+    .formParam("username", "${email}")
+    .formParam("password", "${password}")
     .formParam("grantType", "authorization_code_backend")
     .formParam("response_type", "code")
     .formParam("client_id", "picking_api")
@@ -43,7 +43,7 @@ trait CodeAuthorizeBackendApiBase {
     .check(status.is(201))
 
   val scn = scenario(scenarioName)
-    .feed(usersFeeder)
+    .feed(customersFeeder)
     .exec(codeAuthorizeRequest)
 }
 

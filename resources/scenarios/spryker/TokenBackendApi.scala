@@ -31,8 +31,9 @@ trait TokenBackendApiBase {
 
   val tokenRequest = http(scenarioName)
     .post("/token")
-    .formParam("grantType", "device_token")
-    .formParam("response_type", "token")
+    .formParam("grantType", "client_credentials")
+    .formParam("client_id", "01a7afdeff08543006f109184b733912")
+    .formParam("clientSecret", "instacart-password")
     .check(status.is(200))
 
   val scn = scenario(scenarioName)

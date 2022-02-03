@@ -177,6 +177,7 @@ fastify.post('/run', async (req, reply) => {
         + ` -DGLUE_URL=${project.glue}`
         + ` -DFE_URL=${project.fe_api}`
         + ` -DBACKEND_API_URL=${project.backend_api}`
+        + ` -DMOCK_SERVER_URL=${project.mock_server}`
         + ` -DINSTANCE_NAME=${instanceName}`
         + ` -DDURATION=${duration}`
         + ` -DTARGET_RPS=${targetRps}`;
@@ -248,6 +249,7 @@ fastify.post('/instances', (req, reply) => {
     let glue = req.body.glue;
     let backendApi = req.body.backend_api;
     let feApi = req.body.fe_api;
+    let mockServer = req.body.mock_server;
 
     if (key !== "") {
         let project = Object.assign({},
@@ -255,6 +257,7 @@ fastify.post('/instances', (req, reply) => {
             glue && {"glue": glue},
             key && {"key": key},
             backendApi && {"backend_api": backendApi},
+            mockServer && {"mock_server": mockServer},
             feApi && {"fe_api": feApi},
         );
 

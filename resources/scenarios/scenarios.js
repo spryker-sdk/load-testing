@@ -13,6 +13,9 @@ const scenarios = [
     {
         title: 'Frontend API',
         tests: [
+            { id: 'CreateCustomersAddressesFrontendApi', title: 'CreateCustomersAddressesFrontendApi'},
+            { id: 'GetCollectionOfCustomersAddressesFrontendApi', title: 'GetCollectionOfCustomersAddressesFrontendApi'},
+            { id: 'GetCollectionOfCatalogSearchProductOffersFrontendApi', title: 'GetCollectionOfCatalogSearchProductOffersFrontendApi'},
             { id: 'UpdateCustomerPasswordFrontendApi', title: 'UpdateCustomerPasswordFrontendApi'},
             { id: 'CreateAccessTokensFrontendApi', title: 'CreateAccessTokensFrontendApi'},
             { id: 'CreateRefreshTokensFrontendApi', title: 'CreateRefreshTokensFrontendApi'},
@@ -47,7 +50,7 @@ const scenarios = [
             { id: 'GetCollectionOfPreviewPickupTimeslotsFrontendApi', title: 'GetCollectionOfPreviewPickupTimeslotsFrontendApi'},
             { id: 'GetCollectionOfCartsCartMerchantTimeslotsFrontendApi', title: 'GetCollectionOfCartsCartMerchantTimeslotsFrontendApi'},
             { id: 'GetCollectionOfCartsDeliveryTimeslotsFrontendApi', title: 'GetCollectionOfCartsDeliveryTimeslotsFrontendApi'},
-            { id: 'GetCollectionOfCatalogSearchProductOffersFrontendApi', title: 'GetCollectionOfCatalogSearchProductOffersFrontendApi'},
+            
             { id: 'GetCollectionOfCatalogSearchSuggestionsProductOffersFrontendApi', title: 'GetCollectionOfCatalogSearchSuggestionsProductOffersFrontendApi'},
             // { id: 'GetCollectionOfProductOffersAlternativeProductOffersFrontendApi', title: 'GetCollectionOfProductOffersAlternativeProductOffersFrontendApi'},
             { id: 'MerchantSearchApi', title: 'Merchant Search Request'},

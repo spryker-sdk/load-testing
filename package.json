@@ -5,6 +5,10 @@
   "main": "public/index.js",
   "scripts": {
     "run": "pm2 start public/index.js",
+    "stop": "pm2 stop public/index.js",
+    "restart": "pm2 stop public/index.js && pm2 start public/index.js",
+    "logs": "pm2 logs",
+    "monitor": "pm2 monitor",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "Spryker",

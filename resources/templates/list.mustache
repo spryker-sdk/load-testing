@@ -75,10 +75,13 @@
                     var result = '';
                     if (row.done && row.reportPath) {
                         result += `<a href="${row.reportPath}" target="_blank">Report</a>`;
+                        if (row.newrelicPath !== "undefined") {
+                            result += `<br/><a href="${row.newrelicLogPath}">Newrelic</a>`;
+                        }
                     }
                     result += '&nbsp;';
                     if (row.logPath) {
-                        result += `<a href="${row.logPath}">Log</a>`;
+                        result += `<br/><a href="${row.logPath}">Log</a>`;
                     }
 
                     return result;

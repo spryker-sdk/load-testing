@@ -13,7 +13,6 @@ a {
     color: #1b98f8;
 }
 
-
 /*
  * -- HELPER STYLES --
  * Over-riding some of the .pure-button styles to make my buttons look unique
@@ -133,7 +132,6 @@ a {
 
     /* Move the layout over so we can fit the nav + list in on the left */
     #layout {
-        padding-left:150px; /* "left col (nav + list)" width */
         position: relative;
     }
 
@@ -173,7 +171,6 @@ a {
         top: 33%;
         right: 0;
         bottom: 0;
-        left: 150px;
         overflow: auto;
         width: auto; /* so that it's not 100% */
     }
@@ -186,18 +183,24 @@ a {
  * of the mobile styles.
  */
 @media (min-width: 60em) {
+    #nav {
+        position: relative;
+        margin-left:0; /* "left col (nav + list)" width */
+        width:20%;
+        height: 100%;
+    }
 
     /* This will take up the entire height, and be a little thinner */
     #list {
-        margin-left: -350px;
-        width:350px;
+        width:100%;
         height: 100%;
         border-right: 1px solid #ddd;
     }
 
     /* This will now take up it's own column, so don't need position: fixed; */
     #main {
-        position: static;
+        position: relative;
+        width: 80%;
         margin: 0;
         padding: 0;
     }

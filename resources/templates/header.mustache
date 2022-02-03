@@ -25,6 +25,10 @@
                 <a class="primary-button pure-button" href="/run">New Test</a>
             {{/jobs}}
 
+            {{^jobs}}
+                <a class="primary-button pure-button" href="/run_all">Execute all tests</a>
+            {{/jobs}}
+
             <div class="pure-menu">
                 <ul class="pure-menu-list">
                     {{#jobs}}
@@ -39,10 +43,10 @@
                         </li>
                     {{/projects}}
                     <li class="pure-menu-heading">Tests</li>
-                    <li class="pure-menu-item"><a href="/" class="pure-menu-link">ALL</a></li
+                    <li class="pure-menu-item"><a href="/" class="pure-menu-link">ALL</a></li>
                     {{#scenarios}}
                         {{#tests}}
-                        <li class="pure-menu-item"><small><a href="/?filter[testName]={{id}}" class="pure-menu-link">{{id}}</a></small></li>
+                        <li class="pure-menu-item"><small><a href="/?filter[testName]={{id}}" class="pure-menu-link">{{title}}</a></small></li>
                         {{/tests}}
                     {{/scenarios}}
                 </ul>

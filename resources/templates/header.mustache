@@ -29,11 +29,23 @@
                 <a class="primary-button pure-button" href="/run_all">Execute all tests</a>
             {{/jobs}}
 
+            {{#pendingJobs}}
+                <a class="primary-button pure-button" href="/clear">Clear Tests Pipeline</a>
+            {{/pendingJobs}}
+
             <div class="pure-menu">
                 <ul class="pure-menu-list">
-                    {{#jobs}}
-                        <li class="pure-menu-item"><a href="{{logPath}}" class="pure-menu-link">Running <span class="email-count">(1)</span></a></li>
+
+                    <li class="pure-menu-item"><a href="{{logPath}}" class="pure-menu-link">Running Jobs<span class="email-count">
+                    {{^jobs}}
+                        (0)
                     {{/jobs}}
+                    {{#jobs}}
+                        (1)
+                    {{/jobs}}
+                    </span></a></li>
+
+                    <li class="pure-menu-item"><a href="/" class="pure-menu-link">Pending Jobs <span class="email-count">({{ pendingJobs }})</a></li>
                     <li class="pure-menu-heading">Instances</li>
                     <a class="primary-button pure-button" href="/instances">New instance</a>
                     <li class="pure-menu-item"><a href="/" class="pure-menu-link">ALL</a></li>

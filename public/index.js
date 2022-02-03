@@ -27,19 +27,31 @@ const getNewrelicTime = () => {
     return new Date().toISOString().replace("T", " ");
 }
 
-const getTestCaseById = (testCaseId) => {
+const initTestCases = () => {
+    let storage = new Map();
+
     for (let i = 0; i < scenarios.length; i++) {
         if (scenarios[i].status === 'inactive') {
             continue;
         }
         for (let j = 0; j < scenarios[i].tests.length; j++) {
-            let test = scenarios[i].tests[j]
-            if (test != null && test.id === testCaseId) {
-                return test
-            }
+            let testCase = scenarios[i].tests[j]
+            storage.set(testCase.id, testCase);
         }
     }
-    return null;
+    return storage;
+}
+
+const jobs = new Map();
+const reports = new Map();
+let pendingJobs = new Map();
+let instanceList = getInstanceList();
+
+const getTestCaseById = (testCaseId) => {
+    if (pendingJobs.has(testCaseId)) {
+        return pendingJobs.get(testCaseId);
+    }
+    return null
 }
 
 async function executeTestCase(test, instance, instanceName, testType, targetRps, duration, description) {
@@ -50,7 +62,7 @@ async function executeTestCase(test, instance, instanceName, testType, targetRps
     let key = `${instance}/${testName}/${testType}/${targetRps}-RPS/` + dateFormat.asString('yyyy-MM-dd-hh-mm-ss');
     let reportPath = `/report/${key}/report/index.html`;
     let reportFolder = `./${destinationFolder}/${key}`;
-    let newrelicPath = `${reportFolder}/newrelic.json`;
+    let newrelicLogFilePath = `${reportFolder}/newrelic.json`;
     await fs.mkdirs(reportFolder);
 
     let runObject = {
@@ -67,14 +79,15 @@ async function executeTestCase(test, instance, instanceName, testType, targetRps
         description,
         title,
         reportPath,
-        newrelicPath,
+        newrelicLogFilePath: newrelicLogFilePath,
+        newrelicLog: [],
         newrelicLogPath: `/newrelic/${key}`,
         logPath: `/log/${key}`,
         valid: null,
     };
 
-    jobs.set(String(key), runObject);
-    reports.set(String(key), runObject);
+    jobs.set(key, runObject);
+    reports.set(key, runObject);
 
     var env = Object.create(process.env);
     env.JAVA_OPTS = (process.env.JAVA_OPTS || '')
@@ -108,6 +121,7 @@ async function executeTestCase(test, instance, instanceName, testType, targetRps
         runObject.exitCode = code;
         runObject.success = code === 0;
         jobs.delete(key);
+        pendingJobs.delete(key);
         if (!runObject.success) {
             await fs.remove(reportFolder);
             return;
@@ -123,13 +137,14 @@ async function executeTestCase(test, instance, instanceName, testType, targetRps
     });
 
     while (!runObject.done) {
-        fastify.log.info(`Job ID:  ${runObject.id} Job Status: ${runObject.done} Job error: ${runObject.error}`);
+        // fastify.log.info(`Job ID:  ${runObject.id} Job Status: ${runObject.done} Job error: ${runObject.error}`);
         await new Promise(resolve => setTimeout(resolve, 1000));
     }
 
     if (test.route.length > 0) {
+        fastify.log.info(`Sleep before request to newrelic`);
         await new Promise(resolve => setTimeout(resolve, 90000)); // sleep 1 and half min until data will appears in newrelic.
-        await collectNewrelicLogs(project, startTime, getNewrelicTime(), test.route, test.requestType, newrelicPath);
+        await collectNewrelicLogs(project, startTime, getNewrelicTime(), test.route, test.requestType, newrelicLogFilePath);
     }
 
     return runObject;
@@ -186,10 +201,6 @@ async function collectNewrelicLogs(instance, timeFrameStart, timeFrameEnd, route
     req.end();
 }
 
-const jobs = new Map();
-const reports = new Map();
-let instanceList = getInstanceList();
-
 fastify.register(require('fastify-formbody'));
 fastify.register(require('point-of-view'), {
     engine: {
@@ -226,6 +237,7 @@ fastify.get('/', (req, reply) => {
         projects: Array.from(instanceList.values()),
         jobs: Array.from(jobs.values()),
         reports: Array.from(reports.values()),
+        pendingJobs: pendingJobs.size,
     }, {...partials});
 });
 
@@ -288,6 +300,7 @@ fastify.get('/run', (req, reply) => {
         projects: Array.from(instanceList.values()),
         jobs: Array.from(jobs.values()),
         reports: Array.from(reports.values()),
+        pendingJobs: pendingJobs.size,
     }, {...partials});
 });
 
@@ -307,16 +320,22 @@ fastify.post('/run', async (req, reply) => {
         reply.send(`Project ${instance} is not found.`);
         return;
     }
-
+    pendingJobs = initTestCases();
     let testCase = getTestCaseById(testName);
     if (testCase == null) {
         reply.code(404);
         reply.send(`Given test ${testName} was not found.`);
         return;
     }
-
+    pendingJobs.clear();
+    pendingJobs.set(testCase.id, testCase);
     executeTestCase(testCase, instance, instanceName, testType, targetRps, duration, description);
 
+    reply.redirect(302, `/`);
+});
+
+fastify.get('/clear', async (req, reply) => {
+    pendingJobs.clear();
     reply.redirect(302, `/`);
 });
 
@@ -329,6 +348,7 @@ fastify.get('/run_all', (req, reply) => {
         projects: Array.from(instanceList.values()),
         jobs: Array.from(jobs.values()),
         reports: Array.from(reports.values()),
+        pendingJobs: pendingJobs.size,
     }, {...partials});
 });
 
@@ -347,29 +367,24 @@ fastify.post('/run_all', async (req, reply) => {
         reply.send(`Project ${instance} is not found.`);
         return;
     }
+    pendingJobs = initTestCases();
 
     async function runAll(instance, instanceName, testType, targetRps, duration, description) {
-        let index = 0;
-
         for (let i = 0; i < scenarios.length; i++) {
             if (scenarios[i].status === 'inactive') {
                 continue;
             }
             for (let j = 0; j < scenarios[i].tests.length; j++) {
-                if (index > 1) {
-                    break;
-                }
-
-                let test = scenarios[i].tests[j]
-                if (test != null) {
-                    fastify.log.info(`test:  ${test.id} : ${test.route}`)
-                    let runObject = await executeTestCase(test, instance, instanceName, testType, targetRps, duration, description);
-                    fastify.log.info(`test result:  ${runObject.done}`)
-                    index++;
+                let testCase = scenarios[i].tests[j]
+                if (testCase != null) {
+                    fastify.log.info(`Test case:  ${testCase.id} : ${testCase.route}`)
+                    let runObject = await executeTestCase(testCase, instance, instanceName, testType, targetRps, duration, description);
+                    fastify.log.info(`Test case status:  ${runObject.done}`)
                 }
             }
         }
     }
+
     runAll(instance, instanceName, testType, targetRps, duration, description);
 
     reply.redirect(302, `/`);
@@ -460,6 +475,7 @@ fastify.get('/log/*', async (req, reply) => {
         projects: Array.from(instanceList.values()),
         jobs: Array.from(jobs.values()),
         reports: Array.from(reports.values()),
+        pendingJobs: pendingJobs.size,
     }, {...partials});
 });
 
@@ -486,6 +502,7 @@ fastify.get('/newrelic/*', async (req, reply) => {
         projects: Array.from(instanceList.values()),
         jobs: Array.from(jobs.values()),
         reports: Array.from(reports.values()),
+        pendingJobs: pendingJobs.size,
     }, {...partials});
 });
 
@@ -493,6 +510,10 @@ const readReports = async () => {
     await glob(`./${destinationFolder}/!(archive)/**/report.json`, (er, files) => {
         Array.isArray(files) && files.map(file => {
             let runObject = fs.readJsonSync(file);
+            // if (fs.exists(runObject.newrelicLogFilePath)) {
+            // fastify.log.info(`${runObject.newrelicLogFilePath}`)
+            // runObject.newrelicLog = fs.readJsonSync(runObject.newrelicLogFilePath)
+            // }
             reports.set(runObject.id, runObject);
         });
     });
@@ -500,9 +521,8 @@ const readReports = async () => {
 
 // Run the server!
 const start = async () => {
-    await readReports();
-
     try {
+        await readReports();
         await fastify.listen(port, host, error => {
             if (error) {
                 fastify.log.info(`Server start error: ${error.error}`)

@@ -17,8 +17,8 @@ const scenarios = [
         tests: [
             { id: 'UpdateCustomerPasswordFrontendApi', title: 'UpdateCustomerPasswordFrontendApi', route: 'customer-password', requestType: 'patch'},
             { id: 'CreateAccessTokensFrontendApi', title: 'CreateAccessTokensFrontendApi', route: 'access-tokens', requestType: 'post'},
-            { id: 'CreateRefreshTokensFrontendApi', title: 'CreateRefreshTokensFrontendApi', route: '', requestType: ''},
-            { id: 'CreateCustomerForgottenPasswordFrontendApi', title: 'CreateCustomerForgottenPasswordFrontendApi', route: '', requestType: ''},
+            { id: 'CreateRefreshTokensFrontendApi', title: 'CreateRefreshTokensFrontendApi', route: 'refresh-tokens', requestType: 'post'},
+            { id: 'CreateCustomerForgottenPasswordFrontendApi', title: 'CreateCustomerForgottenPasswordFrontendApi', route: 'customer-forgotten-password', requestType: 'post'},
             { id: 'DeleteCustomersFrontendApi', title: 'DeleteCustomersFrontendApi', route: '', requestType: ''},
             { id: 'CreateCustomersFrontendApi', title: 'CreateCustomersFrontendApi', route: '', requestType: ''},
             { id: 'CreateCartsFrontendApi', title: 'CreateCartsFrontendApi', route: '', requestType: ''},

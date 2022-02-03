@@ -27,6 +27,149 @@ const getNewrelicTime = () => {
     return new Date().toISOString().replace("T", " ");
 }
 
+async function execute(test, instance, instanceName, testType, targetRps, duration, description) {
+    let startTime = getNewrelicTime();
+    let testName = test.id;
+    let title = `${testName}${testType}`;
+    let project = instanceList.get(instance);
+    let key = `${instance}/${testName}/${testType}/${targetRps}-RPS/` + dateFormat.asString('yyyy-MM-dd-hh-mm-ss');
+    let reportPath = `/report/${key}/report/index.html`;
+    let reportFolder = `./${destinationFolder}/${key}`;
+    let newrelicPath = `${reportFolder}/newrelic.json`;
+    await fs.mkdirs(reportFolder);
+
+    let runObject = {
+        id: key,
+        done: false,
+        exitCode: -1,
+        when: new Date().getTime(),
+        log: [],
+        instance,
+        testName,
+        testType,
+        targetRps,
+        duration,
+        description,
+        title,
+        reportPath,
+        newrelicPath,
+        newrelicLogPath: `/newrelic/${key}`,
+        logPath: `/log/${key}`,
+        valid: null,
+    };
+
+    jobs.set(String(key), runObject);
+    reports.set(String(key), runObject);
+
+    var env = Object.create(process.env);
+    env.JAVA_OPTS = (process.env.JAVA_OPTS || '')
+        + ` -DYVES_URL=${project.yves}`
+        + ` -DGLUE_URL=${project.glue}`
+        + ` -DFE_URL=${project.fe_api}`
+        + ` -DBACKEND_API_URL=${project.backend_api}`
+        + ` -DINSTANCE_NAME=${instanceName}`
+        + ` -DDURATION=${duration}`
+        + ` -DTARGET_RPS=${targetRps}`;
+
+    description = description || '-';
+    const run = spawn('./gatling/bin/gatling.sh', ['-sf=resources/scenarios/spryker', `-rd='${description}'`, `-rf=${reportFolder}`, `-s=spryker.${testName}${testType}`], {env: env});
+
+    run.stdout.on('data', data => {
+        runObject.log.push({
+            entry: data.toString(),
+            error: false
+        });
+    });
+
+    run.stderr.on('data', data => {
+        runObject.log.push({
+            entry: data.toString(),
+            error: true
+        });
+    });
+
+    run.on('close', async code => {
+        runObject.done = true;
+        runObject.exitCode = code;
+        runObject.success = code === 0;
+        jobs.delete(key);
+        if (!runObject.success) {
+            await fs.remove(reportFolder);
+            return;
+        }
+
+        await glob(`${reportFolder}/*/`, (er, directories) => {
+            directories.map(async directory => fs.rename(directory, `${reportFolder}${reportSuffix}`));
+        });
+
+        await fs.writeJson(`${reportFolder}/report.json`, {...runObject, log: null});
+        await fs.writeJson(`${reportFolder}/report.log.json`, runObject.log);
+    });
+
+    while (!runObject.done) {
+        fastify.log.info(`Job ID:  ${runObject.id} Job Status: ${runObject.done} Job error: ${runObject.error}`);
+        await new Promise(resolve => setTimeout(resolve, 1000));
+    }
+
+    if (test.route.length > 0) {
+        await new Promise(resolve => setTimeout(resolve, 3000));
+        await collectNewrelicLogs(project, startTime, getNewrelicTime(), test.route, test.requestType, newrelicPath);
+    }
+
+    return runObject;
+}
+
+async function collectNewrelicLogs(instance, timeFrameStart, timeFrameEnd, route, requestType, newrelicPath) {
+    fastify.log.info(`Collect newrelic info:  ${timeFrameStart} - ${timeFrameEnd} : ${route}  Request type: ${requestType} Newrelic log path: ${newrelicPath}`)
+    fastify.log.info(instance);
+
+    if (!route.length) {
+        fastify.log.info(`Skip request to newrelic due to empty route.`)
+        return;
+    }
+
+    const data = JSON.stringify({
+        "query": newrelicQuery.replace('ACCOUNT_ID', instance.newrelic_application_id)
+            .replace('TARGET_ROUTE', route)
+            .replace('REQUEST_TYPE', requestType.toUpperCase())
+            .replace('APPLICATION_NAME', instance.newrelic_application)
+            .replace('SINCE_DATE_TIME', timeFrameStart)
+            .replace('UNTIL_DATE_TIME', timeFrameEnd),
+        "variables": ""
+    });
+
+    fastify.log.info(`Payload:` + data);
+
+    const options = {
+        hostname: 'api.newrelic.com',
+        port: 443,
+        path: '/graphql',
+        method: 'POST',
+        json: true,
+        headers: {
+            'Content-Type': 'application/json',
+            'Content-Length': data.length,
+            'API-Key': instance.newrelic_api_key
+        }
+    }
+    const req = https.request(options, res => {
+        let data = '';
+        res.on('data', (chunk) => {
+            data += chunk;
+        })
+
+        res.on('end', async () => {
+            await fs.writeJson(newrelicPath, JSON.parse(data));
+            fastify.log.info(JSON.parse(data));
+        });
+    }).on("error", async (error) => {
+        await fs.writeJson(newrelicPath, JSON.parse(data));
+        fastify.log.info("Newrelic request error:" + error.message)
+    })
+    req.write(data);
+    req.end();
+}
+
 const jobs = new Map();
 const reports = new Map();
 let instanceList = getInstanceList();
@@ -255,150 +398,7 @@ fastify.post('/run_all', async (req, reply) => {
         return;
     }
 
-    async function collectNewrelicLogs(instance, timeFrameStart, timeFrameEnd, route, requestType, newrelicPath) {
-        fastify.log.info(`Collect newrelic info:  ${timeFrameStart} - ${timeFrameEnd} : ${route}  Request type: ${requestType} Newrelic log path: ${newrelicPath}`)
-        fastify.log.info(instance);
-
-        if (!route.length) {
-            fastify.log.info(`Skip request to newrelic due to empty route.`)
-            return;
-        }
-
-        const data = JSON.stringify({
-            "query": newrelicQuery.replace('ACCOUNT_ID', instance.newrelic_application_id)
-                .replace('TARGET_ROUTE', route)
-                .replace('REQUEST_TYPE', requestType.toUpperCase())
-                .replace('APPLICATION_NAME', instance.newrelic_application)
-                .replace('SINCE_DATE_TIME', timeFrameStart)
-                .replace('UNTIL_DATE_TIME', timeFrameEnd),
-            "variables": ""
-        });
-
-        fastify.log.info(`Payload:` + data);
-
-        const options = {
-            hostname: 'api.newrelic.com',
-            port: 443,
-            path: '/graphql',
-            method: 'POST',
-            json: true,
-            headers: {
-                'Content-Type': 'application/json',
-                'Content-Length': data.length,
-                'API-Key': instance.newrelic_api_key
-            }
-        }
-        const req = https.request(options, res => {
-            let data = '';
-            res.on('data', (chunk) => {
-                data += chunk;
-            })
-
-            res.on('end', async () => {
-                await fs.writeJson(newrelicPath, JSON.parse(data));
-                fastify.log.info(JSON.parse(data));
-            });
-        }).on("error", async (error) => {
-            await fs.writeJson(newrelicPath, JSON.parse(data));
-            fastify.log.info("Newrelic request error:" + error.message)
-        })
-        req.write(data);
-        req.end();
-    }
-
     async function runAll(instance, instanceName, testType, targetRps, duration, description) {
-        async function execute(test, instance, instanceName, testType, targetRps, duration, description) {
-            let startTime = getNewrelicTime();
-            let testName = test.id;
-            let title = `${testName}${testType}`;
-            let project = instanceList.get(instance);
-            let key = `${instance}/${testName}/${testType}/${targetRps}-RPS/` + dateFormat.asString('yyyy-MM-dd-hh-mm-ss');
-            let reportPath = `/report/${key}/report/index.html`;
-            let reportFolder = `./${destinationFolder}/${key}`;
-            let newrelicPath = `${reportFolder}/newrelic.json`;
-            await fs.mkdirs(reportFolder);
-
-            let runObject = {
-                id: key,
-                done: false,
-                exitCode: -1,
-                when: new Date().getTime(),
-                log: [],
-                instance,
-                testName,
-                testType,
-                targetRps,
-                duration,
-                description,
-                title,
-                reportPath,
-                newrelicPath,
-                newrelicLogPath: `/newrelic/${key}`,
-                logPath: `/log/${key}`,
-                valid: null,
-            };
-
-            jobs.set(String(key), runObject);
-            reports.set(String(key), runObject);
-
-            var env = Object.create(process.env);
-            env.JAVA_OPTS = (process.env.JAVA_OPTS || '')
-                + ` -DYVES_URL=${project.yves}`
-                + ` -DGLUE_URL=${project.glue}`
-                + ` -DFE_URL=${project.fe_api}`
-                + ` -DBACKEND_API_URL=${project.backend_api}`
-                + ` -DINSTANCE_NAME=${instanceName}`
-                + ` -DDURATION=${duration}`
-                + ` -DTARGET_RPS=${targetRps}`;
-
-            description = description || '-';
-            const run = spawn('./gatling/bin/gatling.sh', ['-sf=resources/scenarios/spryker', `-rd='${description}'`, `-rf=${reportFolder}`, `-s=spryker.${testName}${testType}`], {env: env});
-
-            run.stdout.on('data', data => {
-                runObject.log.push({
-                    entry: data.toString(),
-                    error: false
-                });
-            });
-
-            run.stderr.on('data', data => {
-                runObject.log.push({
-                    entry: data.toString(),
-                    error: true
-                });
-            });
-
-            run.on('close', async code => {
-                runObject.done = true;
-                runObject.exitCode = code;
-                runObject.success = code === 0;
-                jobs.delete(key);
-                if (!runObject.success) {
-                    await fs.remove(reportFolder);
-                    return;
-                }
-
-                await glob(`${reportFolder}/*/`, (er, directories) => {
-                    directories.map(async directory => fs.rename(directory, `${reportFolder}${reportSuffix}`));
-                });
-
-                await fs.writeJson(`${reportFolder}/report.json`, {...runObject, log: null});
-                await fs.writeJson(`${reportFolder}/report.log.json`, runObject.log);
-            });
-
-            while (!runObject.done) {
-                fastify.log.info(`Job ID:  ${runObject.id} Job Status: ${runObject.done} Job error: ${runObject.error}`);
-                await new Promise(resolve => setTimeout(resolve, 1000));
-            }
-
-            if (test.route.length > 0) {
-                await new Promise(resolve => setTimeout(resolve, 3000));
-                await collectNewrelicLogs(project, startTime, getNewrelicTime(), test.route, test.requestType, newrelicPath);
-            }
-
-            return runObject;
-        }
-
         let index = 0;
 
         for (let i = 0; i < scenarios.length; i++) {

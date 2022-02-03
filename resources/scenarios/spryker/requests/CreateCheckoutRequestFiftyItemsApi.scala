@@ -50,8 +50,8 @@ object CreateCheckoutRequestFiftyItemsApi {
   val productConcreteFeeder = csv("tests/_data/product_concrete.csv").random
 
   val feeder = Iterator.continually(Map(
-    "customer_email" -> (Random.alphanumeric.take(30).mkString + "@gmail.com"), 
-    "password" -> "supe!rsEcu1re", 
+    "customer_email" -> (Random.alphanumeric.take(30).mkString + "@gmail.com"),
+    "password" -> "supe!rsEcu1re",
     "payment_token" -> (Random.alphanumeric.take(8).mkString.toUpperCase() + "-" + Random.alphanumeric.take(4).mkString.toUpperCase() + "-" + Random.alphanumeric.take(4).mkString.toUpperCase() + "-" + Random.alphanumeric.take(4).mkString.toUpperCase() + "-" + Random.alphanumeric.take(12).mkString.toUpperCase())
   ))
 
@@ -103,7 +103,7 @@ object CreateCheckoutRequestFiftyItemsApi {
 
   val checkoutDataRequest = http("Checkout First Data Request")
     .post("/checkout-data")
-    .body(StringBody("""{"data":{"type":"checkout-data","attributes":{"customer":{"salutation":"Mr","email":"${customer_email}","firstName":"name","lastName":"name"},"idCart":"${cart_id}","cartNote":"this is cart note","billingAddress":{"salutation":"Mr","firstName":"John","lastName":"Doe","address1":"billing","address2":"b","address3":"aaa","zipCode":"12312","city":"Huston","country":"USA","iso2Code":"US","phone":"1234567890","regionIso2Code":"US-IL"},"payments":[{"paymentMethodName":"firstDataCreditCard","paymentProviderName":"firstData"}],"shipment":{"idShipmentMethod":2}}}}"""))
+    .body(StringBody("""{"data":{"type":"checkout-data","attributes":{"customer":{"salutation":"Mr","email":"${customer_email}","firstName":"name","lastName":"name"},"idCart":"${cart_id}","cartNote":"this is cart note","billingAddress":{"salutation":"Mr","firstName":"John","lastName":"Doe","address1":"billing","address2":"b","address3":"aaa","zipCode":"12312","city":"Huston","country":"USA","countryIsoCode":"US","phone":"1234567890","regioncountryIsoCode":"US-IL"},"payments":[{"paymentMethodName":"firstDataCreditCard","paymentProviderName":"firstData"}],"shipment":{"idShipmentMethod":2}}}}"""))
     .header("Authorization", "Bearer ${access_token}")
     .header("Content-Type", "application/json")
     .check(status.is(200))
@@ -131,7 +131,7 @@ object CreateCheckoutRequestFiftyItemsApi {
         .formParam("chargetotal", session => session("chargetotal").as[String])
         .formParam("storename", session => session("storename").as[String])
         .formParam("transactionNotificationURL", "https://test.ipg-online.com/webshop/transactionNotification")
-        .formParam("notification_hash", session => Encryptor.getNotificationHash(      
+        .formParam("notification_hash", session => Encryptor.getNotificationHash(
               session("chargetotal").as[String].trim,
               session("currency").as[String].trim,
               txndatetime,
@@ -185,7 +185,7 @@ object CreateCheckoutRequestFiftyItemsApi {
 
   val checkoutRequest = http("Checkout Full Flow Api")
     .post("/checkout")
-    .body(StringBody("""{"data":{"type":"checkout","attributes":{"customer":{"salutation":"Mr","email":"sonia@spryker.com","firstName":"name","lastName":"name","phone":"1234567890","dateOfBirth": "1980-10-23"},"idCart":"${cart_id}","cartNote":"this is cart note","billingAddress":{"salutation":"Mr","firstName":"John","lastName":"Doe","address1":"billing","address2":"b","address3":"aaa","zipCode":"32836","city":"Huston","country":"USA","iso2Code":"US","phone":"1234567890","regionIso2Code":"US-IL"},"shipment":{"idShipmentMethod":2},"payments":[{"paymentMethodName":"firstDataCreditCard","paymentProviderName":"firstData","savePaymentMethod":true}],"shippingAddress":{"salutation":"Mr","firstName":"John","lastName":"Doe","address1":"not used","address2":"b","address3":"aaa","zipCode":"32836","city":"Chicago","country":"USA","iso2Code":"US","phone":"1234567890"}}}}""")).asJson
+    .body(StringBody("""{"data":{"type":"checkout","attributes":{"customer":{"salutation":"Mr","email":"sonia@spryker.com","firstName":"name","lastName":"name","phone":"1234567890","dateOfBirth": "1980-10-23"},"idCart":"${cart_id}","cartNote":"this is cart note","billingAddress":{"salutation":"Mr","firstName":"John","lastName":"Doe","address1":"billing","address2":"b","address3":"aaa","zipCode":"32836","city":"Huston","country":"USA","countryIsoCode":"US","phone":"1234567890","regioncountryIsoCode":"US-IL"},"shipment":{"idShipmentMethod":2},"payments":[{"paymentMethodName":"firstDataCreditCard","paymentProviderName":"firstData","savePaymentMethod":true}],"shippingAddress":{"salutation":"Mr","firstName":"John","lastName":"Doe","address1":"not used","address2":"b","address3":"aaa","zipCode":"32836","city":"Chicago","country":"USA","countryIsoCode":"US","phone":"1234567890"}}}}""")).asJson
     .header("Authorization", "Bearer ${access_token}")
     .header("Content-Type", "application/json")
     .check(status.saveAs("checkout_status"))

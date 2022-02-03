@@ -27,7 +27,22 @@ const getNewrelicTime = () => {
     return new Date().toISOString().replace("T", " ");
 }
 
-async function execute(test, instance, instanceName, testType, targetRps, duration, description) {
+const getTestCaseById = (testCaseId) => {
+    for (let i = 0; i < scenarios.length; i++) {
+        if (scenarios[i].status === 'inactive') {
+            continue;
+        }
+        for (let j = 0; j < scenarios[i].tests.length; j++) {
+            let test = scenarios[i].tests[j]
+            if (test != null && test.id === testCaseId) {
+                return test
+            }
+        }
+    }
+    return null;
+}
+
+async function executeTestCase(test, instance, instanceName, testType, targetRps, duration, description) {
     let startTime = getNewrelicTime();
     let testName = test.id;
     let title = `${testName}${testType}`;
@@ -104,6 +119,7 @@ async function execute(test, instance, instanceName, testType, targetRps, durati
 
         await fs.writeJson(`${reportFolder}/report.json`, {...runObject, log: null});
         await fs.writeJson(`${reportFolder}/report.log.json`, runObject.log);
+
     });
 
     while (!runObject.done) {
@@ -112,7 +128,7 @@ async function execute(test, instance, instanceName, testType, targetRps, durati
     }
 
     if (test.route.length > 0) {
-        await new Promise(resolve => setTimeout(resolve, 3000));
+        await new Promise(resolve => setTimeout(resolve, 90000)); // sleep 1 and half min until data will appears in newrelic.
         await collectNewrelicLogs(project, startTime, getNewrelicTime(), test.route, test.requestType, newrelicPath);
     }
 
@@ -282,7 +298,6 @@ fastify.post('/run', async (req, reply) => {
     let targetRps = req.body.targetRps;
     let duration = req.body.duration;
     let description = req.body.description;
-    let title = `${testName}${testType}`;
     let instanceNameRegex = /\(([a-zA-Z_-]+)\)/i;
     let found = instance.match(instanceNameRegex);
     let instanceName = Array.isArray(found) && found.length > 1 ? found[1] : "";
@@ -293,81 +308,16 @@ fastify.post('/run', async (req, reply) => {
         return;
     }
 
-    let project = instanceList.get(instance);
-    let key = `${instance}/${testName}/${testType}/${targetRps}-RPS/` + dateFormat.asString('yyyy-MM-dd-hh-mm-ss');
-    let reportPath = `/report/${key}/report/index.html`;
-    let reportFolder = `./${destinationFolder}/${key}`;
-    await fs.mkdirs(reportFolder);
+    let testCase = getTestCaseById(testName);
+    if (testCase == null) {
+        reply.code(404);
+        reply.send(`Given test ${testName} was not found.`);
+        return;
+    }
 
-    let runObject = {
-        id: key,
-        done: false,
-        exitCode: -1,
-        when: new Date().getTime(),
-        log: [],
-        instance,
-        testName,
-        testType,
-        targetRps,
-        duration,
-        description,
-        title,
-        reportPath,
-        logPath: `/log/${key}`,
-        valid: null,
-    };
+    executeTestCase(testCase, instance, instanceName, testType, targetRps, duration, description);
 
-    jobs.set(String(key), runObject);
-    reports.set(String(key), runObject);
-
-    var env = Object.create(process.env);
-    env.JAVA_OPTS = (process.env.JAVA_OPTS || '')
-        + ` -DYVES_URL=${project.yves}`
-        + ` -DGLUE_URL=${project.glue}`
-        + ` -DFE_URL=${project.fe_api}`
-        + ` -DBACKEND_API_URL=${project.backend_api}`
-        + ` -DINSTANCE_NAME=${instanceName}`
-        + ` -DDURATION=${duration}`
-        + ` -DTARGET_RPS=${targetRps}`;
-
-    description = description || '-';
-    const run = spawn('./gatling/bin/gatling.sh', ['-sf=resources/scenarios/spryker', `-rd='${description}'`, `-rf=${reportFolder}`, `-s=spryker.${testName}${testType}`], {env: env});
-
-    run.stdout.on('data', data => {
-        runObject.log.push({
-            entry: data.toString(),
-            error: false
-        });
-    });
-
-    run.stderr.on('data', data => {
-        runObject.log.push({
-            entry: data.toString(),
-            error: true
-        });
-    });
-
-    run.on('close', async code => {
-        runObject.done = true;
-        runObject.exitCode = code;
-        runObject.success = code === 0;
-
-        jobs.delete(key);
-
-        if (!runObject.success) {
-            await fs.remove(reportFolder);
-            return;
-        }
-
-        await glob(`${reportFolder}/*/`, (er, directories) => {
-            directories.map(async directory => fs.rename(directory, `${reportFolder}${reportSuffix}`));
-        });
-
-        await fs.writeJson(`${reportFolder}/report.json`, {...runObject, log: null});
-        await fs.writeJson(`${reportFolder}/report.log.json`, runObject.log);
-    });
-
-    reply.redirect(302, `${runObject.logPath}#bottom`);
+    reply.redirect(302, `/`);
 });
 
 fastify.get('/run_all', (req, reply) => {
@@ -413,7 +363,7 @@ fastify.post('/run_all', async (req, reply) => {
                 let test = scenarios[i].tests[j]
                 if (test != null) {
                     fastify.log.info(`test:  ${test.id} : ${test.route}`)
-                    let runObject = await execute(test, instance, instanceName, testType, targetRps, duration, description);
+                    let runObject = await executeTestCase(test, instance, instanceName, testType, targetRps, duration, description);
                     fastify.log.info(`test result:  ${runObject.done}`)
                     index++;
                 }

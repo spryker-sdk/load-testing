@@ -33,8 +33,8 @@ trait CheckoutFullFlowLessOrEqualFiftyItemsApiBase {
   val customerFeeder = csv("tests/_data/customer.csv").random
 
   val feeder = Iterator.continually(Map(
-  "customerEmail" -> (Random.alphanumeric.take(30).mkString + "@gmail.com"), 
-  "password" -> "supe!rsEcu1re", 
+  "customerEmail" -> (Random.alphanumeric.take(30).mkString + "@gmail.com"),
+  "password" -> "supe!rsEcu1re",
   "cartItemsQuantity" -> 49))
 
   val createCustomerRequest = http("Create Customer Request")
@@ -67,7 +67,7 @@ trait CheckoutFullFlowLessOrEqualFiftyItemsApiBase {
 
   val checkoutRequest = http("Checkout Request")
     .post("/checkout")
-    .body(StringBody("""{"data":{"type":"checkout","attributes":{"customer":{"firstName":"Paul","lastName":"Rosenberg","gender":"Male","salutation":"Mr","email":"${customerEmail}","dateOfBirth":"1957-10-23","phone":"1 800-123-0000"},"idCart":"${cart_id}","billingAddress":{"salutation":"Mr","firstName":"Paul","lastName":"Rosenberg","address1":"203 Fifth Ave","address2":"17th floor","address3":"Office 1716","zipCode":"10013","city":"New York","iso2Code":"US","company":"Spryker","phone":"1 800-123-0000","isDefaultBilling":true,"isDefaultShipping":true,"regionIso2Code":"US-CA"},"shippingAddress":{"salutation":"Mr","firstName":"Paul","lastName":"Rosenberg","address1":"203 Fifth Ave","address2":"17th floor","address3":"Office 1716","zipCode":"10013","city":"New York","iso2Code":"US","company":"Spryker","phone":"1 800-123-0000","isDefaultBilling":true,"isDefaultShipping":true,"regionIso2Code":"US-CA"},"payments":[{"paymentProviderName":"DummyPayment","paymentMethodName":"Invoice"}],"shipment":{"idShipmentMethod":3},"shipments":[{"shippingAddress":{"salutation":"Mr","firstName":"Paul","lastName":"Rosenberg","address1":"203 Fifth Ave","address2":"17th floor","address3":"Office 1716","zipCode":"10013","city":"New York","iso2Code":"US","company":"Spryker","phone":"1 800-123-0000","isDefaultBilling":true,"isDefaultShipping":true,"regionIso2Code":"US-CA"},"items":["string"],"idShipmentMethod":3,"requestedDeliveryDate":"2022-09-19"}],"cartNote":"string"}}}""")).asJson
+    .body(StringBody("""{"data":{"type":"checkout","attributes":{"customer":{"firstName":"Paul","lastName":"Rosenberg","gender":"Male","salutation":"Mr","email":"${customerEmail}","dateOfBirth":"1957-10-23","phone":"1 800-123-0000"},"idCart":"${cart_id}","billingAddress":{"salutation":"Mr","firstName":"Paul","lastName":"Rosenberg","address1":"203 Fifth Ave","address2":"17th floor","address3":"Office 1716","zipCode":"10013","city":"New York","countryIsoCode":"US","company":"Spryker","phone":"1 800-123-0000","isDefaultBilling":true,"isDefaultShipping":true,"regioncountryIsoCode":"US-CA"},"shippingAddress":{"salutation":"Mr","firstName":"Paul","lastName":"Rosenberg","address1":"203 Fifth Ave","address2":"17th floor","address3":"Office 1716","zipCode":"10013","city":"New York","countryIsoCode":"US","company":"Spryker","phone":"1 800-123-0000","isDefaultBilling":true,"isDefaultShipping":true,"regioncountryIsoCode":"US-CA"},"payments":[{"paymentProviderName":"DummyPayment","paymentMethodName":"Invoice"}],"shipment":{"idShipmentMethod":3},"shipments":[{"shippingAddress":{"salutation":"Mr","firstName":"Paul","lastName":"Rosenberg","address1":"203 Fifth Ave","address2":"17th floor","address3":"Office 1716","zipCode":"10013","city":"New York","countryIsoCode":"US","company":"Spryker","phone":"1 800-123-0000","isDefaultBilling":true,"isDefaultShipping":true,"regioncountryIsoCode":"US-CA"},"items":["string"],"idShipmentMethod":3,"requestedDeliveryDate":"2022-09-19"}],"cartNote":"string"}}}""")).asJson
     .header("Authorization", "Bearer ${access_token}")
     .header("Content-Type", "application/json")
     .check(status.is(201))

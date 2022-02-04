@@ -424,6 +424,7 @@ fastify.post('/instances', (req, reply) => {
     let newrelicApplication = req.body.newrelic_application;
     let newrelicApiKey = req.body.newrelic_api_key;
     let newrelicApplicationId = req.body.newrelic_application_id;
+    let mockServer = req.body.mock_server;
 
     if (key !== "") {
         let project = Object.assign({},
@@ -431,6 +432,7 @@ fastify.post('/instances', (req, reply) => {
             glue && {"glue": glue},
             key && {"key": key},
             backendApi && {"backend_api": backendApi},
+            mockServer && {"mock_server": mockServer},
             feApi && {"fe_api": feApi},
             newrelicApplication && {"newrelic_application": newrelicApplication},
             newrelicApiKey && {"newrelic_api_key": newrelicApiKey},

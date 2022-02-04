@@ -36,7 +36,7 @@ trait CreateCheckoutDataFrontendApiBase {
 
   val checkoutDataRequest = http("Checkout First Data Request")
       .post("/checkout-data")
-      .body(StringBody("""{"data":{"type":"checkout-data","attributes":{"customer":{"salutation":"Mr","email":"${customerEmail}","firstName":"name","lastName":"name"},"idCart":"${cartId}","cartNote":"this is cart note","billingAddress":{"salutation":"Mr","firstName":"John","lastName":"Doe","address1":"billing","address2":"b","address3":"aaa","zipCode":"12312","city":"Huston","country":"USA","iso2Code":"US","phone":"1234567890","regionIso2Code":"US-IL"},"payments":[{"paymentMethodName":"firstDataCreditCard","paymentProviderName":"firstData"}],"shipment":{"idShipmentMethod":"2"}}}}"""))
+      .body(StringBody("""{"data":{"type":"checkout-data","attributes":{"customer":{"salutation":"Mr","email":"${customerEmail}","firstName":"name","lastName":"name"},"idCart":"${cartId}","cartNote":"this is cart note","billingAddress":{"salutation":"Mr","firstName":"John","lastName":"Doe","address1":"billing","address2":"b","address3":"aaa","zipCode":"12312","city":"Huston","country":"USA","countryIsoCode":"US","phone":"1234567890","regioncountryIsoCode":"US-IL"},"payments":[{"paymentMethodName":"firstDataCreditCard","paymentProviderName":"firstData"}],"shipment":{"idShipmentMethod":"2"}}}}"""))
       .header("Authorization", "Bearer ${access_token}")
       .header("Content-Type", "application/json")
       .check(status.is(200))

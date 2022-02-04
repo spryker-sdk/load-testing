@@ -368,21 +368,21 @@ fastify.post('/run_all', async (req, reply) => {
     pendingJobs = initTestCases();
 
     async function runAll(instance, instanceName, testType, targetRps, duration, description) {
-        let counter = 1;
+        // let counter = 1;
         for (let i = 0; i < scenarios.length; i++) {
             if (scenarios[i].status === 'inactive') {
                 continue;
             }
             for (let j = 0; j < scenarios[i].tests.length; j++) {
-                if (counter > 4) {
-                    break;
-                }
+                // if (counter > 4) {
+                //     break;
+                // }
                 let testCase = scenarios[i].tests[j]
                 if (testCase != null) {
                     fastify.log.info(`Test case:  ${testCase.id} : ${testCase.route}`)
                     let runObject = await executeTestCase(testCase, instance, instanceName, testType, targetRps, duration, description);
                     fastify.log.info(`Test case status:  ${runObject.done}`)
-                    counter++;
+                    // counter++;
                 }
             }
         }

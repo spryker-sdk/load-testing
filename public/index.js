@@ -24,7 +24,7 @@ const getInstanceList = () => {
 }
 
 const getNewrelicTime = () => {
-    return new Date().toISOString().replace("T", " ");
+    return new Date().toISOString().replace("T", " ").replace(/\..+/, ``);
 }
 
 const initTestCases = () => {
@@ -70,6 +70,7 @@ async function executeTestCase(test, instance, instanceName, testType, targetRps
         done: false,
         exitCode: -1,
         when: new Date().getTime(),
+        end: '',
         log: [],
         instance,
         testName,
@@ -118,10 +119,11 @@ async function executeTestCase(test, instance, instanceName, testType, targetRps
 
     run.on('close', async code => {
         runObject.done = true;
+        runObject.end = new Date().getTime();
         runObject.exitCode = code;
         runObject.success = code === 0;
         jobs.delete(key);
-        pendingJobs.delete(key);
+        pendingJobs.delete(test.id);
         if (!runObject.success) {
             await fs.remove(reportFolder);
             return;
@@ -133,72 +135,68 @@ async function executeTestCase(test, instance, instanceName, testType, targetRps
 
         await fs.writeJson(`${reportFolder}/report.json`, {...runObject, log: null});
         await fs.writeJson(`${reportFolder}/report.log.json`, runObject.log);
-
+        await collectNewrelicLogs(project, startTime, getNewrelicTime(), test.route, test.requestType, newrelicLogFilePath);
     });
 
     while (!runObject.done) {
         // fastify.log.info(`Job ID:  ${runObject.id} Job Status: ${runObject.done} Job error: ${runObject.error}`);
-        await new Promise(resolve => setTimeout(resolve, 1000));
+        await new Promise(resolve => setTimeout(resolve, 30000));
     }
-
-    if (test.route.length > 0) {
-        fastify.log.info(`Sleep before request to newrelic`);
-        await new Promise(resolve => setTimeout(resolve, 90000)); // sleep 1 and half min until data will appears in newrelic.
-        await collectNewrelicLogs(project, startTime, getNewrelicTime(), test.route, test.requestType, newrelicLogFilePath);
-    }
-
     return runObject;
 }
 
 async function collectNewrelicLogs(instance, timeFrameStart, timeFrameEnd, route, requestType, newrelicPath) {
-    fastify.log.info(`Collect newrelic info:  ${timeFrameStart} - ${timeFrameEnd} : ${route}  Request type: ${requestType} Newrelic log path: ${newrelicPath}`)
-    fastify.log.info(instance);
-
-    if (!route.length) {
-        fastify.log.info(`Skip request to newrelic due to empty route.`)
+    if (!route.length && (!instance.newrelic_application_id.length || !instance.newrelic_application.length || !instance.newrelic_api_key)) {
+        fastify.log.info(`Skip request to newrelic due to misconfiguration.`)
         return;
     }
-
-    const data = JSON.stringify({
-        "query": newrelicQuery.replace('ACCOUNT_ID', instance.newrelic_application_id)
-            .replace('TARGET_ROUTE', route)
-            .replace('REQUEST_TYPE', requestType.toUpperCase())
-            .replace('APPLICATION_NAME', instance.newrelic_application)
-            .replace('SINCE_DATE_TIME', timeFrameStart)
-            .replace('UNTIL_DATE_TIME', timeFrameEnd),
-        "variables": ""
-    });
-
-    fastify.log.info(`Payload:` + data);
-
-    const options = {
-        hostname: 'api.newrelic.com',
-        port: 443,
-        path: '/graphql',
-        method: 'POST',
-        json: true,
-        headers: {
-            'Content-Type': 'application/json',
-            'Content-Length': data.length,
-            'API-Key': instance.newrelic_api_key
-        }
-    }
-    const req = https.request(options, res => {
-        let data = '';
-        res.on('data', (chunk) => {
-            data += chunk;
-        })
-
-        res.on('end', async () => {
-            await fs.writeJson(newrelicPath, JSON.parse(data));
-            fastify.log.info(JSON.parse(data));
+    async function collect() {
+        fastify.log.info(`Collect newrelic info:  ${timeFrameStart} - ${timeFrameEnd} : ${route}  Request type: ${requestType} Newrelic log path: ${newrelicPath}`)
+        const data = JSON.stringify({
+            "query": newrelicQuery.replace('ACCOUNT_ID', instance.newrelic_application_id)
+                .replace('TARGET_ROUTE', route)
+                .replace('REQUEST_TYPE', requestType.toUpperCase())
+                .replace('APPLICATION_NAME', instance.newrelic_application)
+                .replace('SINCE_DATE_TIME', timeFrameStart)
+                .replace('UNTIL_DATE_TIME', timeFrameEnd),
+            "variables": ""
         });
-    }).on("error", async (error) => {
-        await fs.writeJson(newrelicPath, JSON.parse(data));
-        fastify.log.info("Newrelic request error:" + error.message)
-    })
-    req.write(data);
-    req.end();
+
+        fastify.log.info(`Payload:` + data);
+
+        const options = {
+            hostname: 'api.newrelic.com',
+            port: 443,
+            path: '/graphql',
+            method: 'POST',
+            json: true,
+            headers: {
+                'Content-Type': 'application/json',
+                'Content-Length': data.length,
+                'API-Key': instance.newrelic_api_key
+            }
+        }
+        const req = https.request(options, res => {
+            let data = '';
+            res.on('data', (chunk) => {
+                data += chunk;
+            })
+
+            res.on('end', async () => {
+                await fs.writeJson(newrelicPath, JSON.parse(data));
+                fastify.log.info(JSON.parse(data));
+            });
+        }).on("error", async (error) => {
+            await fs.writeJson(newrelicPath, JSON.parse(data));
+            fastify.log.info("Newrelic request error:" + error.message)
+        })
+        req.write(data);
+        req.end();
+    }
+
+    fastify.log.info(`Sleep before request to newrelic`);
+
+    return new Promise(() => setTimeout(collect, 120000)); // sleep 2 min until data will appear in newrelic.
 }
 
 fastify.register(require('fastify-formbody'));
@@ -370,19 +368,25 @@ fastify.post('/run_all', async (req, reply) => {
     pendingJobs = initTestCases();
 
     async function runAll(instance, instanceName, testType, targetRps, duration, description) {
+        let counter = 1;
         for (let i = 0; i < scenarios.length; i++) {
             if (scenarios[i].status === 'inactive') {
                 continue;
             }
             for (let j = 0; j < scenarios[i].tests.length; j++) {
+                if (counter > 4) {
+                    break;
+                }
                 let testCase = scenarios[i].tests[j]
                 if (testCase != null) {
                     fastify.log.info(`Test case:  ${testCase.id} : ${testCase.route}`)
                     let runObject = await executeTestCase(testCase, instance, instanceName, testType, targetRps, duration, description);
                     fastify.log.info(`Test case status:  ${runObject.done}`)
+                    counter++;
                 }
             }
         }
+        pendingJobs.clear();
     }
 
     runAll(instance, instanceName, testType, targetRps, duration, description);
@@ -510,10 +514,10 @@ const readReports = async () => {
     await glob(`./${destinationFolder}/!(archive)/**/report.json`, (er, files) => {
         Array.isArray(files) && files.map(file => {
             let runObject = fs.readJsonSync(file);
-            // if (fs.exists(runObject.newrelicLogFilePath)) {
-            // fastify.log.info(`${runObject.newrelicLogFilePath}`)
-            // runObject.newrelicLog = fs.readJsonSync(runObject.newrelicLogFilePath)
-            // }
+            if (fs.existsSync(runObject.newrelicLogFilePath)) {
+                let info = fs.readJsonSync(runObject.newrelicLogFilePath)
+                runObject.newrelicLog = info.data.actor.account.nrql.results[0]
+            }
             reports.set(runObject.id, runObject);
         });
     });

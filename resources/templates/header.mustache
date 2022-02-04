@@ -22,11 +22,10 @@
         <div class="nav-inner">
 
             {{^jobs}}
-                <a class="primary-button pure-button" href="/run">New Test</a>
-            {{/jobs}}
-
-            {{^jobs}}
-                <a class="primary-button pure-button" href="/run_all">Execute all tests</a>
+                {{^pendingJobs}}
+                    <a class="primary-button pure-button" href="/run">New Test</a>
+                    <a class="primary-button pure-button" href="/run_all">Execute all tests</a>
+                {{/pendingJobs}}
             {{/jobs}}
 
             {{#pendingJobs}}
@@ -35,7 +34,6 @@
 
             <div class="pure-menu">
                 <ul class="pure-menu-list">
-
                     <li class="pure-menu-item"><a href="{{logPath}}" class="pure-menu-link">Running Jobs<span class="email-count">
                     {{^jobs}}
                         (0)

@@ -64,10 +64,38 @@
                     }
                 },
                 sorter: "number",
-                headerFilter: "input"
+                headerFilter: "input",
+                widthGrow: 1
             },
-            {title: "Description", field: "description", headerFilter: "input", widthGrow: 4, headerFilter: "input"},
-            {title: "Newrelic", field: "newrelicLog", widthGrow: 4},
+            {
+                title: "Finished At",
+                field: "end",
+                formatter: function (cell) {
+                    var value = cell.getValue();
+                    if (value) {
+                        return new Date(value).toLocaleDateString() + '<br>' + new Date(value).toLocaleTimeString();
+                    }
+                },
+                sorter: "number",
+                headerFilter: "input",
+                widthGrow: 1
+            },
+            {title: "Description", field: "description", headerFilter: "input", widthGrow: 3, headerFilter: "input"},
+            {
+                title: "Newrelic",
+                field: "newrelicLog",
+                widthGrow: 3,
+                formatter:function(cell) {
+                    var row = cell.getRow().getData();
+                    var result = '';
+                    if (row.done && row.newrelicLog) {
+                        for (const infoKey in row.newrelicLog) {
+                            result += `${infoKey}: ${row.newrelicLog[infoKey]} <br/>`;
+                        }
+                    }
+                    return result;
+                }
+            },
             {
                 title: "",
                 field: "",
@@ -75,18 +103,13 @@
                     var row = cell.getRow().getData();
                     var result = '';
                     if (row.done && row.reportPath) {
-                        result += `<a href="${row.reportPath}" target="_blank">Report</a>`;
-                        if (row.newrelicPath !== "undefined") {
-                            result += `<br/><a href="${row.newrelicLogPath}">Newrelic</a>`;
-                        }
+                        result += `<a href="${row.reportPath}" target="_blank">Report</a><br/>`;
                     }
-                    result += '&nbsp;';
                     if (row.logPath) {
-                        result += `<br/><a href="${row.logPath}">Log</a>`;
+                        result += `<a href="${row.logPath}">Log</a>`;
                     }
-
                     return result;
-                }
+                },
             },
             {
                 formatter:"buttonCross",

@@ -31,7 +31,11 @@
             {{#pendingJobs}}
                 <a class="primary-button pure-button" href="/clear">Clear Tests Pipeline</a>
             {{/pendingJobs}}
-
+            {{^jobs}}
+                {{#reports.length}}
+                    <a class="primary-button pure-button" href="/drop">Remove All Test Results</a>
+                {{/reports.length}}
+            {{/jobs}}
             <div class="pure-menu">
                 <ul class="pure-menu-list">
                     <li class="pure-menu-item"><a href="{{logPath}}" class="pure-menu-link">Running Jobs<span class="email-count">

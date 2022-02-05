@@ -9,7 +9,16 @@ const dotenv = require("dotenv").config({ path: process.cwd() + '/.env' });
 const port = process.env.PORT || 3000;
 const host = process.env.HOST || '0.0.0.0';
 const https = require('https');
-const newrelicQuery='{\n  actor {\n    account(id: ACCOUNT_ID) {\n      nrql(query: \"SELECT count(*), max(duration)*1000, min(duration)*1000, average(duration)*1000 FROM Transaction WHERE spryker_router_resources_path=\u0027/TARGET_ROUTE/*\u0027 AND request.method = \u0027REQUEST_TYPE\u0027 AND appName = \u0027APPLICATION_NAME\u0027 SINCE \u0027SINCE_DATE_TIME\u0027 UNTIL \u0027UNTIL_DATE_TIME\u0027\") {\n        results\n      }\n    }\n  }\n}';
+const newrelicQuery='{\n' +
+    '  actor {\n' +
+    '    account(id: ACCOUNT_ID) {\n' +
+    '      nrql(query: "SELECT count(*) as requests, max(duration)*1000 as max, min(duration)*1000 as min, average(duration)*1000 as avg FROM Transaction WITH TIMEZONE \'UTC\' WHERE spryker_router_resources_path=\u0027TARGET_ROUTE\u0027 AND appName = \u0027APPLICATION_NAME\u0027 AND request.method in (\u0027REQUEST_TYPE\u0027) SINCE \u0027SINCE_DATE_TIME\u0027 UNTIL \u0027UNTIL_DATE_TIME\u0027") ' +
+    '      {\n' +
+    '        results\n' +
+    '      }\n' +
+    '    }\n' +
+    '  }\n' +
+    '}';
 const scenarios = require('../resources/scenarios/scenarios.js');
 
 const destinationFolder = 'web';
@@ -117,6 +126,13 @@ async function executeTestCase(test, instance, instanceName, testType, targetRps
         });
     });
 
+    run.stderr.on('error', async code => {
+        await fs.remove(reportFolder);
+        jobs.delete(key);
+        pendingJobs.delete(test.id);
+        await readReports();
+    });
+
     run.on('close', async code => {
         runObject.done = true;
         runObject.end = new Date().getTime();
@@ -195,8 +211,7 @@ async function collectNewrelicLogs(instance, timeFrameStart, timeFrameEnd, route
     }
 
     fastify.log.info(`Sleep before request to newrelic`);
-
-    return new Promise(() => setTimeout(collect, 120000)); // sleep 2 min until data will appear in newrelic.
+    return new Promise(() => setTimeout(collect, 10 * 1000)); // sleep 10 seconds to make sure that  data appeared in newrelic.
 }
 
 fastify.register(require('fastify-formbody'));
@@ -229,6 +244,8 @@ fastify.register(require('fastify-static'), {
 });
 
 fastify.get('/', (req, reply) => {
+    readReports();
+
     reply.view('list.mustache', {
         title: 'Load testing',
         scenarios: scenarios,
@@ -337,6 +354,18 @@ fastify.get('/clear', async (req, reply) => {
     reply.redirect(302, `/`);
 });
 
+fastify.get('/drop', async (req, reply) => {
+    await glob(`./${destinationFolder}/*`, (er, files) => {
+        for (const filesKey in files) {
+            if (fs.lstatSync(files[filesKey]).isDirectory()) {
+                fs.removeSync(files[filesKey]);
+            }
+        }
+    });
+    await readReports();
+    reply.redirect(302, `/`);
+});
+
 fastify.get('/run_all', (req, reply) => {
     let template = jobs.size === 0 ? 'run_all.mustache' : 'error.mustache';
     reply.view(template, {
@@ -379,10 +408,8 @@ fastify.post('/run_all', async (req, reply) => {
                 // }
                 let testCase = scenarios[i].tests[j]
                 if (testCase != null) {
-                    fastify.log.info(`Test case:  ${testCase.id} : ${testCase.route}`)
-                    let runObject = await executeTestCase(testCase, instance, instanceName, testType, targetRps, duration, description);
-                    fastify.log.info(`Test case status:  ${runObject.done}`)
-                    // counter++;
+                    await executeTestCase(testCase, instance, instanceName, testType, targetRps, duration, description);
+                    await new Promise(resolve => setTimeout(resolve, 60000));
                 }
             }
         }
@@ -516,10 +543,10 @@ const readReports = async () => {
     await glob(`./${destinationFolder}/!(archive)/**/report.json`, (er, files) => {
         Array.isArray(files) && files.map(file => {
             let runObject = fs.readJsonSync(file);
-            if (fs.existsSync(runObject.newrelicLogFilePath)) {
+            try {
                 let info = fs.readJsonSync(runObject.newrelicLogFilePath)
                 runObject.newrelicLog = info.data.actor.account.nrql.results[0]
-            }
+            } catch (err) {}
             reports.set(runObject.id, runObject);
         });
     });

@@ -145,10 +145,11 @@
         table.setHeaderFilterValue(filter, filters[filter]);
     });
 
-    setInterval(function () {
-        table.replaceData();
-    }, 5000);
-
+    {{#jobs}}
+        setInterval(function () {
+            table.replaceData();
+        }, 5000);
+    {{/jobs}}
 </script>
 
 {{> footer}}

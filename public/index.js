@@ -253,6 +253,7 @@ fastify.get('/', (req, reply) => {
         jobs: Array.from(jobs.values()),
         reports: Array.from(reports.values()),
         pendingJobs: pendingJobs.size,
+        amountOfTestCases: initTestCases().size,
     }, {...partials});
 });
 
@@ -316,6 +317,7 @@ fastify.get('/run', (req, reply) => {
         jobs: Array.from(jobs.values()),
         reports: Array.from(reports.values()),
         pendingJobs: pendingJobs.size,
+        amountOfTestCases: initTestCases().size,
     }, {...partials});
 });
 
@@ -376,6 +378,7 @@ fastify.get('/run_all', (req, reply) => {
         jobs: Array.from(jobs.values()),
         reports: Array.from(reports.values()),
         pendingJobs: pendingJobs.size,
+        amountOfTestCases: initTestCases().size,
     }, {...partials});
 });
 
@@ -509,6 +512,7 @@ fastify.get('/log/*', async (req, reply) => {
         jobs: Array.from(jobs.values()),
         reports: Array.from(reports.values()),
         pendingJobs: pendingJobs.size,
+        amountOfTestCases: initTestCases().size,
     }, {...partials});
 });
 
@@ -536,6 +540,7 @@ fastify.get('/newrelic/*', async (req, reply) => {
         jobs: Array.from(jobs.values()),
         reports: Array.from(reports.values()),
         pendingJobs: pendingJobs.size,
+        amountOfTestCases: initTestCases().size,
     }, {...partials});
 });
 

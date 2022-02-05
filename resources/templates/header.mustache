@@ -33,7 +33,7 @@
             {{/pendingJobs}}
             {{^jobs}}
                 {{#reports.length}}
-                    <a class="primary-button pure-button" href="/drop">Remove All Test Results</a>
+                    <a class="primary-button pure-button" href="/drop">Remove All Test Results ({{reports.length}})</a>
                 {{/reports.length}}
             {{/jobs}}
             <div class="pure-menu">
@@ -48,6 +48,7 @@
                     </span></a></li>
 
                     <li class="pure-menu-item"><a href="/" class="pure-menu-link">Pending Jobs <span class="email-count">({{ pendingJobs }})</a></li>
+                    <li class="pure-menu-item"><a href="/" class="pure-menu-link">Amount Of Executable Tests<span class="email-count">({{ amountOfTestCases }})</a></li>
                     <li class="pure-menu-heading">Instances</li>
                     <a class="primary-button pure-button" href="/instances">New instance</a>
                     <li class="pure-menu-item"><a href="/" class="pure-menu-link">ALL</a></li>

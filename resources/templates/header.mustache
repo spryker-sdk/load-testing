@@ -14,41 +14,33 @@
     <script src="https://use.fontawesome.com/97ec165e51.js"></script>
 </head>
 <body>
-
 <div id="layout" class="content pure-g">
     <div id="nav" class="pure-u">
         <a href="#" class="nav-menu-button">Menu</a>
-
         <div class="nav-inner">
-
-            {{^jobs}}
-                {{^pendingJobs}}
-                    <a class="primary-button pure-button" href="/run">New Test</a>
-                    <a class="primary-button pure-button" href="/run_all">Execute all tests</a>
-                {{/pendingJobs}}
-            {{/jobs}}
-
-            {{#pendingJobs}}
-                <a class="primary-button pure-button" href="/clear">Clear Tests Pipeline</a>
-            {{/pendingJobs}}
-            {{^jobs}}
-                {{#reports.length}}
-                    <a class="primary-button pure-button" href="/drop">Remove All Test Results ({{reports.length}})</a>
-                {{/reports.length}}
-            {{/jobs}}
             <div class="pure-menu">
                 <ul class="pure-menu-list">
-                    <li class="pure-menu-item"><a href="{{logPath}}" class="pure-menu-link">Running Jobs<span class="email-count">
-                    {{^jobs}}
-                        (0)
-                    {{/jobs}}
-                    {{#jobs}}
-                        (1)
-                    {{/jobs}}
-                    </span></a></li>
 
-                    <li class="pure-menu-item"><a href="/" class="pure-menu-link">Pending Jobs <span class="email-count">({{ pendingJobs }})</a></li>
-                    <li class="pure-menu-item"><a href="/" class="pure-menu-link">Amount Of Executable Tests<span class="email-count">({{ amountOfTestCases }})</a></li>
+                    <li class="pure-menu-heading">Tests Information</li>
+                    <li class="pure-menu-item"><div id="current-status"></div></li>
+                    <li class="pure-menu-heading">Actions</li>
+                    <li class="pure-menu-item">
+                        {{^jobs}}
+                            {{^pendingJobs}}
+                                <a class="primary-button pure-button" href="/run">New Test</a>
+                                <a class="primary-button pure-button" href="/run_all">Execute all tests</a>
+                            {{/pendingJobs}}
+                        {{/jobs}}
+
+                        {{#pendingJobs}}
+                            <a class="primary-button pure-button" href="/clear">Clear Tests Pipeline</a>
+                        {{/pendingJobs}}
+                        {{^jobs}}
+                            {{#reports.length}}
+                                <a class="primary-button pure-button" href="/drop">Remove All Test Results ({{reports.length}})</a>
+                            {{/reports.length}}
+                        {{/jobs}}
+                    </li>
                     <li class="pure-menu-heading">Instances</li>
                     <a class="primary-button pure-button" href="/instances">New instance</a>
                     <li class="pure-menu-item"><a href="/" class="pure-menu-link">ALL</a></li>
@@ -65,6 +57,30 @@
                         {{/tests}}
                     {{/scenarios}}
                 </ul>
+                <script>
+                    var statusTable = new Tabulator("#current-status", {
+                        ajaxURL: '/status',
+                        layout: "fitColumns",
+                        resizableColumns: false,
+                        columns: [
+                            {title: "Total", field: "total", align: "center"},
+                            {title: "Pending", field: "pending", align: "center"},
+                            {title: "Running", field: "running", align: "center"},
+                        ],
+                    });
+                    {{#pendingJobs}}
+                        setInterval(function () {
+                          statusTable.replaceData();
+                        }, 5000);
+                    {{/pendingJobs}}
+                    {{^pendingJobs}}
+                        {{#jobs}}
+                          setInterval(function () {
+                            statusTable.replaceData();
+                          }, 5000);
+                        {{/jobs}}
+                    {{/pendingJobs}}
+                </script>
             </div>
         </div>
     </div>

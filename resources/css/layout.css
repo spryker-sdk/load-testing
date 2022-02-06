@@ -6,8 +6,13 @@ body {
     color: #333;
 }
 
-
-
+.failed {
+    background-color: #ffc1bc;
+}
+.info{
+    text-align: center;
+    padding-bottom: 5px;
+}
 a {
     text-decoration: none;
     color: #1b98f8;

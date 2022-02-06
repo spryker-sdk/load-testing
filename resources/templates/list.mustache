@@ -10,7 +10,7 @@
         groupBy: "done",
         groupValues: [[false, true]],
         groupHeader: function (value, count, data, group) {
-            return value ? 'Done' : ('Running (' + count + ')');
+            return value ? 'Done (' + count + ')' : ('Running (' + count + ')');
         },
         initialSort:[
             {column:"when", dir:"desc"},
@@ -81,6 +81,7 @@
                 widthGrow: 1
             },
             {title: "Description", field: "description", headerFilter: "input", widthGrow: 3, headerFilter: "input"},
+            {title: "SLA", field: "slaStatus", align: "center", formatter: "tickCross"},
             {
                 title: "Newrelic",
                 field: "newrelicLog",
@@ -93,7 +94,11 @@
                             result += `${infoKey}: ${row.newrelicLog[infoKey]} <br/>`;
                         }
                     }
-                    return result;
+                    if (row.slaStatus) {
+                        return result;
+                    } else {
+                        return `<div class="failed">${result}</div>`;
+                    }
                 }
             },
             {
@@ -145,11 +150,18 @@
         table.setHeaderFilterValue(filter, filters[filter]);
     });
 
-    {{#jobs}}
+    {{#pendingJobs}}
         setInterval(function () {
-            table.replaceData();
+          table.replaceData();
         }, 5000);
-    {{/jobs}}
+    {{/pendingJobs}}
+    {{^pendingJobs}}
+        {{#jobs}}
+          setInterval(function () {
+            table.replaceData();
+          }, 5000);
+        {{/jobs}}
+    {{/pendingJobs}}
 </script>
 
 {{> footer}}

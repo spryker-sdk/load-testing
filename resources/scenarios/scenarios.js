@@ -36,7 +36,7 @@ const scenarios = [
             { id: 'GetCollectionOfStoresFrontendApi', title: 'GetCollectionOfStoresFrontendApi', route: '/stores', requestType: 'get'},
             { id: 'GetStoresFrontendApi', title: 'GetStoresFrontendApi', route: '/stores/*', requestType: 'get'},
             { id: 'GetCollectionOfCategoryTreesFrontendApi', title: 'GetCollectionOfCategoryTreesFrontendApi', route: '/category-trees', requestType: 'get'},
-            { id: 'GetCategoryNodesFrontendApi', title: 'Get Category Nodes', route: '/category-nodes/1', requestType: 'get'},
+            { id: 'GetCategoryNodesFrontendApi', title: 'Get Category Nodes', route: '/category-nodes/*', requestType: 'get'},
             { id: 'GetCustomersFrontendApi', title: 'GetCustomersFrontendApi', route: '/customers/*', requestType: 'get'},
             { id: 'GetCollectionOfCustomersFrontendApi', title: 'GetCollectionOfCustomersFrontendApi', route: '/customers', requestType: 'get'},
             { id: 'PdpApi', title: 'PDP request', route: '/concrete-products/*', requestType: 'get'},

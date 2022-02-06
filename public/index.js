@@ -223,7 +223,7 @@ fastify.post('/run_all', async (req, reply) => {
                 let testCase = scenarios[i].tests[j]
                 if (testCase != null) {
                     await executeTestCase(testCase, instance, instanceName, testType, targetRps, duration, description);
-                    await new Promise(resolve => setTimeout(resolve, timeouts.executeNextTestAfter));
+                    await new Promise(resolve => setTimeout(resolve, timeouts.executeNextTestAfter)).catch(() => {});
                 }
             }
         }

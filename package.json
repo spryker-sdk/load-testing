@@ -15,6 +15,7 @@
   "license": "Spryker",
   "dependencies": {
     "data-store": "^4.0.3",
+    "yargs": "^16.2.0",
     "date-format": "^3.0.0",
     "dotenv": "^10.0.0",
     "fastify": "^2.10.0",

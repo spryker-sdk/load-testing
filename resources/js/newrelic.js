@@ -74,5 +74,7 @@ module.exports.collectNewrelicLogs =
         }
 
         console.info(`Sleep before request to newrelic`);
-        return new Promise(() => setTimeout(collect, timeouts.collectNewrelicInfoAfter));
+        return new Promise(() => setTimeout(collect, timeouts.collectNewrelicInfoAfter)).catch(() => {
+            console.log("Newrelic collect results: Promise for Timeout Rejected");
+        });
     }

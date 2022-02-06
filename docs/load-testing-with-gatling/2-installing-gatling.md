@@ -121,12 +121,18 @@ cd load-testing
 ```bash
   docker-compose exec gatling bash
 ```
-5. Access UI via url http://localhost:3000
-6. Stop container
+5. Execute full test suite from command line
+```bash
+  docker-compose exec gatling bash
+
+  node public/test-suite.js  -i TARGET_ENV -t LOAD TYPE -r RPS -d DURATION
+```
+6. Access UI via url http://localhost:3000
+7. Stop container
 ```bash
     docker-compose stop
 ```
-7. Destroy container
+8. Destroy container
 ```bash
     docker-compose down
 ```

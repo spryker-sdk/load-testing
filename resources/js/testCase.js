@@ -133,7 +133,7 @@ module.exports.executeTestCase = async function executeTestCase(test, instance, 
 
     while (!runObject.done) {
         // fastify.log.info(`Job ID:  ${runObject.id} Job Status: ${runObject.done} Job error: ${runObject.error}`);
-        await new Promise(resolve => setTimeout(resolve, timeouts.checkJobStatusAfter));
+        await new Promise(resolve => setTimeout(resolve, timeouts.checkJobStatusAfter)).catch(() => {});
     }
     return runObject;
 }

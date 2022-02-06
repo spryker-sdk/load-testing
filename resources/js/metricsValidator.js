@@ -10,14 +10,15 @@ module.exports = class MetricsValidator {
         if (results.requestType !== 'get') {
             requestType = 'post'
         }
+        results.slaPassed = false;
 
-        results.avg = results.avg.toFixed(2);
-        results.min = results.min.toFixed(2);
-        results.max = results.max.toFixed(2);
-
-        let limits = this.getRequestLimits(requestType, area, limit);
-        results.slaPassed = results.max <= limits.max || results.avg <= limits.avg;
-
+        if (results.avg != null && results.min != null && results.max != null )  {
+            results.avg = results.avg.toFixed(2);
+            results.min = results.min.toFixed(2);
+            results.max = results.max.toFixed(2);
+            let limits = this.getRequestLimits(requestType, area, limit);
+            results.slaPassed = results.max <= limits.max || results.avg <= limits.avg;
+        }
         return results;
     }
 

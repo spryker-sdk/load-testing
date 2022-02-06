@@ -6,15 +6,16 @@ const {spawn} = require('child_process');
 const scenarios = require("../scenarios/scenarios");
 let variables = require('./variables');
 const timeouts = require('./timeout');
+const report = require('./reports');
 
-getTestCaseById = (testCaseId) => {
+const getTestCaseById = (testCaseId) => {
     if (variables.pendingJobs.has(testCaseId)) {
         return variables.pendingJobs.get(testCaseId);
     }
     return null
 }
 
-initTestCases = () => {
+const initTestCases = () => {
     let storage = new Map();
 
     for (let i = 0; i < scenarios.length; i++) {
@@ -29,6 +30,27 @@ initTestCases = () => {
     return storage;
 }
 
+const updateReport = async (runObject, code, test, reportFolder, project, startTime, newrelicLogFilePath, key) => {
+    runObject.done = true;
+    runObject.end = new Date().getTime();
+    runObject.exitCode = code;
+    runObject.success = code === 0;
+    variables.jobs.delete(key);
+    variables.pendingJobs.delete(test.id);
+    // if (!runObject.success) {
+    //     await fs.remove(reportFolder);
+    //     return;
+    // }
+
+    await glob(`${reportFolder}/*/`, (er, directories) => {
+        directories.map(async directory => fs.rename(directory, `${reportFolder}${variables.reportSuffix}`));
+    });
+
+    await fs.writeJson(`${reportFolder}/report.json`, {...runObject, log: null});
+    await fs.writeJson(`${reportFolder}/report.log.json`, runObject.log);
+    await newrelic.collectNewrelicLogs(project, startTime, newrelic.getNewrelicTime(), test.route, test.requestType, newrelicLogFilePath);
+    await report.readReports();
+}
 module.exports.getTestCaseById = getTestCaseById
 
 module.exports.initTestCases = initTestCases
@@ -97,31 +119,15 @@ module.exports.executeTestCase = async function executeTestCase(test, instance, 
     });
 
     run.stderr.on('error', async code => {
-        await fs.remove(reportFolder);
-        variables.jobs.delete(key);
-        variables.pendingJobs.delete(test.id);
-        await readReports();
+        await updateReport(runObject, code, test, reportFolder, project, startTime, newrelicLogFilePath, key);
+    });
+
+    run.on('exit', async code => {
+        await updateReport(runObject, code, test, reportFolder, project, startTime, newrelicLogFilePath, key);
     });
 
     run.on('close', async code => {
-        runObject.done = true;
-        runObject.end = new Date().getTime();
-        runObject.exitCode = code;
-        runObject.success = code === 0;
-        variables.jobs.delete(key);
-        variables.pendingJobs.delete(test.id);
-        if (!runObject.success) {
-            await fs.remove(reportFolder);
-            return;
-        }
-
-        await glob(`${reportFolder}/*/`, (er, directories) => {
-            directories.map(async directory => fs.rename(directory, `${reportFolder}${variables.reportSuffix}`));
-        });
-
-        await fs.writeJson(`${reportFolder}/report.json`, {...runObject, log: null});
-        await fs.writeJson(`${reportFolder}/report.log.json`, runObject.log);
-        await newrelic.collectNewrelicLogs(project, startTime, newrelic.getNewrelicTime(), test.route, test.requestType, newrelicLogFilePath);
+        await updateReport(runObject, code, test, reportFolder, project, startTime, newrelicLogFilePath, key);
     });
 
     while (!runObject.done) {

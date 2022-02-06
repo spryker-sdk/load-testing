@@ -1,4 +1,5 @@
 const fs = require('fs-extra');
+const dateFormat = require("date-format");
 const path = require('path');
 const glob = require("glob");
 const rimraf = require("rimraf");
@@ -8,6 +9,7 @@ const scenarios = require('../resources/scenarios/scenarios.js');
 let variables = require('../resources/js/variables');
 const {getInstanceList, initTestCases, getTestCaseById, executeTestCase} = require('../resources/js/testCase');
 const timeouts = require('../resources/js/timeout');
+const report = require('../resources/js/reports');
 
 fastify.register(require('fastify-formbody'));
 fastify.register(require('point-of-view'), {
@@ -43,7 +45,7 @@ fastify.register(require('fastify-static'), {
 });
 
 fastify.get('/', (req, reply) => {
-    readReports();
+    report.readReports();
 
     reply.view('list.mustache', {
         title: 'Load testing',
@@ -57,7 +59,7 @@ fastify.get('/', (req, reply) => {
 });
 
 fastify.get('/reports', async (req, reply) => {
-    await readReports();
+    await report.readReports();
     let list = Array.from(variables.reports.values()).map(report => ({...report, log: null}));
 
     reply.send(list);
@@ -75,7 +77,7 @@ fastify.get('/status', async (req, reply) => {
 });
 
 fastify.post('/reports', async(req, reply) => {
-    await readReports();
+    await report.readReports();
 
     let data = JSON.parse(req.body);
     let reportPath = 'web/' + data.id + '/report.json';
@@ -325,23 +327,10 @@ fastify.get('/log/*', async (req, reply) => {
     }, {...partials});
 });
 
-const readReports = async () => {
-    await glob(`./${variables.destinationFolder}/!(archive)/**/report.json`, (er, files) => {
-        Array.isArray(files) && files.map(file => {
-            let runObject = fs.readJsonSync(file);
-            try {
-                runObject.newrelicLog = fs.readJsonSync(runObject.newrelicLogFilePath)
-                runObject.slaStatus = runObject.newrelicLog.slaPassed;
-            } catch (err) {}
-            variables.reports.set(runObject.id, runObject);
-        });
-    });
-};
-
 // Run the server!
 const start = async () => {
     try {
-        await readReports();
+        await report.readReports();
         await fastify.listen(variables.port, variables.host, error => {
             if (error) {
                 fastify.log.info(`Server start error: ${error.error}`)

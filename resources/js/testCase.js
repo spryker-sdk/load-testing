@@ -97,6 +97,7 @@ module.exports.executeTestCase = async function executeTestCase(test, instance, 
         + ` -DGLUE_URL=${project.glue}`
         + ` -DFE_URL=${project.fe_api}`
         + ` -DBACKEND_API_URL=${project.backend_api}`
+        + ` -DMOCK_SERVER_URL=${project.mock_server}`
         + ` -DINSTANCE_NAME=${instanceName}`
         + ` -DDURATION=${duration}`
         + ` -DTARGET_RPS=${targetRps}`;

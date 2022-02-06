@@ -7,7 +7,7 @@ const fastify = require('fastify')({logger: true});
 const dotenv = require("dotenv").config({ path: process.cwd() + '/.env' });
 const scenarios = require('../resources/scenarios/scenarios.js');
 let variables = require('../resources/js/variables');
-const {getInstanceList, initTestCases, getTestCaseById, executeTestCase} = require('../resources/js/testCase');
+const {initTestCases, getTestCaseById, executeTestCase} = require('../resources/js/testCase');
 const timeouts = require('../resources/js/timeout');
 const report = require('../resources/js/reports');
 
@@ -282,7 +282,7 @@ fastify.post('/instances', (req, reply) => {
 
         variables.instanceStore.set(key, project);
 
-        variables.instanceList = getInstanceList();
+        variables.instanceList = variables.getInstanceList();
     }
 
     reply.redirect(302, '/instances');
@@ -294,7 +294,7 @@ fastify.delete('/instances/:instanceKey', (req, reply) => {
 
     if (variables.instanceStore.has(key)) {
         variables.instanceStore.del(key);
-        variables.instanceList = getInstanceList();
+        variables.instanceList = variables.getInstanceList();
         statusCode = 200;
     }
 

@@ -14,20 +14,19 @@ const newrelicQuery='{\n' +
     '  }\n' +
     '}';
 
-
 module.exports.getNewrelicTime = () => {
     return new Date().toISOString().replace("T", " ").replace(/\..+/, ``);
 }
 
 module.exports.collectNewrelicLogs =
     async function collectNewrelicLogs(instance, timeFrameStart, timeFrameEnd, route, requestType, newrelicPath) {
-        if (!route.length && (!instance.newrelic_application_id.length || !instance.newrelic_application.length || !instance.newrelic_api_key)) {
+        if (!route.length && (!instance.newrelic_application_id.length || !instance.newrelic_application.length || !instance.newrelic_api_key.length)) {
             console.info(`Skip request to newrelic due to misconfiguration.`)
             return;
         }
         async function collect() {
             console.info(`Collect newrelic info:  ${timeFrameStart} - ${timeFrameEnd} : ${route}  Request type: ${requestType} Newrelic log path: ${newrelicPath}`)
-            const data = JSON.stringify({
+            const requestQuery = JSON.stringify({
                 "query": newrelicQuery.replace('ACCOUNT_ID', instance.newrelic_application_id)
                     .replace('TARGET_ROUTE', route)
                     .replace('REQUEST_TYPE', requestType.toUpperCase())
@@ -38,7 +37,7 @@ module.exports.collectNewrelicLogs =
             });
             const validator = new MetricsValidator();
 
-            console.info(`Payload:` + data);
+            console.info(`Payload:` + requestQuery);
 
             const options = {
                 hostname: 'api.newrelic.com',
@@ -48,7 +47,7 @@ module.exports.collectNewrelicLogs =
                 json: true,
                 headers: {
                     'Content-Type': 'application/json',
-                    'Content-Length': data.length,
+                    'Content-Length': requestQuery.length,
                     'API-Key': instance.newrelic_api_key
                 }
             }
@@ -67,10 +66,10 @@ module.exports.collectNewrelicLogs =
                     console.info(JSON.parse(data));
                 });
             }).on("error", async (error) => {
-                await fs.writeJson(newrelicPath, JSON.parse(data));
+                await fs.writeJson(newrelicPath, JSON.parse(error));
                 console.error("Newrelic request error:" + error.message)
             })
-            req.write(data);
+            req.write(requestQuery);
             req.end();
         }
 

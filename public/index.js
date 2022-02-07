@@ -266,6 +266,7 @@ fastify.post('/instances', (req, reply) => {
     let newrelicApiKey = req.body.newrelic_api_key;
     let newrelicApplicationId = req.body.newrelic_application_id;
     let mockServer = req.body.mock_server;
+    let zedApi = req.body.zed_api;
 
     if (key !== "") {
         let project = Object.assign({},
@@ -278,6 +279,7 @@ fastify.post('/instances', (req, reply) => {
             newrelicApplication && {"newrelic_application": newrelicApplication},
             newrelicApiKey && {"newrelic_api_key": newrelicApiKey},
             newrelicApplicationId && {"newrelic_application_id": newrelicApplicationId},
+            zedApi && {"zed_api": zedApi},
         );
 
         variables.instanceStore.set(key, project);

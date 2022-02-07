@@ -98,6 +98,7 @@ module.exports.executeTestCase = async function executeTestCase(test, instance, 
         + ` -DFE_URL=${project.fe_api}`
         + ` -DBACKEND_API_URL=${project.backend_api}`
         + ` -DMOCK_SERVER_URL=${project.mock_server}`
+        + ` -DZED_API_URL=${project.zed_api}`
         + ` -DINSTANCE_NAME=${instanceName}`
         + ` -DDURATION=${duration}`
         + ` -DTARGET_RPS=${targetRps}`;

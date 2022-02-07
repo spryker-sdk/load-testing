@@ -18,33 +18,41 @@ package spryker
 
 import io.gatling.core.Predef._
 import io.gatling.http.Predef._
+import io.netty.handler.codec.http._
+import io.netty.util.CharsetUtil
+import java.nio.charset.Charset
+import io.gatling.core.akka._
 import scala.concurrent.duration._
-import scala.util.Random
-import spryker.FeProtocol._
-import spryker.Scenario._
-import java.net.URL
+import spryker.ZedApiProtocol._
 
-trait CheckoutBase {
+trait GetOrdersTableZedApiBase {
 
-  lazy val scenarioName = "Checkout page"
+  lazy val scenarioName = "Import Merchants Api"
 
-  val httpProtocol = FeProtocol.httpProtocol
-  val url = new URL(FeProtocol.baseUrl)
-  val hostName = url.getHost
+  val httpProtocol = ZedApiProtocol.httpProtocol
 
-  val request = http(scenarioName)
-    .get("/checkout")
-    .header("Authorization", "Basic YWxkaTpsaWtlc2Nsb3Vk")
-    .header("Host", hostName)
+  var request = http("Get table of orders from Zed API")
+    .get("/sales/index/table")
     .check(status.is(200))
 
+  if (!ZedApiProtocol.instanceName.isEmpty &&
+      !ZedApiProtocol.basicAuthUsername.isEmpty &&
+      !ZedApiProtocol.basicAuthPassword.isEmpty) {
+      request = request.basicAuth(ZedApiProtocol.basicAuthUsername, ZedApiProtocol.basicAuthPassword)
+  } 
+
   val scn = scenario(scenarioName)
-    .exec(request)
+  .exec(session => {
+    println(session("id").as[String])
+    session
+  })
+  .exec(request)
+  
 }
 
-class CheckoutRamp extends Simulation with CheckoutBase {
+class GetOrdersTableZedApiRamp extends Simulation with GetOrdersTableZedApiBase {
 
-  override lazy val scenarioName = "Checkout page [Incremental]"
+  override lazy val scenarioName = "Get table of orders from Zed API [Incremental]"
 
   setUp(scn.inject(
       rampUsersPerSec(1) to (Scenario.targetRps.toDouble) during (Scenario.duration),
@@ -53,9 +61,9 @@ class CheckoutRamp extends Simulation with CheckoutBase {
     .protocols(httpProtocol)
 }
 
-class CheckoutSteady extends Simulation with CheckoutBase {
+class GetOrdersTableZedApiSteady extends Simulation with GetOrdersTableZedApiBase {
 
-  override lazy val scenarioName = "Checkout page [Steady RPS]"
+  override lazy val scenarioName = "Get table of orders from Zed API [Steady RPS]"
 
   setUp(scn.inject(
       constantUsersPerSec(Scenario.targetRps.toDouble) during (Scenario.duration),

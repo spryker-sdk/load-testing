@@ -33,9 +33,7 @@ trait AddItemToCartFullFlowApiBase {
   val httpProtocol = GlueProtocol.httpProtocol
 
   val productFeeder = csv("tests/_data/product_concrete.csv").random
-  val customerFeeder = csv("tests/_data/customer.csv").random
-
-  val feeder = Iterator.continually(Map("customerEmail" -> (Random.alphanumeric.take(30).mkString + "@gmail.com"), "password" -> "supe!rsEcu1re"))
+  val newCustomerFeeder = Iterator.continually(Map("customerEmail" -> (Random.alphanumeric.take(30).mkString + "@gmail.com"), "password" -> "supe!rsEcu1re"))
 
   val createCustomerRequest = http("Create Customer Request")
     .post("/customers")
@@ -66,7 +64,7 @@ trait AddItemToCartFullFlowApiBase {
     .check(status.is(201))
 
   val scn = scenario(scenarioName)
-    .feed(feeder)
+    .feed(newCustomerFeeder)
     .feed(productFeeder)
     .exec(createCustomerRequest)
     .pause(3)

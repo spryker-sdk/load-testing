@@ -1,0 +1,19 @@
+version: '3.7'
+
+x-base-services:
+    tool: &tool  '.:/app:delegated'
+
+services:
+  gatling:
+    build: ./local
+    pull_policy: always
+    working_dir: '/app'
+    environment:
+      HOST: 0.0.0.0
+      PORT: 3000
+      NODE_ENV: "${NODE_ENV:-production}"
+    volumes:
+        - *tool
+    ports:
+      - '3000:3000'
+

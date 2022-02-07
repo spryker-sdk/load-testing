@@ -10,7 +10,7 @@
         groupBy: "done",
         groupValues: [[false, true]],
         groupHeader: function (value, count, data, group) {
-            return value ? 'Done' : ('Running (' + count + ')');
+            return value ? 'Done (' + count + ')' : ('Running (' + count + ')');
         },
         initialSort:[
             {column:"when", dir:"desc"},
@@ -64,9 +64,43 @@
                     }
                 },
                 sorter: "number",
-                headerFilter: "input"
+                headerFilter: "input",
+                widthGrow: 1
             },
-            {title: "Description", field: "description", headerFilter: "input", widthGrow: 4, headerFilter: "input"},
+            {
+                title: "Finished At",
+                field: "end",
+                formatter: function (cell) {
+                    var value = cell.getValue();
+                    if (value) {
+                        return new Date(value).toLocaleDateString() + '<br>' + new Date(value).toLocaleTimeString();
+                    }
+                },
+                sorter: "number",
+                headerFilter: "input",
+                widthGrow: 1
+            },
+            {title: "Description", field: "description", headerFilter: "input", widthGrow: 3, headerFilter: "input"},
+            {title: "SLA", field: "slaStatus", align: "center", formatter: "tickCross"},
+            {
+                title: "Newrelic",
+                field: "newrelicLog",
+                widthGrow: 3,
+                formatter:function(cell) {
+                    var row = cell.getRow().getData();
+                    var result = '';
+                    if (row.done && row.newrelicLog) {
+                        for (const infoKey in row.newrelicLog) {
+                            result += `${infoKey}: ${row.newrelicLog[infoKey]} <br/>`;
+                        }
+                    }
+                    if (row.slaStatus) {
+                        return result;
+                    } else {
+                        return `<div class="failed">${result}</div>`;
+                    }
+                }
+            },
             {
                 title: "",
                 field: "",
@@ -74,15 +108,13 @@
                     var row = cell.getRow().getData();
                     var result = '';
                     if (row.done && row.reportPath) {
-                        result += `<a href="${row.reportPath}" target="_blank">Report</a>`;
+                        result += `<a href="${row.reportPath}" target="_blank">Report</a><br/>`;
                     }
-                    result += '&nbsp;';
                     if (row.logPath) {
                         result += `<a href="${row.logPath}">Log</a>`;
                     }
-
                     return result;
-                }
+                },
             },
             {
                 formatter:"buttonCross",
@@ -118,10 +150,18 @@
         table.setHeaderFilterValue(filter, filters[filter]);
     });
 
-    setInterval(function () {
-        table.replaceData();
-    }, 5000);
-
+    {{#pendingJobs}}
+        setInterval(function () {
+          table.replaceData();
+        }, 5000);
+    {{/pendingJobs}}
+    {{^pendingJobs}}
+        {{#jobs}}
+          setInterval(function () {
+            table.replaceData();
+          }, 5000);
+        {{/jobs}}
+    {{/pendingJobs}}
 </script>
 
 {{> footer}}

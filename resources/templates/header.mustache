@@ -14,22 +14,33 @@
     <script src="https://use.fontawesome.com/97ec165e51.js"></script>
 </head>
 <body>
-
 <div id="layout" class="content pure-g">
     <div id="nav" class="pure-u">
         <a href="#" class="nav-menu-button">Menu</a>
-
         <div class="nav-inner">
-
-            {{^jobs}}
-                <a class="primary-button pure-button" href="/run">New Test</a>
-            {{/jobs}}
-
             <div class="pure-menu">
                 <ul class="pure-menu-list">
-                    {{#jobs}}
-                        <li class="pure-menu-item"><a href="{{logPath}}" class="pure-menu-link">Running <span class="email-count">(1)</span></a></li>
-                    {{/jobs}}
+
+                    <li class="pure-menu-heading">Tests Information</li>
+                    <li class="pure-menu-item"><div id="current-status"></div></li>
+                    <li class="pure-menu-heading">Actions</li>
+                    <li class="pure-menu-item">
+                        {{^jobs}}
+                            {{^pendingJobs}}
+                                <a class="primary-button pure-button" href="/run">New Test</a>
+                                <a class="primary-button pure-button" href="/run_all">Execute all tests</a>
+                            {{/pendingJobs}}
+                        {{/jobs}}
+
+                        {{#pendingJobs}}
+                            <a class="primary-button pure-button" href="/clear">Stop Test Suite Execution</a>
+                        {{/pendingJobs}}
+                        {{^jobs}}
+                            {{#reports.length}}
+                                <a class="primary-button pure-button" href="/drop">Remove All Test Results ({{reports.length}})</a>
+                            {{/reports.length}}
+                        {{/jobs}}
+                    </li>
                     <li class="pure-menu-heading">Instances</li>
                     <a class="primary-button pure-button" href="/instances">New instance</a>
                     <li class="pure-menu-item"><a href="/" class="pure-menu-link">ALL</a></li>
@@ -39,13 +50,37 @@
                         </li>
                     {{/projects}}
                     <li class="pure-menu-heading">Tests</li>
-                    <li class="pure-menu-item"><a href="/" class="pure-menu-link">ALL</a></li
+                    <li class="pure-menu-item"><a href="/" class="pure-menu-link">ALL</a></li>
                     {{#scenarios}}
                         {{#tests}}
-                        <li class="pure-menu-item"><small><a href="/?filter[testName]={{id}}" class="pure-menu-link">{{id}}</a></small></li>
+                        <li class="pure-menu-item"><small><a href="/?filter[testName]={{id}}" class="pure-menu-link">{{title}}</a></small></li>
                         {{/tests}}
                     {{/scenarios}}
                 </ul>
+                <script>
+                    var statusTable = new Tabulator("#current-status", {
+                        ajaxURL: '/status',
+                        layout: "fitColumns",
+                        resizableColumns: false,
+                        columns: [
+                            {title: "Total", field: "total", align: "center"},
+                            {title: "Pending", field: "pending", align: "center"},
+                            {title: "Running", field: "running", align: "center"},
+                        ],
+                    });
+                    {{#pendingJobs}}
+                        setInterval(function () {
+                          statusTable.replaceData();
+                        }, 5000);
+                    {{/pendingJobs}}
+                    {{^pendingJobs}}
+                        {{#jobs}}
+                          setInterval(function () {
+                            statusTable.replaceData();
+                          }, 5000);
+                        {{/jobs}}
+                    {{/pendingJobs}}
+                </script>
             </div>
         </div>
     </div>

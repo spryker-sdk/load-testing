@@ -23,7 +23,7 @@ namespace Pyz\Yves\Router;
 class RouterDependencyProvider extends SprykerRouterDependencyProvider
 {
     ...
-    
+
     /**
      * @return \Spryker\Yves\RouterExtension\Dependency\Plugin\RouteProviderPluginInterface[]
      */
@@ -33,7 +33,7 @@ class RouterDependencyProvider extends SprykerRouterDependencyProvider
         if (class_exists(LoadTestingRouterProviderPlugin::class)) {
             $routeProviders[] = new LoadTestingRouterProviderPlugin();
         }
-        
+
         return $routeProviders;
     }
 
@@ -69,7 +69,7 @@ console publish:trigger-events
 3. Run the *queue worker*:
 
 ```bash
-console q:w:s -s 
+console q:w:s -s
 ```
 
 That being done, you should have the fixtures loaded into the databases.
@@ -83,7 +83,7 @@ After you have completed integration and prepared the fixtures, you install the 
 cd vendor/spryker-sdk/load-testing
 ```
 
-2. Run 
+2. Run
 ```bash
 ./install.sh
 ```
@@ -103,6 +103,50 @@ cd load-testing
 ```bash
 ./install.sh
 ```
+
+## Installing gatling inside docker container for development mode.
+1. Start docker container
+```bash
+  docker-compose up -d
+```
+2. Install gatling and npm dependencies
+```bash
+  docker-compose exec  gatling local/init.sh
+```
+3. Run UI
+```bash
+  docker-compose exec gatling npm run run
+```
+4. Connect to container
+```bash
+  docker-compose exec gatling bash
+```
+5. Execute full test suite from command line
+```bash
+  docker-compose exec gatling bash
+
+  node public/test-suite.js  -i TARGET_ENV -t LOAD TYPE -r RPS -d DURATION
+```
+6. Access UI via url http://localhost:3000
+7. Stop container
+```bash
+    docker-compose stop
+```
+8. Destroy container
+```bash
+    docker-compose down
+```
+
+## Pack application inside docker image:
+1. Start docker container
+```bash
+  docker build -t IMAGE_NAME  --build-arg "APP_ENV=production" --build-arg HOST="HOST=0.0.0.0" --build-arg "PORT=3000".
+```
+2. Run image:
+```bash
+  docker run  -p 3000:3000 -it --rm IMAGE_NAME
+```
+3. Access UI via url http://localhost:3000
 
 Now you should have Gatling installed and ready for load testing.
 

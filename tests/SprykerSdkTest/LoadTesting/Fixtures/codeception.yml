@@ -14,6 +14,7 @@ coverage:
 
 suites:
     Product:
+        actor: LoadTestingProductTester
         class_name: LoadTestingProductTester
         path: Product
         modules:
@@ -33,6 +34,7 @@ suites:
                     cleanup: false
 
     Customer:
+        actor: LoadTestingCustomerTester
         class_name: LoadTestingCustomerTester
         path: Customer
         modules:

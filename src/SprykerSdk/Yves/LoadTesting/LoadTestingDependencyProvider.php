@@ -18,9 +18,19 @@ use SprykerSdk\Yves\LoadTesting\Dependency\Service\LoadTestingToUtilEncodingServ
 
 class LoadTestingDependencyProvider extends AbstractBundleDependencyProvider
 {
+    /**
+     * @var string
+     */
     public const CLIENT_CHECKOUT = 'CLIENT_CHECKOUT';
+
+    /**
+     * @var string
+     */
     public const CLIENT_QUOTE = 'CLIENT_QUOTE';
 
+    /**
+     * @var string
+     */
     public const SERVICE_UTIL_ENCODING = 'SERVICE_UTIL_ENCODING';
 
     /**
@@ -48,7 +58,7 @@ class LoadTestingDependencyProvider extends AbstractBundleDependencyProvider
     {
         $container->set(static::CLIENT_CHECKOUT, function (Container $container): LoadTestingToCheckoutClientInterface {
             return new LoadTestingToCheckoutClientBridge(
-                $container->getLocator()->checkout()->client()
+                $container->getLocator()->checkout()->client(),
             );
         });
 

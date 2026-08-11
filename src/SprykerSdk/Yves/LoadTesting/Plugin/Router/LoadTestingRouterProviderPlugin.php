@@ -12,6 +12,9 @@ use Spryker\Yves\Router\Route\RouteCollection;
 
 class LoadTestingRouterProviderPlugin extends AbstractRouteProviderPlugin
 {
+    /**
+     * @var string
+     */
     public const ROUTE_NAME_PLACE_ORDER_DEBUG = 'place-order-debug';
 
     /**
